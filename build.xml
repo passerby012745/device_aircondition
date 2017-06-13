@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="rule_service" default="war" basedir=".">
+	<property name="warname" value="aircondition-device.war"/>
+		
+	<property name="lib.dir" value="WebContent/WEB-INF/lib"/>
+	<property name="src.dir" value="src"/>
+	
+	<property name="build.dir" value="build/destination/webapp"/>
+	<property name="classes.dir" value="${build.dir}/WEB-INF/classes"/>
+	<property name="output.dir" value="${build.dir}/WEB-INF"/>
+	<property name="target.dir" value="target"/>
+	<property name="target.ver" value="1.8"/>
+	<property name="source.ver" value="1.8"/>
+	
+	<property name="mainclass" value="com.szsbay.livehome.openlife.aircondition"/>
+	
+	<!-- 第三方jar包的路径 -->    
+	<path id="lib-classpath">    
+	    <fileset dir="${lib.dir}">    
+	        <include name="**/*.jar"/>    
+	    </fileset>    
+	</path>
+	
+	<!-- 1. 初始化工作，如创建目录等 -->  
+    <target name="init">
+        <mkdir dir="${build.dir}"/>  
+        <mkdir dir="${output.dir}"/>  
+        <mkdir dir="${classes.dir}/resource"/>  
+        <mkdir dir="${output.dir}/lib"/>
+    	<mkdir dir="${target.dir}"/>
+        <copy todir="${build.dir}">  
+            <fileset dir="${basedir}/WebContent">  
+                <include name="WEB-INF/**"/>  
+                <include name="**" />
+            	<exclude name="**/web.xml"/>
+            </fileset>  
+        </copy>
+    	
+    </target>   
+	<!-- 2. 编译 -->    
+	<target name="compile" depends="init">
+	    <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="on">
+	    	<compilerarg line="-encoding UTF-8"/>    
+	    	<classpath refid="lib-classpath"/>    
+	    </javac>    
+	</target>
+
+	<!-- 2. 编译 -->    
+	<target name="clean">
+		<delete dir="build" />
+		<delete dir="target" />
+	</target>
+	
+	<!-- 3. war -->
+	<target name="war" depends="clean,compile">
+		<war warfile="${target.dir}/${warname}" webxml="${basedir}/web.xml">
+			<lib dir="${output.dir}/lib">  
+				<include name="**" />  
+        	</lib>  
+	        <classes dir="${classes.dir}"/>
+	        <fileset dir="${build.dir}">
+	        	<include name="***.*" />
+	        	<include name="livehome/**" />
+	        	<include name="resource/**" />
+	        	<include name="META-INF/**" />
+	        	<exclude name="**/web.xml"/>
+	        </fileset>
+        </war>   
+	</target>
+</project>

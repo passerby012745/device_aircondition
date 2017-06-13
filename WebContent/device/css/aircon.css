@@ -1,0 +1,75 @@
+@CHARSET "UTF-8";
+*{
+	margin: 0;
+	padding: 0;
+}
+.div_format1{
+	box-sizing: border-box;
+	padding: .2rem 0 0.2rem .5rem;
+	width: 100%;
+	/*height: 2.5rem;*/
+	line-height: 2.5rem;
+	border-bottom: 1px solid #ccc;
+}
+.div_format1:after {
+	content: '';
+	display: block;
+	height: 0;
+	clear: both;
+}
+.div_format1:first-child {
+	height: 4rem;
+}
+.div_format1:first-child span {
+	width: 35%;
+	line-height: 4rem;
+	word-break: break-all;
+	height: 4rem;
+	overflow: auto;
+}
+
+.div_format1:first-child .control {
+	float: left;
+	width: 60%;
+}
+.refresh {
+	float: left;
+	margin-top: 1.2rem;
+	margin-left: 0.5rem;
+	width: 3rem;
+	height: 1.5rem;
+}
+
+.div_format1 span {
+	float: left;
+	width: 25%;
+	text-align: left;
+}
+
+.div_format1 .control {
+	float: left;
+	width: 75%;
+}
+
+.div_format1 .control input {
+	margin-left: .5rem;
+}
+
+.div_format1 .control select {
+	width: 5.5rem;
+}
+
+.control #range {
+	width: 80%;
+	margin-top: .5rem;
+}
+.div_format1 .control p {
+	text-align: left;
+}
+
+.div_format1 #action_result {
+	width: 70%;
+	word-break: break-all;
+	height: 5rem;
+	overflow: auto;
+}

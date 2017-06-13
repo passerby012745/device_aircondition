@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- brand:品牌名
+	 manufacturer:厂商名  用于内部逻辑处理
+	 brand-resource:品牌的资源名 
+	 manufacturer-resource:厂商的资源名 用于界面显示 
+	 resource:国际化资源文件路径 -->
+<products brand="LIVE_HOME" 
+		  manufacturer="SMART_BAY" 
+		  resource="resource/resource.properties"
+		  brand-resource="LIVE_HOME_BRAND" 
+		  manufacturer-resource="SMART_BAY_MANUFACTURER"
+		  alarm-template="resource/alarm-template.properties">
+	
+	<!-- implement-class: 驱动实现类类名-->
+	<driver-config
+		implement-class="com.szsbay.livehome.openlife.aircondition.DeviceDriver"
+		discover-class="com.szsbay.livehome.openlife.aircondition.DeviceDiscoverer">
+	</driver-config>
+	
+	<!-- 产品名称：hisenseKelon
+		   产品型号：HISENSE_KELON_1-->
+	<product name ="hisenseKelon" description="LIVEHOME_AIRCONDITION_DESCRIPRION" title="LIVEHOME_AIRCONDITION" model="HISENSE_KELON_1">
+		<!-- 继承标准设备类 -->
+		<classes>
+			<class name="airConditioner" />
+		</classes>
+		
+		<!-- 自定义action动作，可选 -->
+		<actions>
+			<!-- 添加设备-->
+			<action name="addDevice" description="AIR_CONDITION_ADD_DEVICE_DESCRIPTION" title="AIR_CONDITION_ADD_DEVICE_TITLE">
+			</action>
+			
+			<!-- 指令缓存-->
+			<action name="cacheOrder" description="AIR_CONDITION_CACHE_ORDER_DESCRIPTION" title="AIR_CONDITION_CACHE_ORDER_TITLE">
+				<property name="set" type="enum" description="AIR_CONDITION_CACHE_ORDER_SET_DESCRIPTION" title="AIR_CONDITION_CACHE_ORDER_SET_TITLE">
+					<enum title="AIR_CONDITIONER_SET_START">start</enum>
+					<enum title="AIR_CONDITIONER_SET_END">end</enum>
+				</property>
+			</action>
+		</actions>
+		
+		<!-- 自定义alarm警报，可选 -->
+		<alarms>
+			<alarm name="ALARM_DOORBELL" title="DOOR_BUTTON_ALARM" type="alarm">
+				<templates detail-view="DEVICE_LIST">
+					<template title-resource="ALARM_DOOR_TEMPLATE_TITLE" content-resource="ALARM_DOOR_TEMPLATE_CONTENT">
+					</template>
+				</templates>
+			</alarm>
+			
+			<!--预热完成事件-->
+			<alarm name="EVENT_PREHEAT_FINISH" description="EVENT_PREHEAT_FINISH_DESCRIPTION" title="EVENT_PREHEAT_FINISH_TITLE" type="event">
+				<templates detail-view="DEVICE_LIST">
+					<template title-resource="EVENT_PREHEAT_FINISH_TEMPLATE_TITLE"
+						content-resource="EVENT_PREHEAT_FINISH_TEMPLATE_CONTENT">
+					</template>
+				</templates>
+			</alarm>
+			<!--烘焙完成事件-->
+			<alarm name="EVENT_BAKING_FINISH" description="EVENT_BAKING_FINISH_DESCRIPTION" title="EVENT_BAKING_FINISH_TITLE" type="event">
+				<templates detail-view="DEVICE_LIST">
+					<template title-resource="EVENT_BAKING_FINISH_TEMPLATE_TITLE"
+						content-resource="EVENT_BAKING_FINISH_TEMPLATE_CONTENT">
+					</template>
+				</templates>
+			</alarm>
+		</alarms>
+		
+		<ifttt>
+			<triggers>
+				<alarm name="ALARM_DOORBELL" />
+				
+				<alarm name="EVENT_PREHEAT_FINISH" />
+				<alarm name="EVENT_BAKING_FINISH" />
+			</triggers>
+		</ifttt>
+		
+		<!-- 配置设备界面，可选 -->
+		<view>
+			<!-- icon:在线设备图标路径
+				 icon-offline:离线设备图标路径
+				 device-control-entry:设备控制页面路径
+				 device-guide-entry:设备安装指南页面路径 -->
+			<icon>device/images/icon.png</icon>
+			<icon-offline>device/images/icon_offline.png</icon-offline>
+			<device-control-entry>device/aircon_control.html</device-control-entry>
+			<device-guide-entry>device/install_guide.html</device-guide-entry>
+		</view>
+
+	</product>
+</products>

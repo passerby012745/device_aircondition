@@ -1,0 +1,80 @@
+/*
+//
+// Tip: to integrate this plugin seamlessly into your application, use these styles as a starting
+// point to build your own stylish alerts and confirmations!
+//
+*/
+
+/* Modal */
+.alertable {
+    position: fixed;
+    z-index: 9999;
+    /*top: 38vh;*/
+    /*left: calc(50% - 150px);*/
+    width: 83%;
+    background: white;
+    border-radius: 4px;
+    padding: 20px;
+    /*margin: 0 auto;*/
+    /*transform: translate(-50%, 0%);*/
+    left: 8%;
+    top:35%;
+      /*border:1px solid #00F;*/
+}
+
+/* Overlay */
+.alertable-overlay {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .5);
+      /*border:1px solid #F00;*/
+}
+
+/* Message */
+.alertable-message {
+    font-size: 0.5rem;
+    margin-bottom: 30px;
+}
+
+/* Button group */
+.alertable-buttons {
+    text-align: right;
+}
+
+/* OK button */
+.alertable-ok {
+    background: #09d;
+    border: solid 1px #09d;
+    outline: none;
+    color: white;
+    border-radius: 4px;
+    padding: 4px 12px;
+    margin-left: 4px;
+    cursor: pointer;
+    font-size: 0.32rem;
+}
+
+.alertable-ok:hover {
+    background-color: #08c;
+}
+
+/* Cancel button */
+.alertable-cancel {
+    border: solid 1px #ddd;
+    outline: none;
+    background: white;
+    color: #888;
+    border-radius: 4px;
+    padding: 4px 12px;
+    margin-left: 4px;
+    cursor: pointer;
+    font-size: 0.32rem;
+}
+
+.alertable-cancel:hover {
+    background-color: #f2f2f2;
+}
