@@ -548,7 +548,7 @@ var doConfig = function (msg){
 	window.AppJsBridge.service.deviceService.doConfig ({
 		manufacturer : "SMART_BAY",  //厂商名 
 		brand : "LIVE_HOME", //品牌名
-		action : "bind",
+		action : "airconbind",
 		parameters :  {
 			"moduleId" : _moduleId
 		}, //参数JSON字符串

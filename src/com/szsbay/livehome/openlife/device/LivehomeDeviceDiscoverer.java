@@ -11,7 +11,6 @@ import com.huawei.smarthome.driver.IDeviceService;
 import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
 import com.szsbay.livehome.openlife.aircondition.DeviceProtocol;
-import com.szsbay.livehome.util.LogUtils;
 
 public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 {
@@ -94,13 +93,16 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
     }
 
 	@Override
-	public void doConfig(String commmand, JSONObject params)
+	public void doConfig(String command, JSONObject params)
 	{
 		// 手机APP，安装指导界面配置参数，属于驱动自定义参数
-		logger.d("<doConfig> commmand = " + commmand + " , params = " + params.toString());
+		logger.d("<doConfig> commmand = " + command + " , params = " + params.toString());
 		logger.d("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 		logger.d("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-		devicesWaitMap.put(params.getString("moduleId"), params);
+		if(command.equals("airconbind"))
+			devicesWaitMap.put(params.getString("moduleId"), params);
+		else
+			logger.d("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     }
 
 
@@ -139,18 +141,8 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 				{
 					for (Entry<String, JSONObject> entry : devicesWaitMap.entrySet()) 
 					{
-						JSONObject statData = new JSONObject();
-						logger.d("<DiscoverThread> sn = " + entry.getKey());
-						statData.put("state", "off");
-						statData.put("screenState", "off");
-						statData.put("ledState", "off");
-						statData.put("mode", "auto");
-						statData.put("configTemperature", 32);
-						statData.put("configHumidity", 75);
-						statData.put("windDirection", "auto");
-						statData.put("windSpeed", "fast");
-						this.deviceService.reportIncludeDevice(entry.getKey(), DeviceProtocol.deviceName, new JSONObject().put(DeviceProtocol.deviceName, statData));
 						logger.d("<DiscoverThread> sn = " + entry.getKey() + " , entry = " + entry.getValue().toString());
+						this.deviceService.reportIncludeDevice(entry.getKey(), DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
 						LivehomeDeviceDriver.addBindDevice(entry.getValue().getString("moduleId").toUpperCase(), new JSONObject());
 						}
 						devicesWaitMap.clear();

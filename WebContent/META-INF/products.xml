@@ -24,7 +24,22 @@
 		<!-- 继承标准设备类 -->
 		<classes>
 			<class name="airConditioner" />
+			<class name="humiditySensor" />
+			<class name="temperatureSensor"/>
 		</classes>
+		
+		<!-- 自定义property属性，可选 -->
+		<properties>
+			<!-- 睡眠状态-->
+            <property name="sleepState" type="enum" description="The sleep status of the air conditioner, on or off" title="AIR_CONDITIONER_SLEEP_STATE">
+                <enum title="AIR_CONDITIONER_STATE_ON">on</enum>
+                <enum title="AIR_CONDITIONER_STATE_OFF">off</enum>
+            </property>
+			
+			<!-- 室外温度-->
+			<property name="outdoorTemperature" type="float" min="-100" max="100" title="TEMPERATURE_SENSOR_TEMPERATURE" unit="℃" unit-title="TEMPERATURE_SENSOR_UNIT">
+			</property>
+		</properties>
 		
 		<!-- 自定义action动作，可选 -->
 		<actions>

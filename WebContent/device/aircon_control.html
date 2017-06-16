@@ -6,20 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="stylesheet" type="text/css" href="css/aircon.css" />
+<link rel="stylesheet" type="text/css" href="css/device.css" />
 <script type="text/javascript" src="javascript/lib/vconsole.min.js"></script>
 </head>
 <body>
 	<div>
 		<div class="div_format1">
-			<span>空调当前状态</span>
+			<span>空调状态</span>
 			<div class="control">
 				<span id="show_state"></span>
 				<button class="refresh" type="button" onclick="updateState()"> 更新 </button>
 			</div>
 		</div>
 		<div class="div_format1">
-			<span>开关设置：</span>
+			<span>设置电源：</span>
 			<div class="control">
 				<label for="powerOn">开</label><input id="powerOn"  value="on" type="radio" name="power-btn" />
 				<label for="powerOn">关</label><input id="powerOff" value="off" type="radio" name="power-btn" />
@@ -27,7 +27,7 @@
 			</div>
 		</div>
 		<div class="div_format1">
-			<span>风向：</span>
+			<span>设置风向：</span>
 			<div class="control">
 				<label for="windAuto">自动</label><input id="windAuto" value="auto" type="radio" name="wind-btn" />
 				<label for="windHor">水平</label><input id="windHor" value="horizon" type="radio" name="wind-btn" />
@@ -36,7 +36,7 @@
 			</div>
 		</div>
 		<div class="div_format1">
-			<span>风速：</span>
+			<span>设置风速：</span>
 			<div class="control">
 				<select name="mode-speed" id="windSped">
 					<option value="auto">自动</option>
@@ -46,23 +46,16 @@
 					<option value="strong">强</option>
 				</select>
 			</div>
-
-			<!--<button id="modeblow_65" type="button" onclick=""> 送风 </button> -->
-			<!--<button id="modeCool_65" type="button" onclick="modeCool_65()"> 制冷 </button>-->
-			<!--<button id="modeHot_65" type="button"> 制热 </button> -->
-			<!--<button id="modeDehumi_65" type="button"> 除湿 </button> -->
-			<!--<button id="modeAuto_65" type="button"> 自动 </button> -->
 		</div>
 		<div class="div_format1">
-			<span>睡眠模式：</span>
+			<span>设置睡眠：</span>
 			<div class="control">
 				<label for="sleepOn">开</label><input id="sleepOn" value="on" type="radio" name="sleep-btn" />
 				<label for="sleepOff">停</label><input id="sleepOff" value="off" type="radio" name="sleep-btn" />
 			</div>
-
 		</div>
 		<div class="div_format1">
-			<span>工作模式：</span>
+			<span>设置模式：</span>
 			<div class="control">
 				<select name="mode-sel" id="workMode">
 					<option value="auto">自动</option>
@@ -73,32 +66,59 @@
 					<option value="blast">送风</option>
 				</select>
 			</div>
-
 		</div>
-		<div class="div_format1">
-			<span>空调灯：</span>
+<!-- 		<div class="div_format1">
+			<span>设置LED：</span>
 			<div class="control">
 				<label for="lightOn">开</label><input id="lightOn" value="on" type="radio" name="light" />
 				<label for="lightOff">关</label><input id="lightOff" value="off" type="radio" name="light" />
 			</div>
-
-		</div>
-		<div class="div_format1">
-			<span>屏幕开关：</span>
+		</div> -->
+<!-- 		<div class="div_format1">
+			<span>设置屏幕：</span>
 			<div class="control">
 				<label for="screenOn">开</label><input  id="screenOn" value="on" type="radio" name="screen-btn" />
 				<label for="screenOff">关</label><input id="screenOff" value="off" type="radio" name="screen-btn" />
 			</div>
-
-		</div>
+		</div> -->
 		<div class="div_format1">
 			<span>设置温度：</span>
 			<div class="control">
-				<b>18</b><input type="range"  id="range" step="1" min="18" max="32" /><b>32</b>
-				<p>当前设置温度：<b id="temp">24</b>&deg;C</p>
+				<b>18</b><input type="range"  id="rangeTemp" step="1" min="18" max="32" /><b>32</b>
+				<p>当前设置值：<b id="temp">28</b>&deg;C</p>
 			</div>
-
 		</div>
+<!-- 		<div class="div_format1">
+			<span>设置湿度：</span>
+			<div class="control">
+				<b>30</b><input type="range"  id="rangeHumi" step="1" min="30" max="80" /><b>80</b>
+				<p>当前设置值：<b id="humi">50</b>%RH</p>
+			</div>
+		</div> -->
+<!-- 		<div class="div_format1">
+			<span>室内湿度：</span>
+			<div class="control">
+				<span class="val" id="indoorHumidity">-</span><span>%RH</span>
+			</div>
+		</div> -->
+<!-- 		<div class="div_format1">
+			<span>室外湿度：</span>
+			<div class="control">
+				<span class="val" id="outdoorHumidity">-</span><span>%RH</span>
+			</div>
+		</div> -->
+		<div class="div_format1">
+			<span>室内温度：</span>
+			<div class="control">
+				<span class="val" id="indoorTemperature">-</span><span>&deg;C</span>
+			</div>
+		</div>
+<!-- 		<div class="div_format1">
+			<span>室外温度：</span>
+			<div class="control">
+				<span class="val" id="outdoorTemperature">-</span><span>&deg;C</span>
+			</div>
+		</div> -->
 		<div class="div_format1">
 			<span>操作结果：</span>
 			<span id="action_result"></span>

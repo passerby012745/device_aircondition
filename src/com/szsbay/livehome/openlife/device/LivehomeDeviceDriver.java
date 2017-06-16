@@ -1,12 +1,11 @@
 package com.szsbay.livehome.openlife.device;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.huawei.smarthome.api.device.IDeviceManageService;
@@ -22,7 +21,6 @@ import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
 import com.szsbay.livehome.openlife.aircondition.DeviceControl;
 import com.szsbay.livehome.openlife.aircondition.DeviceProtocol;
-import com.szsbay.livehome.openlife.rule.service.DevicesParser;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.SocketManager;
 import com.szsbay.livehome.socket.client.MobileSocketClientListener;
@@ -117,16 +115,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		{
 			if(!flag_temp)
 			{
-				JSONObject statData = new JSONObject();
-				statData.put("state", "off");
-				statData.put("screenState", "off");
-				statData.put("ledState", "off");
-				statData.put("mode", "auto");
-				statData.put("configTemperature", 32);
-				statData.put("configHumidity", 75);
-				statData.put("windDirection", "auto");
-				statData.put("windSpeed", "fast");
-				this.deviceService.reportIncludeDevice(SN, "airConditioner", new JSONObject().put(DeviceProtocol.deviceName, statData));//驱动通知设备管理服务一个新的设备加入网络了
+				this.deviceService.reportIncludeDevice(SN, DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
 				addBindDevice(SN, new JSONObject());
 			}
 		}
@@ -250,6 +239,8 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		@Override
 		protected void onRun() 
 		{
+			DeviceControl deviceControl = new DeviceControl();
+			SocketManager.getInstance().setMobileClientListener(new MobileSocketClientListener(deviceControl));
 			while (!destroyed.get()) 
 			{
 				logger.d("<ReportOnThread> devicesConfigMap.size() = {}",devicesConfigMap.size());
@@ -258,8 +249,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 					for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
 					{
 						String sn = entry.getKey();
-						DeviceControl deviceControl = new DeviceControl();
-						SocketManager.getInstance().setMobileClientListener(new MobileSocketClientListener(deviceControl));
+
 						SocketManager.getInstance().initMobileClientConnect(sn,"cdn1.topfuturesz.com",7820,"test");
 						boolean isOnline = SocketManager.getInstance().getMobileDeviceOnlineStatus(sn);
 						logger.d("<ReportOnThread> sn = {}, online = {}",sn , isOnline);
@@ -269,15 +259,51 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 							SocketManager.getInstance().sendMessageToCdn(sn, ("F4F500400C00000101FE0100006600000001B3F4FB"+"\r\n").getBytes());//发送查询指令
 						}
 						else
+						{
 							this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
+						}
+							
+/*							JSONObject hisenseKelonStatus = new JSONObject();
+							hisenseKelonStatus.put("state" ,"off");
+							hisenseKelonStatus.put("screenState" ,"off");
+							hisenseKelonStatus.put("ledState" ,"off");
+							hisenseKelonStatus.put("mode" ,"auto");
+							hisenseKelonStatus.put("configTemperature" ,22);
+							hisenseKelonStatus.put("configHumidity" ,60);
+							hisenseKelonStatus.put("windDirection" ,"auto");
+							hisenseKelonStatus.put("windSpeed" ,"auto");
+							hisenseKelonStatus.put("sleepState" ,"on");
+							hisenseKelonStatus.put("temperature" ,24);
+							hisenseKelonStatus.put("humidity" ,25);
+							hisenseKelonStatus.put("outdoorTemperature" ,26);
+							JSONObject airConditionerStatus = new JSONObject();
+							airConditionerStatus.put("state" ,"off");
+							airConditionerStatus.put("screenState" ,"off");
+							airConditionerStatus.put("ledState" ,"off");
+							airConditionerStatus.put("mode" ,"auto");
+							airConditionerStatus.put("configTemperature" ,60);
+							airConditionerStatus.put("configHumidity" ,23);
+							airConditionerStatus.put("windDirection" ,"auto");
+							airConditionerStatus.put("windSpeed" ,"auto");
+							JSONObject humiditySensorStatus = new JSONObject();
+							humiditySensorStatus.put("humidity", 25);
+							JSONObject temperatureSensorStatus = new JSONObject();
+							temperatureSensorStatus.put("temperature", 24);
+							JSONObject deviceStatus = new JSONObject();
+							deviceStatus.put("airConditioner", airConditionerStatus);
+							deviceStatus.put("humiditySensor", humiditySensorStatus);
+							deviceStatus.put("temperatureSensor", temperatureSensorStatus);
+							deviceStatus.put(DeviceProtocol.deviceName, hisenseKelonStatus);
+							deviceService.reportDeviceProperty(sn, DeviceProtocol.deviceName, deviceStatus);*/
+
+						logger.d("getDeviceBySnList({}) = {}. ",sn ,LivehomeDeviceDriver.this.dmService.getDeviceBySnList(new JSONArray().put(sn)).toString());//获取所有设备状态
 					}
 				}
 				logger.d("getDeviceByClass(hisenseKelon) = {}. ", LivehomeDeviceDriver.this.dmService.getDeviceByClass(DeviceProtocol.deviceName).toString());//获取所有设备状态
-				logger.d("getDeviceByClass(airConditioner) = {}. ", LivehomeDeviceDriver.this.dmService.getDeviceByClass("airConditioner").toString());//获取所有设备状态
 				
 				try
 				{
-					TimeUnit.SECONDS.sleep(30);
+					TimeUnit.SECONDS.sleep(20);
 				} 
 				catch(InterruptedException e) 
 				{

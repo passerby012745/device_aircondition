@@ -3,6 +3,9 @@ package com.szsbay.livehome.openlife.aircondition;
 import org.json.JSONObject;
 
 import com.huawei.smarthome.driver.IDeviceService;
+import com.huawei.smarthome.log.LogService;
+import com.huawei.smarthome.log.LogServiceFactory;
+import com.szsbay.livehome.openlife.device.LivehomeDeviceDiscoverer;
 import com.szsbay.livehome.openlife.device.LivehomeDeviceDriver;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.ISocketParser;
@@ -14,6 +17,11 @@ public class DeviceControl implements ISocketParser
 	 * 设备服务 
 	 */
 	public static IDeviceService deviceService = null;
+	
+	/**
+	 * 日志接口
+	 */
+	private final static LogService logger = LogServiceFactory.getLogService(LivehomeDeviceDiscoverer.class);
 	
 	/**
 	 * 华为标准空调设备模型动作能力解析
@@ -153,6 +161,7 @@ public class DeviceControl implements ISocketParser
 				
 		}
 		deviceProtocol.setAirConditionSendOrderWay(1);
+		logger.d("<parseAction> sn = {}, sendCmd = {}",sn , deviceProtocol.sendAirConditionCommand());
 		SocketManager.getInstance().sendMessageToCdn(sn, (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
 		return null;
 	}
@@ -168,87 +177,106 @@ public class DeviceControl implements ISocketParser
 	public static JSONObject reportStatus(Device device ,String str ,String sn ,String productName)
 	{
 		DeviceProtocol deviceProtocol = new DeviceProtocol(str);//构造设备协议通道对象
-		JSONObject deviceStatus = new JSONObject();
-		String flag_string = null;
 		
-		deviceStatus.put("state" ,(deviceProtocol.getAirConditionLaunchSwitch()==0)?"off":"on");//空调的状态,打开或关闭
+		String state = (deviceProtocol.getAirConditionLaunchSwitch()==0)?"off":"on";
+		String sleepState = (deviceProtocol.getAirConditionSleepMode()==0)?"off":"on";
+		String screenState = (deviceProtocol.getAirConditionDisplayScreenShineSwitch()==0)?"off":"on";
+		String ledState = (deviceProtocol.getAirConditionLedSwitch()==0)?"off":"on";
+		int configTemperature = deviceProtocol.getAirConditionIndoorSetTemp();
+		int configHumidity = deviceProtocol.getAirConditionIndoorSetHumi();
+		int indoorTemperature = deviceProtocol.getAirConditionIndoorCurrentTemp();
+		int indoorHumidity = deviceProtocol.getAirConditionIndoorCurrentHumi();
+		double outdoorTemperature = deviceProtocol.getAirConditionOutdoorEnvironmentTemp();
 		
-		deviceStatus.put("screenState" ,(deviceProtocol.getAirConditionDisplayScreenShineSwitch()==0)?"off":"on");//空调的屏幕状态,打开或关闭,可选属性
-		
-		deviceStatus.put("ledState" ,(deviceProtocol.getAirConditionLedSwitch()==0)?"off":"on");//空调的LED状态,打开或关闭,可选属性
-		
-		flag_string = null;
+		String mode = null;
 		switch(deviceProtocol.getAirConditionWorkMode())
 		{
 			case 0://空调送风模式
-				flag_string = "blast";
+				mode = "blast";
 				break;
 			case 1://空调制热模式
-				flag_string = "heating";
+				mode = "heating";
 				break;
 			case 2://空调制冷模式
-				flag_string = "cooling";
+				mode = "cooling";
 				break;
 			case 3://空调除湿模式
-				flag_string = "dehumidification";
+				mode = "dehumidification";
 				break;
 			case 4://空调自动模式
-				flag_string = "auto";
-				break;
-			default:
-				flag_string = "";
+				mode = "auto";
 				break;
 		}
-		deviceStatus.put("mode" ,flag_string);//空调的工作模式
 		
-		deviceStatus.put("configTemperature" ,deviceProtocol.getAirConditionIndoorSetTemp());//空调的温度(用户配置的值,而不是真正的温度值)
-		
-		deviceStatus.put("configHumidity" ,deviceProtocol.getAirConditionIndoorSetHumi());//空调的湿度(用户配置的值,而不是真正的湿度值),如果值小于0意味着这个属性没有被配置
 
-		flag_string = null;
+		String windDirection = null;
 		if(1 == deviceProtocol.getAirConditionNaturalWindSwitch())//空调自动风向
 		{
-			flag_string = "auto";
+			windDirection = "auto";
 		}
 		else if(1 == deviceProtocol.getAirConditionLeftRightWindSwitch())//空调水平风向
 		{
-			flag_string = "horizon";
+			windDirection = "horizon";
 		}
 		else if(1 == deviceProtocol.getAirConditionUpDownWindSwitch())//空调垂直风向
 		{
-			flag_string = "vertical";
+			windDirection = "vertical";
 		}
-		else
-		{
-			flag_string = "";
-		}
-		deviceStatus.put("windDirection" ,flag_string);//风向
 		
-		flag_string = null;
+		String windSpeed = null;
 		switch(deviceProtocol.getAirConditionAirVolume())
 		{
 			case 0://自动风
-				flag_string = "auto";
+				windSpeed = "auto";
 				break;
 			case 1://缓慢风
-				flag_string = "slow";
+				windSpeed = "slow";
 				break;
 			case 2://中等风
-				flag_string = "medium";
+				windSpeed = "medium";
 				break;
 			case 3://快速风
-				flag_string = "fast";
+				windSpeed = "fast";
 				break;
 			case 4://强效风
-				flag_string = "strong";
-				break;
-			default:
-				flag_string = "";
+				windSpeed = "strong";
 				break;
 		}
-		deviceStatus.put("windSpeed" ,flag_string);//风速
 		
-		deviceService.reportDeviceProperty(sn, productName, new JSONObject().put(productName, deviceStatus));
+		
+		JSONObject hisenseKelonStatus = new JSONObject();
+		hisenseKelonStatus.put("state" ,state);
+		hisenseKelonStatus.put("screenState" ,screenState);
+		hisenseKelonStatus.put("ledState" ,ledState);
+		hisenseKelonStatus.put("mode" ,mode);
+		hisenseKelonStatus.put("configTemperature" ,configTemperature);
+		hisenseKelonStatus.put("configHumidity" ,configHumidity);
+		hisenseKelonStatus.put("windDirection" ,windDirection);
+		hisenseKelonStatus.put("windSpeed" ,windSpeed);
+		hisenseKelonStatus.put("sleepState" ,sleepState);
+		hisenseKelonStatus.put("temperature" ,indoorTemperature);
+		hisenseKelonStatus.put("humidity" ,indoorHumidity);
+		hisenseKelonStatus.put("outdoorTemperature" ,outdoorTemperature);
+		JSONObject airConditionerStatus = new JSONObject();
+		airConditionerStatus.put("state" ,state);
+		airConditionerStatus.put("screenState" ,screenState);
+		airConditionerStatus.put("ledState" ,ledState);
+		airConditionerStatus.put("mode" ,mode);
+		airConditionerStatus.put("configTemperature" ,configTemperature);
+		airConditionerStatus.put("configHumidity" ,configHumidity);
+		airConditionerStatus.put("windDirection" ,windDirection);
+		airConditionerStatus.put("windSpeed" ,windSpeed);
+		JSONObject humiditySensorStatus = new JSONObject();
+		humiditySensorStatus.put("humidity", indoorHumidity);
+		JSONObject temperatureSensorStatus = new JSONObject();
+		temperatureSensorStatus.put("temperature", indoorTemperature);
+		JSONObject deviceStatus = new JSONObject();
+		deviceStatus.put("airConditioner", airConditionerStatus);
+		deviceStatus.put("humiditySensor", humiditySensorStatus);
+		deviceStatus.put("temperatureSensor", temperatureSensorStatus);
+		deviceStatus.put(DeviceProtocol.deviceName, hisenseKelonStatus);
+		
+		deviceService.reportDeviceProperty(sn, DeviceProtocol.deviceName, deviceStatus);
 		return null;
 	}
 
@@ -262,7 +290,7 @@ public class DeviceControl implements ISocketParser
 	public String parseResult(String sn, String str) 
 	{
 		// TODO Auto-generated method stub
-		System.out.println(sn +":"+ str);
+		logger.d("<parseResult> sn = {}, str = {}",sn , str);
 		String SN = sn.toUpperCase();
 		if(null == LivehomeDeviceDriver.deviceProtocolMap.get(SN))
 		{
