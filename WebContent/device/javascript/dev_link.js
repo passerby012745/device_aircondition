@@ -544,7 +544,7 @@ var switchRoute = function (){
 //*************************************************************************
 var doConfig = function (msg){
 //	showLog("doConfig :"+" moduleId :"+moduleId+"\r\n");
-//	console.log("doConfig :"+" moduleId :"+_moduleId+"\r\n");
+	alert("doConfig :"+" moduleId :"+_moduleId+"\r\n");
 	window.AppJsBridge.service.deviceService.doConfig ({
 		manufacturer : "SMART_BAY",  //厂商名 
 		brand : "LIVE_HOME", //品牌名

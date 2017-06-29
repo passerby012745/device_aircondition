@@ -1,5 +1,6 @@
 package com.szsbay.livehome.openlife.device;
 
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 	/**
 	 * 设备发现等待表
 	 */
-	private static ConcurrentHashMap<String, JSONObject> devicesWaitMap;
+	private static ConcurrentHashMap<String, JSONObject> devicesWaitMap = new ConcurrentHashMap<String, JSONObject>();
 
 	@Override
 	public void init()
@@ -41,8 +42,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 		// 启动发现线程，这里模拟发现设备过程
 	
 		logger.d("<init> ...");
-		// 发现服务初始化函数，可以启动发现服务线程
-		devicesWaitMap= new ConcurrentHashMap<String, JSONObject>();
+
 		// 启动发现线程，这里模拟发现设备过程
 		discoverThread = new DiscoverThread(this.deviceService);
 		discoverThread.setName("airCondition discover thread");
@@ -72,19 +72,12 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
     @Override
     public void enableDeviceInclude(int time)
     {
-		logger.d("Time = {}", time);
-		// 这里为了快速接入您的设备，可以先构造模拟数据增加一个设备
-		logger.d("<enableDeviceInclude>");
+		logger.d("<enableDeviceInclude> Time = {}", time);
+
 		// 这里模拟加快发现过程,终止发现线程睡眠
 		discoverThread.interrupt();
-
-		if(null != discoverThread && discoverThread.isDestroy()) 
-		{
-			discoverThread = new DiscoverThread(this.deviceService);
-			discoverThread.start();
-		}
-       
     }
+    
     @Override
     public void enableDeviceExclude(String sn)
     {
@@ -96,13 +89,16 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 	public void doConfig(String command, JSONObject params)
 	{
 		// 手机APP，安装指导界面配置参数，属于驱动自定义参数
-		logger.d("<doConfig> commmand = " + command + " , params = " + params.toString());
-		logger.d("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-		logger.d("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		logger.d("<doConfig> commmand = {}, params = {}", command, params);
+		
+		logger.d("<doConfig> -----------------------------------------------------");
 		if(command.equals("airconbind"))
+		{
 			devicesWaitMap.put(params.getString("moduleId"), params);
+			logger.d("put into <{}> the devicesWaitMap", params);
+		}
 		else
-			logger.d("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			logger.d("bind doConfig action is error");
     }
 
 
@@ -135,22 +131,32 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 		{
 			while(!destroyed.get()) 
 			{
-				logger.d("<DiscoverThread> ...");
+				logger.d("<DiscoverThread> ............. [size={}], devicesWaitMap = {}",devicesWaitMap.size(), devicesWaitMap);
 				
-				if (null != devicesWaitMap) 
+				for (Iterator<String> it = devicesWaitMap.keySet().iterator(); it.hasNext(); ) 
 				{
-					for (Entry<String, JSONObject> entry : devicesWaitMap.entrySet()) 
+					String module = it.next();
+					logger.d("<DiscoverThread> module = {}, entry = {}", module, devicesWaitMap.get(module));
+					
+					int addr = -1;
+					if(21 == module.length())//对于不带设备子码的sn
 					{
-						logger.d("<DiscoverThread> sn = " + entry.getKey() + " , entry = " + entry.getValue().toString());
-						this.deviceService.reportIncludeDevice(entry.getKey(), DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
-						LivehomeDeviceDriver.addBindDevice(entry.getValue().getString("moduleId").toUpperCase(), new JSONObject());
-						}
-						devicesWaitMap.clear();
+						addr = 1;
 					}
+					String SN = (module + '-' + addr).toUpperCase();
+					logger.d("<DiscoverThread> sn = {}", SN);
+					
+					this.deviceService.reportIncludeDevice(SN, DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
+					
+					devicesWaitMap.remove(module);
+					logger.d("<DiscoverThread> remove <key={}> from devicesWaitMap", module);
+				}
+				
 				try
 				{
-					TimeUnit.SECONDS.sleep(10);
-				} catch(InterruptedException e) 
+					TimeUnit.SECONDS.sleep(20);
+				} 
+				catch(InterruptedException e) 
 				{
 					e.printStackTrace();
 				}

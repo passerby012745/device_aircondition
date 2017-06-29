@@ -1,5 +1,7 @@
 package com.szsbay.livehome.openlife.aircondition;
 
+import java.util.Iterator;
+
 import org.json.JSONObject;
 
 import com.huawei.smarthome.driver.IDeviceService;
@@ -161,8 +163,8 @@ public class DeviceControl implements ISocketParser
 				
 		}
 		deviceProtocol.setAirConditionSendOrderWay(1);
-		logger.d("<parseAction> sn = {}, sendCmd = {}",sn , deviceProtocol.sendAirConditionCommand());
-		SocketManager.getInstance().sendMessageToCdn(sn, (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
+		logger.d("<parseAction> sn = {}, module = {}, sendCmd = {}",sn , LivehomeDeviceDriver.getdeviceModuleFromSn(sn), deviceProtocol.sendAirConditionCommand());
+		SocketManager.getInstance().sendMessageToCdn(LivehomeDeviceDriver.getdeviceModuleFromSn(sn), (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
 		return null;
 	}
 
@@ -176,6 +178,7 @@ public class DeviceControl implements ISocketParser
 	 */
 	public static JSONObject reportStatus(Device device ,String str ,String sn ,String productName)
 	{
+		logger.d("<reportStatus> sn = {}, productName = {}", sn , productName);
 		DeviceProtocol deviceProtocol = new DeviceProtocol(str);//构造设备协议通道对象
 		
 		String state = (deviceProtocol.getAirConditionLaunchSwitch()==0)?"off":"on";
@@ -287,22 +290,44 @@ public class DeviceControl implements ISocketParser
 	}
 
 	@Override
-	public String parseResult(String sn, String str) 
+	public String parseResult(String module, String str) 
 	{
 		// TODO Auto-generated method stub
-		logger.d("<parseResult> sn = {}, str = {}",sn , str);
-		String SN = sn.toUpperCase();
-		if(null == LivehomeDeviceDriver.deviceProtocolMap.get(SN))
+		logger.d("<parseResult> module = {}, str = {}", module , str);
+		Device device = null;
+		
+		for(Iterator<String> it = LivehomeDeviceDriver.deviceProtocolMap.keySet().iterator(); it.hasNext(); )
 		{
-			Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,SN ,DeviceProtocol.deviceId ,(short) 1);
-			LivehomeDeviceDriver.deviceProtocolMap.put(SN, device);
+			String sn = it.next();
+			if(sn.startsWith(module))
+			{
+				device = LivehomeDeviceDriver.deviceProtocolMap.get(sn);
+				break;
+			}
 		}
-		Device device = LivehomeDeviceDriver.deviceProtocolMap.get(SN);
-		JSONObject json_obj = new JSONObject(device.upPropertyParse(str));
-		if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
+		
+		if(null != device)
 		{
-			reportStatus(device, json_obj.toString(), SN, DeviceProtocol.deviceName);
+			JSONObject json_obj = new JSONObject(device.upPropertyParse(str));
+			int addr = json_obj.optInt("addr");
+			String SN = (module + '-' + addr).toUpperCase();
+			if(null != LivehomeDeviceDriver.deviceProtocolMap.get(SN))
+			{
+				if(102 == json_obj.optInt("cmd") && 0 == json_obj.optInt("sub"))
+				{
+					reportStatus(device, json_obj.toString(), SN, DeviceProtocol.deviceName);
+				}
+			}
+			else
+			{
+				logger.d("cannot find <sn = {}> in deviceProtocolMap", SN);
+			}
 		}
+		else
+		{
+			logger.d("please bind this device <module = {}> at first!", module);
+		}
+		
 		return null;
 	}
 

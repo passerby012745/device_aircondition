@@ -31,10 +31,10 @@
 		<!-- 自定义property属性，可选 -->
 		<properties>
 			<!-- 睡眠状态-->
-            <property name="sleepState" type="enum" description="The sleep status of the air conditioner, on or off" title="AIR_CONDITIONER_SLEEP_STATE">
-                <enum title="AIR_CONDITIONER_STATE_ON">on</enum>
-                <enum title="AIR_CONDITIONER_STATE_OFF">off</enum>
-            </property>
+			<property name="sleepState" type="enum" description="The sleep status of the air conditioner, on or off" title="AIR_CONDITIONER_SLEEP_STATE">
+				<enum title="AIR_CONDITIONER_STATE_ON">on</enum>
+				<enum title="AIR_CONDITIONER_STATE_OFF">off</enum>
+			</property>
 			
 			<!-- 室外温度-->
 			<property name="outdoorTemperature" type="float" min="-100" max="100" title="TEMPERATURE_SENSOR_TEMPERATURE" unit="℃" unit-title="TEMPERATURE_SENSOR_UNIT">
@@ -43,17 +43,30 @@
 		
 		<!-- 自定义action动作，可选 -->
 		<actions>
-			<!-- 添加设备-->
-			<action name="addDevice" description="AIR_CONDITION_ADD_DEVICE_DESCRIPTION" title="AIR_CONDITION_ADD_DEVICE_TITLE">
-			</action>
-			
-			<!-- 指令缓存-->
-			<action name="cacheOrder" description="AIR_CONDITION_CACHE_ORDER_DESCRIPTION" title="AIR_CONDITION_CACHE_ORDER_TITLE">
-				<property name="set" type="enum" description="AIR_CONDITION_CACHE_ORDER_SET_DESCRIPTION" title="AIR_CONDITION_CACHE_ORDER_SET_TITLE">
-					<enum title="AIR_CONDITIONER_SET_START">start</enum>
-					<enum title="AIR_CONDITIONER_SET_END">end</enum>
+			<!-- 配置CDN-->
+			<action name="configCDN" description="config device CDN address" title="LIVEHOME_AIRCONDITION_CONFIG_CDN_TITLE">
+				<property name="ip" type="string" description="device CDN server ip address" title="AIR_CONDITIONER_MODE">
+				</property>
+				<property name="port" type="integer" description="device CDN server port" title="AIR_CONDITIONER_CONFIG_TEMPERATURE">
 				</property>
 			</action>
+			
+			<!-- 添加设备-->
+			<action name="addDevice" description="add a device to huawei gateway according to sn" title="LIVEHOME_AIRCONDITION_ADD_DEVICE_TITLE">
+			</action>
+			
+			<!-- 删除设备-->
+			<action name="removeDevice" description="remove a device from huawei gateway according to sn" title="LIVEHOME_AIRCONDITION_REMOVE_DEVICE_TITLE">
+			</action>
+			
+			<!-- 开始指令缓存-->
+			<action name="startCacheOrder" description="start to cache the orders" title="LIVEHOME_AIRCONDITION_START_CACHE_ORDER_TITLE">
+			</action>
+			
+			<!-- 停止指令缓存-->
+			<action name="stopCacheOrder" description="stop to cache the orders, and issues orders at once" title="LIVEHOME_AIRCONDITION_STOP_CACHE_ORDER_TITLE">
+			</action>
+			
 		</actions>
 		
 		<!-- 自定义alarm警报，可选 -->
@@ -73,6 +86,7 @@
 					</template>
 				</templates>
 			</alarm>
+			
 			<!--烘焙完成事件-->
 			<alarm name="EVENT_BAKING_FINISH" description="EVENT_BAKING_FINISH_DESCRIPTION" title="EVENT_BAKING_FINISH_TITLE" type="event">
 				<templates detail-view="DEVICE_LIST">
@@ -81,6 +95,7 @@
 					</template>
 				</templates>
 			</alarm>
+			
 		</alarms>
 		
 		<ifttt>
