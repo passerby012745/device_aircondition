@@ -18,26 +18,50 @@
 		discover-class="com.szsbay.livehome.openlife.aircondition.DeviceDiscoverer">
 	</driver-config>
 	
-	<!-- 产品名称：hisenseKelon
-		   产品型号：HISENSE_KELON_1-->
-	<product name ="hisenseKelon" description="LIVEHOME_AIRCONDITION_DESCRIPRION" title="LIVEHOME_AIRCONDITION" model="HISENSE_KELON_1">
+	<!-- 产品名称：hisenseKelon-->
+	<product name ="hisenseKelon" description="LIVEHOME_AIRCONDITION_DESCRIPRION" title="LIVEHOME_AIRCONDITION_TITLE">
 		<!-- 继承标准设备类 -->
 		<classes>
 			<class name="airConditioner" />
 			<class name="humiditySensor" />
-			<class name="temperatureSensor"/>
+			<class name="temperatureSensor" />
+			<class name="PM25Sensor" />
 		</classes>
 		
 		<!-- 自定义property属性，可选 -->
 		<properties>
-			<!-- 睡眠状态-->
-			<property name="sleepState" type="enum" description="The sleep status of the air conditioner, on or off" title="AIR_CONDITIONER_SLEEP_STATE">
-				<enum title="AIR_CONDITIONER_STATE_ON">on</enum>
-				<enum title="AIR_CONDITIONER_STATE_OFF">off</enum>
+			<!-- 空气质量-->
+			<property name="airQuality" type="enum" description="the current indoor air quality" title="AIR_CONDITIONER_AIR_QUALITY_TITLE">
+				<enum title="AIR_CONDITIONER_AIR_QUALITY_EXCELLENT">excellent</enum>
+				<enum title="AIR_CONDITIONER_AIR_QUALITY_GOOD">good</enum>
+				<enum title="AIR_CONDITIONER_AIR_QUALITY_MEDIUM">medium</enum>
+				<enum title="AIR_CONDITIONER_AIR_QUALITY_BAD">bad</enum>
+				<enum title="AIR_CONDITIONER_AIR_QUALITY_EXBAD">exbad</enum>
 			</property>
-			
-			<!-- 室外温度-->
-			<property name="outdoorTemperature" type="float" min="-100" max="100" title="TEMPERATURE_SENSOR_TEMPERATURE" unit="℃" unit-title="TEMPERATURE_SENSOR_UNIT">
+			<!-- 上下风-->
+			<property name="verticalWind" type="enum" description="the status of vertical wind direction" title="AIR_CONDITIONER_VERTICAL_WIND_STATE_TITLE">
+				<enum title="AIR_CONDITIONER_VERTICAL_WIND_SCAN">scan</enum>
+				<enum title="AIR_CONDITIONER_VERTICAL_WIND_FIX">fix</enum>
+			</property>
+			<!-- 左右风-->
+			<property name="horizonWind" type="enum" description="the status of horizon wind direction" title="AIR_CONDITIONER_HORIZON_WIND_STATE_TITLE">
+				<enum title="AIR_CONDITIONER_HORIZON_WIND_SCAN">scan</enum>
+				<enum title="AIR_CONDITIONER_HORIZON_WIND_FIX">fix</enum>
+			</property>
+			<!-- 电热-->
+			<property name="electricHeat" type="enum" description="the status of electric heat" title="AIR_CONDITIONER_ELECTRIC_HEAT_STATE_TITLE">
+				<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_ON">on</enum>
+				<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_OFF">off</enum>
+			</property>
+			<!-- 强力模式-->
+			<property name="strongMode" type="enum" description="the status of normal strong mode" title="AIR_CONDITIONER_STRONG_MODE_TITLE">
+				<enum title="AIR_CONDITIONER_STRONGE_MODE_ON">on</enum>
+				<enum title="AIR_CONDITIONER_STRONGE_MODE_OFF">off</enum>
+			</property>
+			<!-- 睡眠模式-->
+			<property name="sleepMode" type="enum" description="the status of normal sleep mode" title="AIR_CONDITIONER_SLEEP_MODE_TITLE">
+				<enum title="AIR_CONDITIONER_SLEEP_MODE_ON">on</enum>
+				<enum title="AIR_CONDITIONER_SLEEP_MODE_OFF">off</enum>
 			</property>
 		</properties>
 		
@@ -45,18 +69,22 @@
 		<actions>
 			<!-- 配置CDN-->
 			<action name="configCDN" description="config device CDN address" title="LIVEHOME_AIRCONDITION_CONFIG_CDN_TITLE">
-				<property name="ip" type="string" description="device CDN server ip address" title="AIR_CONDITIONER_MODE">
+				<property name="ip" type="string" description="device CDN server ip address" title="AIR_CONDITIONER_IP_TITLE">
 				</property>
-				<property name="port" type="integer" description="device CDN server port" title="AIR_CONDITIONER_CONFIG_TEMPERATURE">
+				<property name="port" type="integer" description="device CDN server port" title="AIR_CONDITIONER_PORT_TITLE">
 				</property>
 			</action>
 			
 			<!-- 添加设备-->
 			<action name="addDevice" description="add a device to huawei gateway according to sn" title="LIVEHOME_AIRCONDITION_ADD_DEVICE_TITLE">
+				<property name="sn" type="string" description="the device sn that need to be added" title="AIR_CONDITIONER_ADD_DEVICE_SN_TITLE">
+				</property>
 			</action>
 			
 			<!-- 删除设备-->
 			<action name="removeDevice" description="remove a device from huawei gateway according to sn" title="LIVEHOME_AIRCONDITION_REMOVE_DEVICE_TITLE">
+				<property name="sn" type="string" description="the device sn that need to be removed" title="AIR_CONDITIONER_REMOVE_DEVICE_SN_TITLE">
+				</property>
 			</action>
 			
 			<!-- 开始指令缓存-->
@@ -65,6 +93,26 @@
 			
 			<!-- 停止指令缓存-->
 			<action name="stopCacheOrder" description="stop to cache the orders, and issues orders at once" title="LIVEHOME_AIRCONDITION_STOP_CACHE_ORDER_TITLE">
+			</action>
+			
+			<!-- 辅助功能-->
+			<action name="assistFunction" description="the other assistant functions about this product" title="LIVEHOME_AIRCONDITION_ASSIST_FUNCTION_TITLE">
+				<property name="verticalWind" type="enum" description="the status of vertical wind direction" title="AIR_CONDITIONER_VERTICAL_WIND_STATE_TITLE">
+					<enum title="AIR_CONDITIONER_VERTICAL_WIND_SCAN">scan</enum>
+					<enum title="AIR_CONDITIONER_VERTICAL_WIND_FIX">fix</enum>
+				</property>
+				<property name="horizonWind" type="enum" description="the status of horizon wind direction" title="AIR_CONDITIONER_HORIZON_WIND_STATE_TITLE">
+					<enum title="AIR_CONDITIONER_HORIZON_WIND_SCAN">scan</enum>
+					<enum title="AIR_CONDITIONER_HORIZON_WIND_FIX">fix</enum>
+				</property>
+				<property name="electricHeat" type="enum" description="the status of electric heat" title="AIR_CONDITIONER_ELECTRIC_HEAT_STATE_TITLE">
+					<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_ON">on</enum>
+					<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_OFF">off</enum>
+				</property>
+				<property name="strongMode" type="enum" description="the status of normal strong mode" title="AIR_CONDITIONER_STRONG_MODE_TITLE">
+					<enum title="AIR_CONDITIONER_STRONGE_MODE_ON">on</enum>
+					<enum title="AIR_CONDITIONER_STRONGE_MODE_OFF">off</enum>
+				</property>
 			</action>
 			
 		</actions>

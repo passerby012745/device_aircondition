@@ -3,6 +3,7 @@ package com.szsbay.livehome.openlife.device;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,6 +86,16 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	 */
 	public static int cdnServerPort = 7820;
 	
+	/**
+	 * 虚拟设备SN
+	 */
+	public static String falseDeviceSn = null;
+	
+	/**
+	 * 设备SN与设备设置指令集映射表
+	 */
+	private static HashMap<String, JSONArray> deviceOrdersInfo = new HashMap<String, JSONArray>();
+	
 	@Override
 	public void setDeviceService(IDeviceService deviceService)
 	{
@@ -121,7 +132,11 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		}
 		
 		logger.d("<LivehomeDeviceDriver:init -4-> add a false device for livehome");
-		this.deviceService.reportIncludeDevice("SZSBAY_AIRCONDITION_" + getMacByIp("192.168.8.1") + "-1", DeviceProtocol.deviceName, new JSONObject());
+		if(null == falseDeviceSn)
+		{
+			falseDeviceSn = "SZSBAY-AIRCONDITION-" + getMacByIp("192.168.8.1") + "-1";
+		}
+		this.deviceService.reportIncludeDevice(falseDeviceSn, DeviceProtocol.deviceName, new JSONObject());
 	}
 	
 	@Override
@@ -129,46 +144,75 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	{
 		logger.d("Begin doAction, sn={}, action={}, params={}, deviceClass={}", sn, action, parameter, deviceClass);
 		
-		String module = getdeviceModuleFromSn(sn);
-		int addr = getdeviceAddrFromSn(sn);
-		String SN = (module + '-' + addr).toUpperCase();
-		
-		boolean flag_temp = getDeviceFromLocalMap(SN);
 		
 		if(action.equals("configCDN"))//<非标>,配置CDN
 		{
-			cdnServerIp = parameter.optString("ip", "203.195.160.110");
-			cdnServerPort = parameter.optInt("port", 7820);
+			if(parameter.has("ip"))
+			{
+				cdnServerIp = parameter.getString("ip");
+			}
+			if(parameter.has("port"))
+			{
+				cdnServerPort = parameter.getInt("port");
+			}
 		}
 		else if(action.equals("addDevice"))//<非标>,添加设备
 		{
-			if(!flag_temp)
+			if(parameter.has("sn"))
 			{
-				this.deviceService.reportIncludeDevice(SN, DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
+				String deviceSn = parameter.getString("sn").toUpperCase();
+				if(!getDeviceFromLocalMap(deviceSn))
+				{
+					this.deviceService.reportIncludeDevice(deviceSn, DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
+				}
 			}
 		}
 		else if(action.equals("removeDevice"))//<非标>,删除设备
 		{
-			if(flag_temp)
+			if(parameter.has("sn"))
 			{
-				this.deviceService.reportExcludeDevice(SN);//驱动通知设备管理服务一个设备退出网络了
+				String deviceSn = parameter.getString("sn").toUpperCase();
+				if(getDeviceFromLocalMap(deviceSn))
+				{
+					this.deviceService.reportExcludeDevice(deviceSn);//驱动通知设备管理服务一个设备退出网络了
+				}
 			}
 		}
 		else if(action.equals("startCacheOrder"))//<非标>,开始指令缓存
 		{
-			
+			if(parameter.has("sn"))
+			{
+				String deviceSn = parameter.getString("sn").toUpperCase();
+				if(getDeviceFromLocalMap(deviceSn))
+				{
+					if(null == deviceOrdersInfo.get(deviceSn))
+					{
+						deviceOrdersInfo.put(deviceSn, new JSONArray());
+						
+					}
+					deviceOrdersInfo.get(deviceSn).put(parameter);
+				}
+			}
 		}
 		else if(action.equals("stopCacheOrder"))//<非标>,结束指令缓存
 		{
-			
+			if(parameter.has("sn"))
+			{
+				String deviceSn = parameter.getString("sn").toUpperCase();
+				if(getDeviceFromLocalMap(deviceSn))
+				{
+					
+				}
+			}
 		}
 		else//<标准>
 		{
-			if(flag_temp)
+			String SN = (sn).toUpperCase();
+			if(getDeviceFromLocalMap(SN))
 			{
 				if(null == deviceProtocolMap.get(SN))
 				{
-					Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,SN ,DeviceProtocol.deviceId ,(short)addr);
+					Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,SN ,DeviceProtocol.deviceId ,(short)getdeviceAddrFromSn(SN));
 					deviceProtocolMap.put(SN, device);
 				}
 				DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, action, parameter);
@@ -204,7 +248,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public void onUserDeviceAdd(String sn, JSONObject data)
 	{
-		// 系统通知一个设备被用户添加到系统中来了
+		//系统通知一个设备被用户添加到系统中来了
 		logger.d("<onUserDeviceAdd> sn = {}, data = {}",sn ,data.toString());
 		
 		if (null == devicesConfigMap.get(sn))//本地设备配置表中没有该设备
@@ -218,7 +262,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public void onUserDeviceDel(String sn)
 	{
-		// 系统通知一个设备被用户从系统中删除了
+		//系统通知一个设备被用户从系统中删除了
 		logger.d("<onUserDeviceDel> sn = {}", sn);
 		
 		if (null != devicesConfigMap.get(sn))//本地设备配置表中有该设备
@@ -229,6 +273,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
 			
 			this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
+			this.deviceService.reportExcludeDevice(sn);
 			devicesConfigMap.remove(sn);
 			dataService.remove(sn);
 		}
@@ -253,7 +298,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			{
 				logger.d("<ReportOnThread> ====================> [size={}], devicesConfigMap = {}", devicesConfigMap.size(), devicesConfigMap);
 				
-				this.deviceService.reportDeviceOnline("SZSBAY_AIRCONDITION_" + getMacByIp("192.168.8.1") + "-1", DeviceProtocol.deviceName);
+				this.deviceService.reportDeviceOnline(falseDeviceSn, DeviceProtocol.deviceName);
 				
 				if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
 				{
@@ -437,7 +482,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	 * @param ip
 	 * @return
 	 */
-	public String getMacByIp(String ip) 
+	public static String getMacByIp(String ip) 
 	{
 		String mac = null;
 		byte[] addr = new byte[4];

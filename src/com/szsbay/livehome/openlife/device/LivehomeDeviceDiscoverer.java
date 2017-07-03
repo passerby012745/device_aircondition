@@ -72,7 +72,8 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
     @Override
     public void enableDeviceInclude(int time)
     {
-		logger.d("<enableDeviceInclude> Time = {}", time);
+		//使能设备入网功能
+    	logger.d("<enableDeviceInclude> Time = {}", time);
 
 		// 这里模拟加快发现过程,终止发现线程睡眠
 		discoverThread.interrupt();
@@ -81,7 +82,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
     @Override
     public void enableDeviceExclude(String sn)
     {
-		// 用户在手机APP上删除设备时调用
+		//使指定的设备退出网络
     	logger.d("<enableDeviceExclude>");
     }
 
@@ -154,7 +155,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 				
 				try
 				{
-					TimeUnit.SECONDS.sleep(20);
+					TimeUnit.SECONDS.sleep(30);
 				} 
 				catch(InterruptedException e) 
 				{

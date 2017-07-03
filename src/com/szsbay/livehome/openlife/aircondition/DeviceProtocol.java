@@ -325,7 +325,7 @@ public class DeviceProtocol
 	}
 
 	/**
-	 * 设置空调上下风门位置
+	 * 设置空调风门位置
 	 * @param value	<扫掠:0、自动:1>
 	 */
 	public void setAirConditionWindValvePosition(int value)

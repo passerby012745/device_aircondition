@@ -302,7 +302,7 @@
 		    "sn":getCurrentDeviceSn(),
     	    "success": function getDeviceSuccess(res){
                 console.log(res);
-				if(res && res.hisenseKelon) {
+/*				if(res && res.hisenseKelon) {
                     //空调-电源状态
                     $("input[name=power-btn][value=" + res.hisenseKelon.state + "]").prop("checked", true);
                     //空调-风向状态
@@ -333,7 +333,7 @@
                     $("#outdoorHumidity").text(res.hisenseKelon.outdoorHumidity)
 				} else {
 					console.log('参数异常！')
-				}
+				}*/
             },
     	    "error": function getDeviceError(res){
                 console.log("error : " + JSON.stringify(res));
