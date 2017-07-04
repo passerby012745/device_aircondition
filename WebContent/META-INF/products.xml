@@ -163,7 +163,7 @@
 				 device-guide-entry:设备安装指南页面路径 -->
 			<icon>device/images/icon.png</icon>
 			<icon-offline>device/images/icon_offline.png</icon-offline>
-			<device-control-entry>device/aircon_control.html</device-control-entry>
+			<device-control-entry>device/index.html</device-control-entry>
 			<device-guide-entry>device/install_guide.html</device-guide-entry>
 		</view>
 

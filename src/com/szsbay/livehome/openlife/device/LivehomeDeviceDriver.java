@@ -3,8 +3,10 @@ package com.szsbay.livehome.openlife.device;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +66,12 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	/**
 	 * 设备协议映射表
 	 */
-	public static Map<String, Device> deviceProtocolMap = new ConcurrentHashMap<String, Device>();
+	public static HashMap<String, Device> deviceProtocolMap = new HashMap<String, Device>();
+	
+	/**
+	 * 设备SN与设备设置指令集映射表
+	 */
+	private static HashMap<String, JSONArray> deviceOrdersInfo = new HashMap<String, JSONArray>();
 	
 	/**
 	 * 设备服务 
@@ -92,9 +99,10 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	public static String falseDeviceSn = null;
 	
 	/**
-	 * 设备SN与设备设置指令集映射表
+	 * 指令缓存标志位
 	 */
-	private static HashMap<String, JSONArray> deviceOrdersInfo = new HashMap<String, JSONArray>();
+	private boolean cacheOrderFlag = false;
+	
 	
 	@Override
 	public void setDeviceService(IDeviceService deviceService)
@@ -144,84 +152,96 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	{
 		logger.d("Begin doAction, sn={}, action={}, params={}, deviceClass={}", sn, action, parameter, deviceClass);
 		
-		
-		if(action.equals("configCDN"))//<非标>,配置CDN
+		if(deviceClass.equals("airConditioner"))
 		{
-			if(parameter.has("ip"))
+			String SN = sn.toUpperCase();
+			
+			if(action.equals("configCDN"))//<非标>,配置CDN
 			{
-				cdnServerIp = parameter.getString("ip");
-			}
-			if(parameter.has("port"))
-			{
-				cdnServerPort = parameter.getInt("port");
-			}
-		}
-		else if(action.equals("addDevice"))//<非标>,添加设备
-		{
-			if(parameter.has("sn"))
-			{
-				String deviceSn = parameter.getString("sn").toUpperCase();
-				if(!getDeviceFromLocalMap(deviceSn))
+				if(parameter.has("ip"))
 				{
-					this.deviceService.reportIncludeDevice(deviceSn, DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
+					cdnServerIp = parameter.getString("ip");
+				}
+				if(parameter.has("port"))
+				{
+					cdnServerPort = parameter.getInt("port");
 				}
 			}
-		}
-		else if(action.equals("removeDevice"))//<非标>,删除设备
-		{
-			if(parameter.has("sn"))
+			else if(action.equals("addDevice"))//<非标>,添加设备
 			{
-				String deviceSn = parameter.getString("sn").toUpperCase();
-				if(getDeviceFromLocalMap(deviceSn))
+				if(parameter.has("sn"))
 				{
-					this.deviceService.reportExcludeDevice(deviceSn);//驱动通知设备管理服务一个设备退出网络了
-				}
-			}
-		}
-		else if(action.equals("startCacheOrder"))//<非标>,开始指令缓存
-		{
-			if(parameter.has("sn"))
-			{
-				String deviceSn = parameter.getString("sn").toUpperCase();
-				if(getDeviceFromLocalMap(deviceSn))
-				{
-					if(null == deviceOrdersInfo.get(deviceSn))
+					String deviceSn = parameter.getString("sn").toUpperCase();
+					if(!getDeviceFromLocalMap(deviceSn))
 					{
-						deviceOrdersInfo.put(deviceSn, new JSONArray());
-						
+						onUserDeviceAdd(deviceSn, new JSONObject());
 					}
-					deviceOrdersInfo.get(deviceSn).put(parameter);
 				}
 			}
-		}
-		else if(action.equals("stopCacheOrder"))//<非标>,结束指令缓存
-		{
-			if(parameter.has("sn"))
+			else if(action.equals("removeDevice"))//<非标>,删除设备
 			{
-				String deviceSn = parameter.getString("sn").toUpperCase();
-				if(getDeviceFromLocalMap(deviceSn))
+				if(parameter.has("sn"))
 				{
-					
+					String deviceSn = parameter.getString("sn").toUpperCase();
+					if(getDeviceFromLocalMap(deviceSn))
+					{
+						onUserDeviceDel(deviceSn);
+					}
 				}
 			}
-		}
-		else//<标准>
-		{
-			String SN = (sn).toUpperCase();
-			if(getDeviceFromLocalMap(SN))
+			else if(action.equals("startCacheOrder"))//<非标>,开始指令缓存
 			{
+				this.cacheOrderFlag = true;
+			}
+			else if(action.equals("stopCacheOrder"))//<非标>,结束指令缓存
+			{
+				this.cacheOrderFlag = false;
 				if(null == deviceProtocolMap.get(SN))
 				{
 					Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,SN ,DeviceProtocol.deviceId ,(short)getdeviceAddrFromSn(SN));
 					deviceProtocolMap.put(SN, device);
 				}
-				DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, action, parameter);
+				DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, deviceOrdersInfo.get(SN));
 			}
-			else
+			else//<标准>
 			{
-				logger.d("please bind this device <sn = {}> at first!", SN);
+				if(cacheOrderFlag)
+				{
+					if(getDeviceFromLocalMap(SN))
+					{
+						if(null == deviceOrdersInfo.get(SN))
+						{
+							deviceOrdersInfo.put(SN, new JSONArray());
+						}
+						JSONObject temp = new JSONObject();
+						temp.put("action", action);
+						temp.put("params", parameter);
+						deviceOrdersInfo.get(SN).put(temp);
+					}
+				}
+				else
+				{
+					if(getDeviceFromLocalMap(SN))
+					{
+						if(null == deviceProtocolMap.get(SN))
+						{
+							Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,SN ,DeviceProtocol.deviceId ,(short)getdeviceAddrFromSn(SN));
+							deviceProtocolMap.put(SN, device);
+						}
+						DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, action, parameter);
+					}
+					else
+					{
+						logger.d("please bind this device <sn = {}> at first!", SN);
+					}
+				}
 			}
 		}
+		else
+		{
+			logger.d("illegal deviceClass = {}", deviceClass);
+		}
+
 		return null;
 	}
 
@@ -253,6 +273,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		
 		if (null == devicesConfigMap.get(sn))//本地设备配置表中没有该设备
 		{
+			this.deviceService.reportIncludeDevice(sn, DeviceProtocol.deviceName, new JSONObject());
 			this.deviceService.reportDeviceOnline(sn, DeviceProtocol.deviceName);
 			devicesConfigMap.put(sn, data);
 			dataService.put(sn, data);
@@ -268,14 +289,33 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		if (null != devicesConfigMap.get(sn))//本地设备配置表中有该设备
 		{
 			String module = getdeviceModuleFromSn(sn);
-			logger.d("make device <module = {}> return  to AP-Mode by 'AT+WFCLS'", module);
-			SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
-			SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
+			List<String> snList = new ArrayList<String>();
+			for(Iterator<String> it = devicesConfigMap.keySet().iterator(); it.hasNext(); )
+			{
+				String sn_temp = it.next();
+				if(sn_temp.startsWith(module))
+				{
+					snList.add(sn_temp);
+				}
+			}
+			if(1 == snList.size())
+			{
+				logger.d("make device <module = {}> return  to AP-Mode by 'AT+WFCLS'", module);
+				SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
+				SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
+			}
+			else
+			{
+				logger.d("can not make device <module = {}> return  to AP-Mode by 'AT+WFCLS', other snList = {}", module, snList);
+			}
 			
 			this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
 			this.deviceService.reportExcludeDevice(sn);
 			devicesConfigMap.remove(sn);
 			dataService.remove(sn);
+			
+			if(deviceProtocolMap.containsKey(sn))
+				deviceProtocolMap.remove(sn);
 		}
 	}
 
