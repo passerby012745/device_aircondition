@@ -1,38 +1,62 @@
 var myApp = angular.module('starterApp', ['ionic'])
-myApp.factory('dateService', function () {
+myApp.factory('DataService', function () {
 //*************************************************************************
 // 获取设备SN函数
 //*************************************************************************
     var factory = {};
-    factory.SN = AppJsBridge.service.deviceService.getCurrentDeviceSn(); //首次进入H5页面，从url中获取sn
+    var SN = AppJsBridge.service.deviceService.getCurrentDeviceSn(); //首次进入H5页面，从url中获取sn
     //H5页面之间跳转，从本地存储中获取sn
-    if ("undefined" == factory.SN)
+    if (undefined == SN)
     {
         factory.SN = localStorage.getItem("SN");
     } else
     {
-        localStorage.setItem("SN", factory.SN); //将SN保存到本地存储中
+        localStorage.setItem("SN", SN); //将SN保存到本地存储中
+    }
+    //*************************************************************************
+    //调用华为接口，发送指令
+    //*************************************************************************
+    factory.doAction = function (cmd, param, callback) {
+        //alert("cmd:" + cmd + " param:" +JSON.stringify(param));
+        window.AppJsBridge.service.deviceService.doAction({
+            "sn": SN,
+            "deviceClass": "airConditioner",
+            "action": cmd,
+            "parameters": param,
+            "success": function doActionSuccess(res)
+            {
+                //alert("doAction success");
+                callback(res);
+            },
+            "error": function doActionError(res)
+            {
+                //alert("doAction error");
+                callback(res);
+            }
+        });
+    }
+    //*************************************************************************
+    //调用华为接口，获取设备状态
+    //*************************************************************************        
+    factory.getState = function (callback) {
+        window.AppJsBridge.service.deviceService.getDevice({
+            "sn": SN,
+            "success": function (data) {
+                callback(data);
+            },
+            "error": function (data) {
+                alert("获取设备状态失败:" + JSON.stringify(data));
+            }
+        });
     }
     return factory;
 })
 
-myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateService) {
-        function getState() {
-            var ret = {};
-            window.AppJsBridge.service.deviceService.getDevice({
-                "sn": dateService.SN, //getCurrentDeviceSn(),
-                "success": function (data) {
-                    getStateCallBack(data);
-                },
-                "error": function (data) {
-                    alert("b" + JSON.stringify(data));
-                }
-            });
-            return ret;
-        }
+myApp.controller("homeCtrl", ["$scope", "DataService", function ($scope, DataService) {
+
         //更新开关空调的状态
-        function getStateCallBack(result) {
-            //alert("c" + JSON.stringify(result));
+        var updateState = function (result) {
+            //alert("get status success:" + JSON.stringify(result));
             $scope.$apply(function () {
                 if (result !== undefined) {
                     if ("basic" in result) {
@@ -154,13 +178,15 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                             }
                         }
                     }
+                } else {
+                    alert("获取设备状态失败");
                 }
             });
-        }
-        ;
-        $scope.refreshStatus = function () {
-            getState();
         };
+
+        $scope.refreshStatus = function () {
+            DataService.getState(updateState);
+        }
         //提示接口
         function toat(str) {
             new jBox('Notice', {
@@ -171,44 +197,25 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
             });
         }
 
-        //*************************************************************************
-        //调用华为接口，发送指令
-        //*************************************************************************
-        function doAction(cmd, param, callback) {
-            //alert("cmd:" + cmd + " param:" +JSON.stringify(param));
-            window.AppJsBridge.service.deviceService.doAction({
-                "sn": dateService.SN, //getCurrentDeviceSn(),
-                "deviceClass": "airConditioner",
-                "action": cmd,
-                "parameters": param,
-                "success": function doActionSuccess(res)
-                {
-                    callback(res);
-                },
-                "error": function doActionError(res)
-                {
-                    callback(res);
-                }
-            });
-        }
-
         //开关空调
         $scope.openClose = function () {
             //alert($scope.open ? "开机" : "关机");
-            var param = null;
+            var param = {};
             var cmd = "config";
-            if ($scope.open == false) { //关机
+            if ($scope.open == false) { //关机                   
                 param = {"state": "off", "screenState": "off"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.open = false;
+                        $scope.gaoXiao = false;
+                        $scope.sleepModel = false;
                         $scope.liangDu = false;
                     });
                 });
             }
-            if ($scope.open == true) { //开机	
+            if ($scope.open == true) { //开机	                
                 param = {"state": "on", "screenState": "on"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.open = true;
                         $scope.liangDu = true;
@@ -218,7 +225,7 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
         };
         //温度加减
         $scope.add = function () {
-            var param = null;
+            var param = {};
             var cmd = "config";
             var mod = $scope.choice;
             var tem = $scope.temControl;
@@ -226,7 +233,7 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                 if ($scope.temControl < 32) {
                     var temp = parseInt($scope.temControl) + 1;
                     param = {"temperature": temp};
-                    doAction(cmd, param, function (data) {
+                    DataService.doAction(cmd, param, function (data) {
                         $scope.$apply(function () {
                             $scope.temControl = temp;
                         });
@@ -239,7 +246,7 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
             }
         };
         $scope.reduce = function () {
-            var param = null;
+            var param = {};
             var cmd = "config";
             var mod = $scope.choice;
             var tem = $scope.temControl;
@@ -247,7 +254,7 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                 if ($scope.temControl > 18) {
                     var temp = parseInt($scope.temControl) - 1;
                     param = {"temperature": temp};
-                    doAction(cmd, param, function (data) {
+                    DataService.doAction(cmd, param, function (data) {
                         $scope.$apply(function () {
                             $scope.temControl = temp;
                         });
@@ -261,125 +268,106 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
         };
         //模式设置modeSet
         $scope.modeSet = function () {
-            var param = null;
+            var param = {};
             var cmd = "config";
             var mva = $scope.choice; //模式
             var sleep = $scope.sleepModel; //睡眠
-            var screenState = "";
-            if (sleep == true) {
-                screenState = "on";
-            } else if (sleep == false) {
-                screenState = "off";
-            }
             //制热
             //alert(mva+":"+sleep);
             if (mva == "heating") {
-                param = {"mode": "heating", "temperature": 23, "windSpeed": "auto", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"mode": "heating", "temperature": 23, "windSpeed": "auto", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.choice = mva;
                         $scope.temControl = 23;
                         $scope.sleepModel = false;
-                        $scope.windValue = 100;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.windValue = 100;//自动风
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
             //制冷
             else if (mva == "cooling") {
-                param = {"mode": "cooling", "temperature": 26, "windSpeed": "auto", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"mode": "cooling", "temperature": 26, "windSpeed": "auto", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.choice = mva;
                         $scope.temControl = 26;
                         $scope.sleepModel = false;
-                        $scope.windValue = 100;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.windValue = 100;//自动风
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
             //除湿
             else if (mva == "dehumidification") {
-                param = {"mode": "dehumidification", "temperature": 25, "windSpeed": "auto", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"mode": "dehumidification", "temperature": 25, "windSpeed": "auto", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.choice = mva;
                         $scope.temControl = 25;
                         $scope.sleepModel = false;
-                        $scope.windValue = 100;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.windValue = 100;//自动风
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
             //送风
             else if (mva == "blast") {
-                param = {"mode": "blast", "temperature": 25, "windSpeed": "medium", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"mode": "blast", "temperature": 25, "windSpeed": "medium", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.choice = mva;
                         $scope.temControl = 25;
                         $scope.sleepModel = false;
-                        $scope.windValue = 50;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.windValue = 50;//中风
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
             //自动
             else if (mva == "auto") {
-                param = {"mode": "auto", "temperature": 25, "windSpeed": "auto", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"mode": "auto", "temperature": 25, "windSpeed": "auto", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.choice = mva;
                         $scope.temControl = 25;
                         $scope.sleepModel = false;
-                        $scope.windValue = 100;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.windValue = 100;//自动风
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
         };
         //睡眠模式
         $scope.sleepCli = function () {
-            var param = null;
-            var cmd = null;
+            var param = {};
+            var cmd = "";
             var mod = $scope.choice;
             var windValue = "";
             //alert(mod+"num"+num+$scope.sleepModel);
             if ($scope.sleepModel == true) {
-                if (mod == "cooling" || mod == "heating") { //制冷,制热模式下开启睡眠模式               
+                if (mod == "cooling" || mod == "heating"|| mod == "dehumidification") { //制冷,制热模式下开启睡眠模式               
                     cmd = "startSleepMode";
-                    doAction(cmd, param, function (data) {
+                    DataService.doAction(cmd, param, function (data) {
                         $scope.$apply(function () {
                             $scope.sleepModel == true;
-                            $scope.liangDu = true;
+                            $scope.gaoXiao = false;
+                            $scope.liangDu = false;
                         });
                     });
                     cmd = "config";
-                    param = {"windSpeed": "slow", "screenState": "on"};
-                    doAction(cmd, param, function (data) {
+                    param = {"windSpeed": "slow", "screenState": "off"};
+                    DataService.doAction(cmd, param, function (data) {
                         $scope.$apply(function () {
                             $scope.sleepModel == true;
-                            $scope.liangDu = true;
+                            $scope.gaoXiao = false;
+                            $scope.liangDu = false;
                         });
                     });
                 } else if (mod == "blast") { //送风模式下  不能开启睡眠		
@@ -388,6 +376,9 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                 } else if (mod == "auto") { //自动模式下  不能开启睡眠
                     $scope.sleepModel = false;
                     toat("自动模式下  不能开启睡眠");
+                }else{
+                    $scope.sleepModel = false;
+                     toat("操作不支持");
                 }
             } else if ($scope.sleepModel == false) { //关闭睡眠
                 var wind = $scope.windValue;
@@ -407,7 +398,7 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                     windValue = "auto";
                 }
                 cmd = "stopSleepMode";
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = wind;
                         $scope.sleepModel == false;
@@ -415,7 +406,7 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                 });
                 cmd = "config";
                 param = {"windSpeed": windValue, "screenState": "on"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.sleepModel == false;
                         $scope.liangDu = true;
@@ -452,123 +443,113 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
 
         //强力
         $scope.gaoxiaoCli = function () {
-            var param = null;
-            var cmd = null;
+            var param = {};
+            var cmd = "";
             var tempWindTo = "";
             var sleep = $scope.sleepModel; //睡眠
             var tempWind; //风速
             var oldMode = ""; // 模式
             var oldTemp = 0; //温度
-            var screenState = "";
-            if (sleep == true) {
-                screenState = "on";
-            } else if (sleep == false) {
-                screenState = "off";
-            }
+
             if ($scope.gaoXiao == true) {
-                if (sleep == false) {
-                    tempWind = $scope.windValue;
-                    oldMode = $scope.choice;
-                    oldTemp = $scope.temControl;
-                    localStorage.removeItem("temp");
-                    localStorage.removeItem("wind");
-                    localStorage.removeItem("mode");
-                    localStorage.setItem("temp", oldTemp);
-                    localStorage.setItem("wind", tempWind);
-                    localStorage.setItem("mode", oldMode);
-                    //在制冷模式下 开启强力
-                    if ($scope.choice == "cooling") {
-                        cmd = "fastCool";
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.gaoXiao = true;
-                            });
+                tempWind = $scope.windValue;
+                oldMode = $scope.choice;
+                oldTemp = $scope.temControl;
+                localStorage.removeItem("temp");
+                localStorage.removeItem("wind");
+                localStorage.removeItem("mode");
+                localStorage.setItem("temp", oldTemp);
+                localStorage.setItem("wind", tempWind);
+                localStorage.setItem("mode", oldMode);
+                //在制冷模式下 开启强力
+                if ($scope.choice == "cooling") {
+                    cmd = "fastCool";
+                    DataService.doAction(cmd, param, function (data) {
+                        $scope.$apply(function () {
+                            $scope.gaoXiao = true;
+                            $scope.choice = "cooling"; //模式
+                            $scope.sleepModel = false;
                         });
-                        cmd = "config";
-                        param = {"mode": "cooling", "temperature": 18, "windSpeed": "auto", "screenState": screenState};
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.temControl = 18; //温度
-                                $scope.choice = "cooling"; //模式
-                                $scope.gaoXiao = true;
-                                $scope.windValue = 100;
-                                $scope.sleepModel = false;
-                                $scope.liangDu = false;
-                            });
+                    });                  
+                   /*
+                    cmd = "config";
+                    param = {"mode": "cooling", "temperature": 18, "windSpeed": "auto", "screenState": "on"};
+                    DataService.doAction(cmd, param, function (data) {
+                        $scope.$apply(function () {
+                            $scope.temControl = 18; //温度
+                            $scope.choice = "cooling"; //模式
+                            $scope.gaoXiao = true;
+                            $scope.windValue = 100;
+                            $scope.sleepModel = false;
+                            $scope.liangDu = true;
                         });
-                    }
-                    //在制热模式下开启强力
-                    else if ($scope.choice == "heating") {
-                        cmd = "fastHeat";
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.gaoXiao = true;
-                            });
-                        });
-                        cmd = "config";
-                        param = {"mode": "heating", "temperature": 32, "windSpeed": "auto", "screenState": screenState};
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.temControl = 32; //温度
-                                $scope.choice = "heating"; //模式
-                                $scope.gaoXiao = true;
-                                $scope.windValue = 100;
-                                $scope.sleepModel = false;
-                                $scope.liangDu = false;
-                            });
-                        });
-                    }
-                    //在除湿模式下开启强力
-                    else if ($scope.choice == "dehumidification") {
-                        cmd = "fastCool";
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.gaoXiao = true;
-                            });
-                        });
-                        cmd = "config";
-                        param = {"mode": "dehumidification", "temperature": 18, "windSpeed": "auto", "screenState": screenState};
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.temControl = 18; //温度
-                                $scope.choice = "dehumidification"; //模式
-                                $scope.gaoXiao = true;
-                                $scope.windValue = 100;
-                                $scope.sleepModel = false;
-                                $scope.liangDu = false;
-                            });
-                        });
-                    }
-                    //送风模式下开启强力
-                    else if ($scope.choice == "blast") {
-                        cmd = "fastCool";
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.gaoXiao = true;
-                            });
-                        });
-                        cmd = "config";
-                        param = {"mode": "blast", "temperature": 18, "windSpeed": "auto", "screenState": screenState};
-                        doAction(cmd, param, function (data) {
-                            $scope.$apply(function () {
-                                $scope.temControl = 18; //温度
-                                $scope.choice = "blast"; //模式
-                                $scope.gaoXiao = true;
-                                $scope.windValue = 100;
-                                $scope.sleepModel = false;
-                                $scope.liangDu = false;
-                            });
-                        });
-                    } else if ($scope.choice == "auto") {
-                        $scope.gaoXiao = false;
-                        toat("自动模式下  不能设置强力");
-                    }
-                } else if (sleep == true) {
-                    $scope.gaoXiao = false;
-                    toat("睡眠模式下  不能设置强力");
+                    });
+                     */
                 }
-            } 
-            else if ($scope.gaoXiao == false) {
+                //在制热模式下开启强力
+                else if ($scope.choice == "heating") {
+                    cmd = "fastHeat";
+                    DataService.doAction(cmd, param, function (data) {
+                        $scope.$apply(function () {
+                            $scope.gaoXiao = true;
+                            $scope.choice = "heating"; //模式
+                            $scope.sleepModel = false;                            
+                        });
+                    });
+                    /*
+                    cmd = "config";
+                    param = {"mode": "heating", "temperature": 32, "windSpeed": "auto", "screenState": "on"};
+                    DataService.doAction(cmd, param, function (data) {
+                        $scope.$apply(function () {
+                            $scope.temControl = 32; //温度
+                            $scope.choice = "heating"; //模式
+                            $scope.gaoXiao = true;
+                            $scope.windValue = 100;
+                            $scope.sleepModel = false;
+                            $scope.liangDu = true;
+                        });
+                    });
+                    */
+                }               
+                //在除湿模式下开启强力
+                /*
+                else if ($scope.choice == "dehumidification") {
+                    cmd = "fastCool";
+                    DataService.doAction(cmd, param, function (data) {
+                        $scope.$apply(function () {
+                            $scope.gaoXiao = true;
+                            $scope.choice = "cooling"; //模式
+                            $scope.sleepModel = false;                              
+                        });
+                    });
+                    
+                    cmd = "config";
+                    param = {"mode": "dehumidification", "temperature": 25, "windSpeed": "auto", "screenState": "on"};
+                    DataService.doAction(cmd, param, function (data) {
+                        $scope.$apply(function () {
+                            $scope.temControl = 25; //温度
+                            $scope.choice = "dehumidification"; //模式
+                            $scope.gaoXiao = true;
+                            $scope.windValue = 100;
+                            $scope.sleepModel = false;
+                            $scope.liangDu = true;
+                        });
+                    });
+                    
+                }
+                */
+                //送风模式下开启强力
+                else if ($scope.choice == "blast") {
+                    $scope.gaoXiao = false;
+                    toat("送风模式下  不能设置强力");
+                } else if ($scope.choice == "auto") {
+                    $scope.gaoXiao = false;
+                    toat("自动模式下  不能设置强力");
+                }else{
+                    $scope.gaoXiao = false;
+                     toat("操作不支持");
+                }
+            } else if ($scope.gaoXiao == false) {
                 var wind = localStorage.getItem("wind");
                 if (wind == 0 || wind == "0") {
                     tempWindTo = "slow";
@@ -588,18 +569,15 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                 var temp = localStorage.getItem("temp");
                 var mode = localStorage.getItem("mode");
                 cmd = "config";
-                param = {"mode": mode, "temperature": temp, "windSpeed": tempWindTo, "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"mode": mode, "temperature": temp, "windSpeed": tempWindTo, "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.gaoXiao = false;
                         $scope.windValue = wind;
                         $scope.temControl = temp; //温度
                         $scope.choice = mode; //模式
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.sleepModel = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
@@ -607,18 +585,18 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
         //亮度(背景灯)
         $scope.dingCli = function () {
             var cmd = "config";
-            var param = null;
+            var param = {};
             var ding = $scope.liangDu;
             if (ding == true) {  //打开背景灯
                 param = {"screenState": "on"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.liangDu = true;
                     });
                 });
             } else if (ding == false) { //关闭背景灯
                 param = {"screenState": "off"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.liangDu = false;
                     });
@@ -628,8 +606,8 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
         //风速设置 
         var arr = [];
         $("#windMode").change(function () {
-            var cmd = null;
-            var param = null;
+            var cmd = "";
+            var param = {};
             var windV = $scope.windValue;
             arr.push($scope.windValue);
             var sleep = $scope.sleepModel; //睡眠
@@ -644,11 +622,15 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                     arr.pop();
                     $scope.$apply(function () {
                         $scope.windValue = 100; //默认自动风
+                        $scope.sleepModel = false;
+                        $scope.gaoXiao = false;
                     });
                 }
                 if (arr.length > 1) {
                     $scope.$apply(function () {
                         $scope.windValue = arr[arr.length - 2];
+                        $scope.sleepModel = false;
+                        $scope.gaoXiao = false;
                     });
                 }
                 toat("自动模式，不能设置风速");
@@ -657,81 +639,75 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
                     arr.pop();
                     $scope.$apply(function () {
                         $scope.windValue = 50; //默认快风
+                        $scope.sleepModel = false;
+                        $scope.gaoXiao = false;
                     });
                 }
                 if (arr.length > 1) {
                     $scope.$apply(function () {
                         $scope.windValue = arr[arr.length - 2];
+                        $scope.sleepModel = false;
+                        $scope.gaoXiao = false;
                     });
                 }
                 toat("送风模式，不能设置自动风");
             } else if ($scope.choice == "dehumidification" && (windV == 0 || windV == 25 || windV == 50 || windV == 75)) { //除湿模式，只能操作自动风
                 $scope.$apply(function () {
                     $scope.windValue = 100;
+                    $scope.sleepModel = false;
+                    $scope.gaoXiao = false;
                 });
                 toat("除湿模式，只能操作自动风");
             }
             //低风
             else if (windV == 0 && $scope.choice != "auto") {
                 cmd = "config";
-                param = {"windSpeed": "slow", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"windSpeed": "slow", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = 0;
                         $scope.sleepModel = false;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
             //中风
             else if (windV == 25 && $scope.choice != "dehumidification") {
                 cmd = "config";
-                param = {"windSpeed": "medium", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"windSpeed": "medium", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = 25;
                         $scope.sleepModel = false;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
             //快风
             else if (windV == 50 && $scope.choice != "dehumidification") {
                 cmd = "config";
-                param = {"windSpeed": "fast", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"windSpeed": "fast", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = 50;
                         $scope.sleepModel = false;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
             //强风
             else if (windV == 75 && $scope.choice != "dehumidification") {
                 cmd = "config";
-                param = {"windSpeed": "strong", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                param = {"windSpeed": "strong", "screenState": "on"};
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = 75;
                         $scope.sleepModel = false;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
@@ -739,15 +715,12 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
             else if (windV == 100 && $scope.choice != "blast") {
                 cmd = "config";
                 param = {"windSpeed": "auto", "screenState": screenState};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = 100;
                         $scope.sleepModel = false;
-                        if (sleep == true) {
-                            $scope.liangDu = true;
-                        } else {
-                            $scope.liangDu = false;
-                        }
+                        $scope.gaoXiao = false;
+                        $scope.liangDu = true;
                     });
                 });
             }
@@ -756,17 +729,17 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
         $scope.leftRight = function () {
             var hwind = $scope.wind_t;
             var cmd = "config";
-            var param = null;
+            var param = {};
             if (hwind == "HWind") { //开启扫风 
                 param = {"windDirection": "horizon"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = "HWind";
                     });
                 });
             } else if (hwind == "HWindNo") {
                 param = {"windDirection": "auto"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = "HWindNo";
                     });
@@ -777,18 +750,18 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
         //上下风(前面四组)
         $scope.upDown = function () {
             var cmd = "config";
-            var param = null;
+            var param = {};
             var upd = $scope.wind_s;
             if (upd == "s_sao") { //扫风	
                 param = {"windDirection": "vertical"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.wind_s = "s_sao";
                     });
                 });
             } else if (upd == "s_auto") { //定向（关闭扫风,就是定向）
                 param = {"windDirection": "auto"};
-                doAction(cmd, param, function (data) {
+                DataService.doAction(cmd, param, function (data) {
                     $scope.$apply(function () {
                         $scope.windValue = "s_auto";
                     });
@@ -799,7 +772,7 @@ myApp.controller("homeCtrl", ["$scope", "dateService", function ($scope, dateSer
             $scope.$apply($scope.refreshStatus);
         }
         ;
-        setInterval(update(), 40 * 1000);
+        setInterval(update(), 10 * 1000);
         update();
     }
 ]);
