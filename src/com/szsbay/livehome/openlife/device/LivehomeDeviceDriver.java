@@ -107,7 +107,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public void setDeviceService(IDeviceService deviceService)
 	{
-		//系统调用驱动，安装设备管理服务
+		logger.d("<LivehomeDeviceDriver:setDeviceService>");
 		this.deviceService = deviceService;
 	}
 	
@@ -142,7 +142,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		logger.d("<LivehomeDeviceDriver:init -4-> add a false device for livehome");
 		if(null == falseDeviceSn)
 		{
-			falseDeviceSn = "SZSBAY-AIRCONDITION-" + getMacByIp("192.168.8.1") + "-1";
+			falseDeviceSn = "SZSBAY-" + DeviceProtocol.deviceName.toUpperCase() + '-' + getMacByIp("192.168.8.1") + "-1";
 		}
 		this.deviceService.reportIncludeDevice(falseDeviceSn, DeviceProtocol.deviceName, new JSONObject());
 	}
@@ -152,7 +152,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	{
 		logger.d("Begin doAction, sn={}, action={}, params={}, deviceClass={}", sn, action, parameter, deviceClass);
 		
-		if(deviceClass.equals("airConditioner"))
+		if(true)
 		{
 			String SN = sn.toUpperCase();
 			
@@ -248,8 +248,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public void destroy()
 	{
-		// 销毁对象
-		logger.d("<destroy>");
+		logger.d("<LivehomeDeviceDriver:destroy> ......");
 		try
 		{
 			if(!reportOnThread.isDestroy()) 
@@ -320,7 +319,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	}
 
 	/**
-	 * 上报设备在线状态线程
+	 * 设备在线状态刷新线程
 	 */
 	public class ReportOnThread extends LivehomeThread 
 	{
@@ -363,7 +362,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 								deviceProtocolMap.put(sn, device);
 							}
 							
-							String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":1}]}");
+							String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
 							logger.d("<ReportOnThread> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
 							SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());//发送查询指令
 						}
