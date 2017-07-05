@@ -1,13 +1,14 @@
 package com.szsbay.livehome.openlife.aircondition;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.huawei.smarthome.driver.IDeviceService;
 import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
-import com.szsbay.livehome.openlife.device.LivehomeDeviceDiscoverer;
 import com.szsbay.livehome.openlife.device.LivehomeDeviceDriver;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.ISocketParser;
@@ -23,7 +24,12 @@ public class DeviceControl implements ISocketParser
 	/**
 	 * 日志接口
 	 */
-	private final static LogService logger = LogServiceFactory.getLogService(LivehomeDeviceDiscoverer.class);
+	private final static LogService logger = LogServiceFactory.getLogService(DeviceControl.class);
+	
+	/**
+	 * 设备SN与设备状态集映射表
+	 */
+	private static HashMap<String, JSONObject> devicesStatusInfo = new HashMap<String, JSONObject>();
 	
 	/**
 	 * 华为标准空调设备模型动作能力解析
@@ -33,9 +39,50 @@ public class DeviceControl implements ISocketParser
 	 * @param params 设备动作参数
 	 * @return
 	 */
-	public static JSONObject parseAction(Device device ,String sn ,String action ,JSONObject params)
+	public static JSONObject parseAction(Device device, String sn, String action, JSONObject params)
 	{
 		DeviceProtocol deviceProtocol = new DeviceProtocol(device);//构造设备协议通道对象
+		
+		buildCommand(action, params, deviceProtocol);
+		
+		deviceProtocol.setAirConditionSendOrderWay(1);
+		logger.d("<parseAction Single> sn = {}, module = {}, sendCmd = {}", sn , LivehomeDeviceDriver.getdeviceModuleFromSn(sn), deviceProtocol.sendAirConditionCommand());
+		SocketManager.getInstance().sendMessageToCdn(LivehomeDeviceDriver.getdeviceModuleFromSn(sn), (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
+		return null;
+	}
+	
+	/**
+	 * 华为标准空调设备模型动作能力解析
+	 * @param device 本地存储的设备协议对象
+	 * @param sn 设备唯一序列号
+	 * @param params 设备动作及参数列表
+	 * @return
+	 */
+	public static JSONObject parseAction(Device device, String sn, JSONArray jsa)
+	{
+		DeviceProtocol deviceProtocol = new DeviceProtocol(device);//构造设备协议通道对象
+		
+		for(int i=0; i<jsa.length(); i++)
+		{
+			JSONObject temp = jsa.getJSONObject(i);
+			String action = temp.getString("action");
+			JSONObject params =temp.getJSONObject("params");
+			buildCommand(action, params, deviceProtocol);
+		}
+		
+		deviceProtocol.setAirConditionSendOrderWay(1);
+		logger.d("<parseAction List> sn = {}, module = {}, sendCmd = {}", sn , LivehomeDeviceDriver.getdeviceModuleFromSn(sn), deviceProtocol.sendAirConditionCommand());
+		SocketManager.getInstance().sendMessageToCdn(LivehomeDeviceDriver.getdeviceModuleFromSn(sn), (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
+		return null;
+	}
+	/**
+	 * 构建设置指令
+	 * @param action 设备动作
+	 * @param params 设备动作参数
+	 * @param deviceProtocol 设备协议
+	 */
+	private static void buildCommand(String action, JSONObject params, DeviceProtocol deviceProtocol) 
+	{
 		switch(action)
 		{
 			case "turnOn"://开机<标准模型>
@@ -46,7 +93,10 @@ public class DeviceControl implements ISocketParser
 				deviceProtocol.setAirConditionLaunchSwitch(0);
 				break;
 				
-			case "config"://配置参数<标准模型>
+			case "toggle"://切换 <标准模型>
+				break;
+				
+			case "config"://配置<标准模型>
 				if(params.has("state"))
 				{
 					int flag = params.getString("state").equals("off")?0:1;
@@ -56,6 +106,11 @@ public class DeviceControl implements ISocketParser
 				{
 					int flag = params.getString("screenState").equals("off")?0:127;
 					deviceProtocol.setAirConditionDisplayScreenBrightness(flag);
+				}
+				if(params.has("ledState"))
+				{
+					int flag = params.getString("ledState").equals("off")?0:1;
+					deviceProtocol.setAirConditionLedSwitch(flag);
 				}
 				if(params.has("mode"))
 				{
@@ -71,6 +126,7 @@ public class DeviceControl implements ISocketParser
 							logger.d("<parseAction> 'mode' error params = '{}'", params.getString("mode"));
 							break;
 					}
+					deviceProtocol.setAirConditionStrongSwitch(0);
 					deviceProtocol.setAirConditionWorkMode(flag);
 				}
 				if(params.has("temperature"))
@@ -78,20 +134,38 @@ public class DeviceControl implements ISocketParser
 					int temp = params.getInt("temperature");
 					deviceProtocol.setAirConditionIndoorTemp(temp);
 				}
+				if(params.has("humidity"))
+				{
+					int humi = params.getInt("humidity");
+					deviceProtocol.setAirConditionIndoorHumi(humi);
+				}
+				if(params.has("windDirection"))//风速，可选属性
+				{
+					switch(params.getString("windDirection"))
+					{
+						case "auto":	/*deviceProtocol.setAirConditionNaturalWindSwitch(1);*/		break;//自动
+						case "horizon":	/*deviceProtocol.setAirConditionLeftRightWindSwitch(1);*/	break;//水平
+						case "vertical":/*deviceProtocol.setAirConditionUpDownWindSwitch(1);*/		break;//垂直 
+						case "fix":		/*deviceProtocol.setAirConditionWindValvePosition(1);*/		break;//固定  
+						default:
+							logger.d("<parseAction> 'windDirection' error params = '{}'", params.getString("windDirection"));
+							break;
+					}
+				}
 				if(params.has("windSpeed"))//风速，可选属性
 				{
 					int flag = 0;
 					switch(params.getString("windSpeed"))
 					{
-						case "auto":	flag = 0;	break;//自动风 
-						case "silent":	flag = 1;	break;//静音风 
-						case "slow":	flag = 2;	break;//低风  
-						case "medium":	flag = 3;	break;//中风  
-						case "fast":	flag = 4;	break;//高风  
-						case "strong":	flag = 4;	break;//高风 
-						default:
-							logger.d("<parseAction> 'windSpeed' error params = '{}'", params.getString("windSpeed"));
-							break;
+					case "auto":	flag = 0;	break;//自动风 
+					case "silent":	flag = 1;	break;//静音风 
+					case "slow":	flag = 2;	break;//低风  
+					case "medium":	flag = 3;	break;//中风  
+					case "fast":	flag = 4;	break;//高风  
+					case "strong":	flag = 4;	break;//高风 
+					default:
+						logger.d("<parseAction> 'windSpeed' error params = '{}'", params.getString("windSpeed"));
+						break;
 					}
 					deviceProtocol.setAirConditionAirVolume(flag);
 				}
@@ -148,10 +222,6 @@ public class DeviceControl implements ISocketParser
 					deviceProtocol.setAirConditionElectricHeatSwitch(flag);
 				}
 		}
-		deviceProtocol.setAirConditionSendOrderWay(1);
-		logger.d("<parseAction> sn = {}, module = {}, sendCmd = {}", sn , LivehomeDeviceDriver.getdeviceModuleFromSn(sn), deviceProtocol.sendAirConditionCommand());
-		SocketManager.getInstance().sendMessageToCdn(LivehomeDeviceDriver.getdeviceModuleFromSn(sn), (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
-		return null;
 	}
 
 	/**
@@ -214,42 +284,143 @@ public class DeviceControl implements ISocketParser
 		String strongState = (deviceProtocol.getAirConditionStrongSwitch()==0)?"off":"on";//强力状态
 		String screenState = (deviceProtocol.getAirConditionDisplayScreenShineSwitch()==0)?"off":"on";//屏幕开关状态
 		String ledState = (deviceProtocol.getAirConditionLedSwitch()==0)?"off":"on";//指示灯开关状态
+
+		if(null == devicesStatusInfo.get(sn))
+		{
+			devicesStatusInfo.put(sn, new JSONObject());
+		}
+		JSONObject devSta_js = devicesStatusInfo.get(sn);
+		if(17 != devSta_js.length())
+		{
+			if(!devSta_js.has("airQuality"))		devSta_js.put("airQuality", "");
+			if(!devSta_js.has("verticalWind"))		devSta_js.put("verticalWind", "");
+			if(!devSta_js.has("horizonWind"))		devSta_js.put("horizonWind", "");
+			if(!devSta_js.has("electricHeat"))		devSta_js.put("electricHeat", "");
+			if(!devSta_js.has("strongMode"))		devSta_js.put("strongMode", "");
+			if(!devSta_js.has("sleepMode"))			devSta_js.put("sleepMode", "");
+			if(!devSta_js.has("state"))				devSta_js.put("state", "");
+			if(!devSta_js.has("screenState"))		devSta_js.put("screenState", "");
+			if(!devSta_js.has("ledState"))			devSta_js.put("ledState", "");
+			if(!devSta_js.has("mode"))				devSta_js.put("mode", "");
+			if(!devSta_js.has("configTemperature"))	devSta_js.put("configTemperature", 0);
+			if(!devSta_js.has("configHumidity"))	devSta_js.put("configHumidity", 0);
+			if(!devSta_js.has("windDirection"))		devSta_js.put("windDirection", "");
+			if(!devSta_js.has("windSpeed"))			devSta_js.put("windSpeed", "");
+			if(!devSta_js.has("humidity"))			devSta_js.put("humidity", 0);
+			if(!devSta_js.has("temperature"))		devSta_js.put("temperature", 0);
+			if(!devSta_js.has("particulates"))		devSta_js.put("particulates", 0);
+		}
 		
 		JSONObject hisenseKelonStatus = new JSONObject();//自定义属性集
-		hisenseKelonStatus.put("airQuality" ,indoorAirQuality);
-		hisenseKelonStatus.put("verticalWind" ,upDownWindState);
-		hisenseKelonStatus.put("horizonWind" ,leftRightWindState);
-		hisenseKelonStatus.put("electricHeat" ,elecHeatState);
-		hisenseKelonStatus.put("strongMode" ,strongState);
-		hisenseKelonStatus.put("sleepMode" ,sleepModeState);
+		if(!devSta_js.getString("airQuality").equals(indoorAirQuality))
+		{
+			hisenseKelonStatus.put("airQuality" ,indoorAirQuality);
+			devSta_js.put("airQuality", indoorAirQuality);
+		}
+		if(!devSta_js.getString("verticalWind").equals(upDownWindState))
+		{
+			hisenseKelonStatus.put("verticalWind" ,upDownWindState);
+			devSta_js.put("verticalWind", upDownWindState);
+		}
+		if(!devSta_js.getString("horizonWind").equals(leftRightWindState))
+		{
+			hisenseKelonStatus.put("horizonWind" ,leftRightWindState);
+			devSta_js.put("horizonWind", leftRightWindState);
+		}
+		if(!devSta_js.getString("electricHeat").equals(elecHeatState))
+		{
+			hisenseKelonStatus.put("electricHeat" ,elecHeatState);
+			devSta_js.put("electricHeat", elecHeatState);
+		}
+		if(!devSta_js.getString("strongMode").equals(strongState))
+		{
+			hisenseKelonStatus.put("strongMode" ,strongState);
+			devSta_js.put("strongMode", strongState);
+		}
+		if(!devSta_js.getString("sleepMode").equals(sleepModeState))
+		{
+			hisenseKelonStatus.put("sleepMode" ,sleepModeState);
+			devSta_js.put("sleepMode", sleepModeState);
+		}
 		
 		JSONObject airConditionerStatus = new JSONObject();//华为标准空调属性集
-		airConditionerStatus.put("state" ,state);
-		airConditionerStatus.put("screenState" ,screenState);
-		airConditionerStatus.put("ledState" ,ledState);
-		airConditionerStatus.put("mode" ,mode);
-		airConditionerStatus.put("configTemperature" ,configTemperature);
-		airConditionerStatus.put("configHumidity" ,configHumidity);
-		airConditionerStatus.put("windDirection" ,"");
-		airConditionerStatus.put("windSpeed" ,windSpeed);
+		if(!devSta_js.getString("state").equals(state))
+		{
+			airConditionerStatus.put("state" ,state);
+			devSta_js.put("state", state);
+		}
+		if(!devSta_js.getString("screenState").equals(screenState))
+		{
+			airConditionerStatus.put("screenState" ,screenState);
+			devSta_js.put("screenState", screenState);
+		}
+		if(!devSta_js.getString("ledState").equals(ledState))
+		{
+			airConditionerStatus.put("ledState" ,ledState);
+			devSta_js.put("ledState", ledState);
+		}
+		if(!devSta_js.getString("mode").equals(mode))
+		{
+			airConditionerStatus.put("mode" ,mode);
+			devSta_js.put("mode", mode);
+		}
+		if(configTemperature != devSta_js.getInt("configTemperature"))
+		{
+			airConditionerStatus.put("configTemperature" ,configTemperature);
+			devSta_js.put("configTemperature", configTemperature);
+		}
+		if(configHumidity != devSta_js.getInt("configHumidity"))
+		{
+			airConditionerStatus.put("configHumidity" ,configHumidity);
+			devSta_js.put("configHumidity", configHumidity);
+		}
+		if(!devSta_js.getString("windDirection").equals(""))
+		{
+			airConditionerStatus.put("windDirection" ,"");
+			devSta_js.put("windDirection", "");
+		}
+		if(!devSta_js.getString("windSpeed").equals(windSpeed))
+		{
+			airConditionerStatus.put("windSpeed" ,windSpeed);
+			devSta_js.put("windSpeed", windSpeed);
+		}
 		
 		JSONObject humiditySensorStatus = new JSONObject();//华为标准湿度传感器属性集
-		humiditySensorStatus.put("humidity", indoorHumidity);
+		if(indoorHumidity != devSta_js.getInt("humidity"))
+		{
+			humiditySensorStatus.put("humidity", indoorHumidity);
+			devSta_js.put("humidity", indoorHumidity);
+		}
 		
 		JSONObject temperatureSensorStatus = new JSONObject();//华为标准温度传感器属性集
-		temperatureSensorStatus.put("temperature", indoorTemperature);
+		if(indoorTemperature != devSta_js.getInt("temperature"))
+		{
+			temperatureSensorStatus.put("temperature", indoorTemperature);
+			devSta_js.put("temperature", indoorTemperature);
+		}
 		
 		JSONObject pm25SensorStatus = new JSONObject();//华为标准pm2.5传感器属性集
-		pm25SensorStatus.put("particulates", indoorPm25);
+		if(indoorPm25 != devSta_js.getInt("particulates"))
+		{
+			pm25SensorStatus.put("particulates", indoorPm25);
+			devSta_js.put("particulates", indoorPm25);
+		}
 		
 		JSONObject deviceStatus = new JSONObject();
-		deviceStatus.put("airConditioner", airConditionerStatus);
-		deviceStatus.put("humiditySensor", humiditySensorStatus);
-		deviceStatus.put("temperatureSensor", temperatureSensorStatus);
-		deviceStatus.put("PM25Sensor", pm25SensorStatus);
-		deviceStatus.put(DeviceProtocol.deviceName, hisenseKelonStatus);
+		if(0 != airConditionerStatus.length())		deviceStatus.put("airConditioner", airConditionerStatus);
+		if(0 != humiditySensorStatus.length())		deviceStatus.put("humiditySensor", humiditySensorStatus);
+		if(0 != temperatureSensorStatus.length())	deviceStatus.put("temperatureSensor", temperatureSensorStatus);
+		if(0 != pm25SensorStatus.length())			deviceStatus.put("PM25Sensor", pm25SensorStatus);
+		if(0 != hisenseKelonStatus.length())		deviceStatus.put(DeviceProtocol.deviceName, hisenseKelonStatus);
 		
-		deviceService.reportDeviceProperty(sn, DeviceProtocol.deviceName, deviceStatus);
+		logger.d("<reportStatus> devicesStatusInfo = {}", devicesStatusInfo);
+		logger.d("<reportStatus> sn = {}, deviceStatus = {}", sn , deviceStatus);
+		
+		if(0 != deviceStatus.length())
+			deviceService.reportDeviceProperty(sn, DeviceProtocol.deviceName, deviceStatus);
+		else
+			logger.d("<reportStatus> The status of the device has not changed, skip!");
+		
 		return null;
 	}
 
@@ -283,6 +454,7 @@ public class DeviceControl implements ISocketParser
 			String SN = (module + '-' + addr).toUpperCase();
 			if(null != LivehomeDeviceDriver.deviceProtocolMap.get(SN))
 			{
+				logger.d("find <sn = {}> in deviceProtocolMap", SN);
 				if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
 				{
 					reportStatus(device, json_obj.toString(), SN, DeviceProtocol.deviceName);
@@ -290,7 +462,7 @@ public class DeviceControl implements ISocketParser
 			}
 			else
 			{
-				logger.d("cannot find <sn = {}> in deviceProtocolMap", SN);
+				logger.d("can not find <sn = {}> in deviceProtocolMap", SN);
 			}
 		}
 		else
