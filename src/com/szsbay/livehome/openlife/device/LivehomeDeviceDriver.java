@@ -144,7 +144,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		{
 			falseDeviceSn = "SZSBAY-" + DeviceProtocol.deviceName.toUpperCase() + '-' + getMacByIp("192.168.8.1") + "-1";
 		}
-		this.deviceService.reportIncludeDevice(falseDeviceSn, DeviceProtocol.deviceName, new JSONObject());
+		onUserDeviceAdd(falseDeviceSn, new JSONObject());
 	}
 	
 	@Override
@@ -287,34 +287,37 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		
 		if (null != devicesConfigMap.get(sn))//本地设备配置表中有该设备
 		{
-			String module = getdeviceModuleFromSn(sn);
-			List<String> snList = new ArrayList<String>();
-			for(Iterator<String> it = devicesConfigMap.keySet().iterator(); it.hasNext(); )
+			if(sn.startsWith("AEH-W4A1-"))
 			{
-				String sn_temp = it.next();
-				if(sn_temp.startsWith(module))
+				String module = getdeviceModuleFromSn(sn);
+				List<String> snList = new ArrayList<String>();
+				for(Iterator<String> it = devicesConfigMap.keySet().iterator(); it.hasNext(); )
 				{
-					snList.add(sn_temp);
+					String sn_temp = it.next();
+					if(sn_temp.startsWith(module))
+					{
+						snList.add(sn_temp);
+					}
 				}
-			}
-			if(1 == snList.size())
-			{
-				logger.d("make device <module = {}> return  to AP-Mode by 'AT+WFCLS'", module);
-				SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
-				SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
-			}
-			else
-			{
-				logger.d("can not make device <module = {}> return  to AP-Mode by 'AT+WFCLS', other snList = {}", module, snList);
+				if(1 == snList.size())
+				{
+					logger.d("make device <module = {}> return  to AP-Mode by 'AT+WFCLS'", module);
+					SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
+					SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
+				}
+				else
+				{
+					logger.d("can not make device <module = {}> return  to AP-Mode by 'AT+WFCLS', other snList = {}", module, snList);
+				}
+				
+				if(deviceProtocolMap.containsKey(sn))
+					deviceProtocolMap.remove(sn);
 			}
 			
 			this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
 			this.deviceService.reportExcludeDevice(sn);
 			devicesConfigMap.remove(sn);
 			dataService.remove(sn);
-			
-			if(deviceProtocolMap.containsKey(sn))
-				deviceProtocolMap.remove(sn);
 		}
 	}
 

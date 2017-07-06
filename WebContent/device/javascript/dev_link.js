@@ -544,7 +544,7 @@ var switchRoute = function (){
 //*************************************************************************
 var doConfig = function (msg){
 //	showLog("doConfig :"+" moduleId :"+moduleId+"\r\n");
-	alert("doConfig :"+" moduleId :"+_moduleId+"\r\n");
+//	alert("doConfig :"+" moduleId :"+_moduleId+"\r\n");
 	window.AppJsBridge.service.deviceService.doConfig ({
 		manufacturer : "SMART_BAY",  //厂商名 
 		brand : "LIVE_HOME", //品牌名
@@ -553,11 +553,11 @@ var doConfig = function (msg){
 			"moduleId" : _moduleId
 		}, //参数JSON字符串
 		"success":function(res){
-			alert("doConfig success");
+//			alert("doConfig success");
 			send_msg(MSG_doConfig_succ);
 		},
 		"error":function(res){
-			alert("doConfig error");
+//			alert("doConfig error");
 			showLog(getResource()["LIVEHOME_Install_msg_device_config_fail"] + res);//设备入网配置失败：
 			send_msg(MSG_doConfig_fail);
 		}

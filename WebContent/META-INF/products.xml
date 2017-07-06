@@ -119,9 +119,10 @@
 		
 		<!-- 自定义alarm警报，可选 -->
 		<alarms>
-			<alarm name="ALARM_DOORBELL" title="DOOR_BUTTON_ALARM" type="alarm">
+			<!--空调坏了-->
+			<alarm name="ALARM_AIR_CONDITIONER_BROKEN" title="AIR_CONDITIONER_BROKEN" type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_DOOR_TEMPLATE_TITLE" content-resource="ALARM_DOOR_TEMPLATE_CONTENT">
+					<template title-resource="AIR_CONDITIONER_BROKEN_TEMPLATE_TITLE" content-resource="AIR_CONDITIONER_BROKEN_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
@@ -148,7 +149,8 @@
 		
 		<ifttt>
 			<triggers>
-				<alarm name="ALARM_DOORBELL" />
+				<alarm name="ALARM_PM25_GOOD" />
+				<alarm name="ALARM_AIR_CONDITIONER_BROKEN" />
 				
 				<alarm name="EVENT_PREHEAT_FINISH" />
 				<alarm name="EVENT_BAKING_FINISH" />
