@@ -52,9 +52,12 @@ public class TestMain
 		*/
 //		JSONObject parameter = new JSONObject();
 //		System.out.println(parameter.optString("ip", "203.195.160.110"));
-		System.out.println(LivehomeDeviceDriver.getdeviceAddrFromSn("AEH-W4A1-845dd741eed0"));
+//		System.out.println(LivehomeDeviceDriver.getdeviceAddrFromSn("AEH-W4A1-845dd741eed0"));
 //		System.out.println(LivehomeDeviceDriver.getdeviceModuleFromSn("AEH-W4A1-845dd741eed0-7"));
 //		System.out.println(StringUtils.convertHexStringToShortArray("AT+WFCLS=" + "\r\n"));
+		
+		JSONObject params = new JSONObject();
+		System.out.println();
 		
 	}
 }

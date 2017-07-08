@@ -222,7 +222,7 @@ public class DeviceControl implements ISocketParser
 					}
 					deviceProtocol.setAirConditionIndoorHumi(humi);
 				}
-				if(params.has("windDirection"))//风速，可选属性
+				if(params.has("windDirection"))//风向，可选属性
 				{
 					String windDirection = params.getString("windDirection");
 					if(!devSta_js.optString("windDirection").equals(windDirection))
@@ -318,19 +318,55 @@ public class DeviceControl implements ISocketParser
 				}
 		}
 	}
-
+	
 	/**
-	 * 华为标准空调设备模型设备状态更新
-	 * @param deviceService 设备服务接口
-	 * @param str 设备返回json协议
+	 * 华为标准空调设备模型设备告警上报
+	 * @param deviceProtocol 设备协议通道对象
 	 * @param sn 设备序列号
 	 * @param productName 产品名称
 	 * @return 
 	 */
-	public static JSONObject reportStatus(Device device ,String str ,String sn ,String productName)
+	private void reportAlarm(DeviceProtocol deviceProtocol, String sn, String devicename) 
+	{
+		logger.d("<reportAlarm> sn = {}, productName = {}", sn , devicename);
+		
+		int indoor_alarm1 = deviceProtocol.getAirConditionIndoorAlarm1();
+		if(1 == ((indoor_alarm1&0x80)>>7))//室内温度传感器故障:0x80
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT", new JSONObject());
+		if(1 == ((indoor_alarm1&0x40)>>6))//室内盘管温度传感器故障:0x40
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT", new JSONObject());
+		if(1 == ((indoor_alarm1&0x20)>>5))//室内湿度传感器故障:0x20
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT", new JSONObject());
+		if(1 == ((indoor_alarm1&0x08)>>3))//室内风机电机运转异常故障:0x08
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT", new JSONObject());	
+		if(1 == ((indoor_alarm1&0x02)>>1))//室内电压过零检测故障:0x02
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT", new JSONObject());	
+		if(1 == (indoor_alarm1&0x01))//室内外通信故障:0x01
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT", new JSONObject());	
+		
+		int indoor_alarm2 = deviceProtocol.getAirConditionIndoorAlarm2();
+		if(1 == ((indoor_alarm2&0x80)>>7))//室内控制板与显示板通信故障:0x80
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT", new JSONObject());
+		
+		int outdoor_alarm1 = deviceProtocol.getAirConditionOutdoorAlarm1();
+		if(1 == ((outdoor_alarm1&0x20)>>5))//室外盘管温度传感器故障:0x20
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT", new JSONObject());
+		
+		int indoor_alarm4 = deviceProtocol.getAirConditionOutdoorAlarm4();
+		if(1 == ((indoor_alarm4&0x40)>>6))//冷媒泄漏:0x40
+			deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_REFRIGERANT_LEAKAGE", new JSONObject());
+	}
+	
+	/**
+	 * 华为标准空调设备模型设备状态更新
+	 * @param deviceProtocol 设备协议通道对象
+	 * @param sn 设备序列号
+	 * @param productName 产品名称
+	 * @return 
+	 */
+	public static JSONObject reportStatus(DeviceProtocol deviceProtocol ,String sn ,String productName)
 	{
 		logger.d("<reportStatus> sn = {}, productName = {}", sn , productName);
-		DeviceProtocol deviceProtocol = new DeviceProtocol(str);//构造设备协议通道对象
 		
 		int indoorTemperature = deviceProtocol.getAirConditionIndoorCurrentTemp();//室内温度
 		int indoorHumidity = deviceProtocol.getAirConditionIndoorCurrentHumi();//室内湿度
@@ -633,7 +669,9 @@ public class DeviceControl implements ISocketParser
 					logger.d("find <sn = {}> in deviceProtocolMap", SN);
 					if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
 					{
-						reportStatus(device, json_obj.toString(), SN, DeviceProtocol.deviceName);
+						DeviceProtocol deviceProtocol = new DeviceProtocol(json_obj.toString());//构造设备协议通道对象
+						reportStatus(deviceProtocol, SN, DeviceProtocol.deviceName);
+						reportAlarm(deviceProtocol, SN, DeviceProtocol.deviceName);
 					}
 				}
 				else
