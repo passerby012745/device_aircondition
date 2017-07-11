@@ -42,6 +42,8 @@ myApp.factory('DataService', function () {
         window.AppJsBridge.service.deviceService.getDevice({
             "sn": SN,
             "success": function (data) {
+            	console.log(data);
+//            	alert("getDevice success:" + JSON.stringify(data));
                 callback(data);
             },
             "error": function (data) {
@@ -57,6 +59,7 @@ myApp.controller("homeCtrl", ["$scope", "DataService", function ($scope, DataSer
         //更新开关空调的状态
         var updateState = function (result) {
             //alert("get status success:" + JSON.stringify(result));
+//        	console.log(result);
             $scope.$apply(function () {
                 if (result !== undefined) {
                     if ("basic" in result) {
@@ -768,12 +771,8 @@ myApp.controller("homeCtrl", ["$scope", "DataService", function ($scope, DataSer
                 });
             }
         };
-        function update() {
-            $scope.$apply($scope.refreshStatus);
-        }
-        ;
-        setInterval(update(), 10 * 1000);
-        update();
+        $scope.refreshStatus();
+        setInterval(function(){$scope.$apply($scope.refreshStatus);}, 10 * 1000);
     }
 ]);
 

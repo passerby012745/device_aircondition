@@ -80,7 +80,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 	@Override
 	public void doConfig(String command, JSONObject params)
 	{
-		logger.d("<doConfig> commmand = {}, params = {}", command, params);
+		logger.d("<doConfig> command = {}, params = {}", command, params);
 		
 		logger.d("<doConfig> -----------------------------------------------------");
 		if(command.equals("airconbind"))

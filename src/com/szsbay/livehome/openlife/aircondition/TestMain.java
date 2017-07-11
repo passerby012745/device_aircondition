@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
 
+import com.huawei.smarthome.log.LogService;
+import com.huawei.smarthome.log.LogServiceFactory;
 import com.szsbay.livehome.openlife.device.LivehomeDeviceDriver;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.SocketManager;
@@ -16,7 +18,7 @@ public class TestMain
 {
 	private static final String TAG = "[TestMain] ";
 
-
+	private final static LogService logger = LogServiceFactory.getLogService(TestMain.class);
 //	测试用例
 	static String value_map_send_3_0 = "{\"cmd\":3,\"sub\":0,\"value\":[]}";
 	static String value_map_send_3_1 = "{\"cmd\":3,\"sub\":1,\"value\":[]}";
@@ -56,8 +58,7 @@ public class TestMain
 //		System.out.println(LivehomeDeviceDriver.getdeviceModuleFromSn("AEH-W4A1-845dd741eed0-7"));
 //		System.out.println(StringUtils.convertHexStringToShortArray("AT+WFCLS=" + "\r\n"));
 		
-		JSONObject params = new JSONObject();
-		System.out.println();
+		logger.d("[{0}] [{1}]: {2}","wefef" ,123, "trhhth");
 		
 	}
 }

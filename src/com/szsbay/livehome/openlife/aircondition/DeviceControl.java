@@ -30,12 +30,12 @@ public class DeviceControl implements ISocketParser
 	/**
 	 * 设备SN与设备真实状态集映射表
 	 */
-	private static HashMap<String, JSONObject> devicesStatusInfo = new HashMap<String, JSONObject>();
+	public static HashMap<String, JSONObject> devicesStatusInfo = new HashMap<String, JSONObject>();
 	
 	/**
 	 * 设备SN与设备期望状态集映射表
 	 */
-	private static ConcurrentHashMap<String, JSONObject> expectStatusInfo = new ConcurrentHashMap<String, JSONObject>();
+	public static ConcurrentHashMap<String, JSONObject> expectStatusInfo = new ConcurrentHashMap<String, JSONObject>();
 	
 	/**
 	 * 华为标准空调设备模型动作能力解析
@@ -367,6 +367,7 @@ public class DeviceControl implements ISocketParser
 	public static JSONObject reportStatus(DeviceProtocol deviceProtocol ,String sn ,String productName)
 	{
 		logger.d("<reportStatus> sn = {}, productName = {}", sn , productName);
+		logger.d("<reportStatus> before flush, devicesStatusInfo = {}", devicesStatusInfo);
 		
 		int indoorTemperature = deviceProtocol.getAirConditionIndoorCurrentTemp();//室内温度
 		int indoorHumidity = deviceProtocol.getAirConditionIndoorCurrentHumi();//室内湿度
@@ -661,22 +662,32 @@ public class DeviceControl implements ISocketParser
 			
 			if(null != device)
 			{
-				JSONObject json_obj = new JSONObject(device.upPropertyParse(str));
-				int addr = json_obj.getInt("addr");
-				String SN = (module + '-' + addr).toUpperCase();
-				if(null != LivehomeDeviceDriver.deviceProtocolMap.get(SN))
+				String j_str = device.upPropertyParse(str);
+				LivehomeDeviceDriver.printflong("return data j_str = {}", j_str);
+				
+				if(null != j_str)
 				{
-					logger.d("find <sn = {}> in deviceProtocolMap", SN);
-					if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
+					JSONObject json_obj = new JSONObject(j_str);
+					int addr = json_obj.getInt("addr");
+					String SN = (module + '-' + addr).toUpperCase();
+					if(null != LivehomeDeviceDriver.deviceProtocolMap.get(SN))
 					{
-						DeviceProtocol deviceProtocol = new DeviceProtocol(json_obj.toString());//构造设备协议通道对象
-						reportStatus(deviceProtocol, SN, DeviceProtocol.deviceName);
-						reportAlarm(deviceProtocol, SN, DeviceProtocol.deviceName);
+						logger.d("find <sn = {}> in deviceProtocolMap", SN);
+						if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
+						{
+							DeviceProtocol deviceProtocol = new DeviceProtocol(j_str);//构造设备协议通道对象
+							reportStatus(deviceProtocol, SN, DeviceProtocol.deviceName);
+							reportAlarm(deviceProtocol, SN, DeviceProtocol.deviceName);
+						}
+					}
+					else
+					{
+						logger.d("can not find <sn = {}> in deviceProtocolMap", SN);
 					}
 				}
 				else
 				{
-					logger.d("can not find <sn = {}> in deviceProtocolMap", SN);
+					logger.d("upPropertyParse error");
 				}
 			}
 			else

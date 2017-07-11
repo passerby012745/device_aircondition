@@ -31,6 +31,7 @@ import com.szsbay.livehome.openlife.util.HttpRequest;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.SocketManager;
 import com.szsbay.livehome.socket.client.MobileSocketClientListener;
+import com.szsbay.livehome.util.StringUtils;
 import com.szsbay.livehome.util.Util;
 
 public class LivehomeDeviceDriver implements IIPDeviceDriver
@@ -311,7 +312,16 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				}
 				
 				if(deviceProtocolMap.containsKey(sn))
+				{
+					deviceProtocolMap.get(sn).removeDevice();
 					deviceProtocolMap.remove(sn);
+				}
+				
+				if(DeviceControl.devicesStatusInfo.containsKey(sn))
+					DeviceControl.devicesStatusInfo.remove(sn);
+				
+				if(DeviceControl.expectStatusInfo.containsKey(sn))
+					DeviceControl.expectStatusInfo.remove(sn);
 			}
 			
 			this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
@@ -374,10 +384,11 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 							this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
 						}
 							
-						logger.d("getDeviceBySnList({}) = {}. ",sn ,LivehomeDeviceDriver.this.dmService.getDeviceBySnList(new JSONArray().put(sn)).toString());//获取所有设备状态
+						printflong("getDeviceBySnList(" + sn + ')', dmService.getDeviceBySnList(new JSONArray().put(sn)).toString());//获取所有设备状态
 					}
 				}
-				logger.d("getDeviceByClass(hisenseKelon) = {}. ", LivehomeDeviceDriver.this.dmService.getDeviceByClass(DeviceProtocol.deviceName).toString());//获取所有设备状态
+				
+				printflong("getDeviceByClass(hisenseKelon)", dmService.getDeviceByClass(DeviceProtocol.deviceName).toString());//获取所有设备状态
 				
 				try
 				{
@@ -545,4 +556,20 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		}
 		return mac.toUpperCase();
 	}
+	
+	public static void printflong(String tag, String logs)
+	{
+		if(!StringUtils.isEmpty(logs))
+		{
+			int str_size = logs.length();
+			logger.d(tag);
+			for(int i=0; i<(str_size+511)/512; i++)
+			{
+				int currLen = (i+1)*512>str_size?str_size-i*512:512;
+				int endIndex=i*512+currLen;
+				logger.d("[{0}] [{1}]: {2}",i ,currLen, logs.substring(i*512, endIndex));
+			}
+		}
+	}
+	
 }

@@ -1,6 +1,11 @@
 package com.szsbay.livehome.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
+
+import com.huawei.smarthome.log.LogService;
+import com.huawei.smarthome.log.LogServiceFactory;
 
 /**
  * 日志输出控制类 (Description)
@@ -61,7 +66,7 @@ public class LogUtils
 	/**
      * 设备日志服务
 	 */
-//	private final static LogService logger = LogServiceFactory.getLogService(LogUtils.class);
+	private final static LogService logger = LogServiceFactory.getLogService(LogUtils.class);
 //	private final static LogService logger = null;
 	
 
@@ -89,11 +94,11 @@ public class LogUtils
 	{
 		if(!StringUtils.isEmpty(msg))
 		{
-			//if(null != logger)
-			//{
-				//logger.v(tag, msg);//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
-			//}
-			//else
+			if(null != logger)
+			{
+//				logger.d("{}, {}", tag, msg);//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
+			}
+			else
 			{
 				System.out.println("[" + tag + "] " + msg);
 			}
@@ -108,11 +113,11 @@ public class LogUtils
 	{
 		if(!StringUtils.isEmpty(msg))
 		{
-			//if(null != logger)
-			//{
-				//logger.v(mTag, msg);//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
-			//}
-			//else
+			if(null != logger)
+			{
+//				logger.d("{}",msg);//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
+			}
+			else
 			{
 				System.out.println("[" + mTag + "] " + msg);
 			}
@@ -127,11 +132,11 @@ public class LogUtils
 	{
 		if(!StringUtils.isEmpty(msg))
 		{
-			//if(null != logger)
-			//{
-				//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
-			//}
-			//else
+			if(null != logger)
+			{
+//				logger.d("{}", msg);//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
+			}
+			else
 			{
 				System.out.print("[" + mTag + "] " + msg);
 			}
@@ -145,11 +150,11 @@ public class LogUtils
 	{
 		if(!StringUtils.isEmpty(msg))
 		{
-			//if(null != logger)
-			//{
-				//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
-			//}
-			//else
+			if(null != logger)
+			{
+//				logger.d("{}", msg);//华为网关日志打印方式 logger.d(); logger.i(); logger.w(); logger.v();
+			}
+			else
 			{
 				System.out.print(msg);
 			}
@@ -443,4 +448,20 @@ public class LogUtils
 		e("error:" + String.format("0x%016X",value));
 	}
 	
+	public static void printflong(String tag,String logs)
+	{
+		if(!StringUtils.isEmpty(logs)){
+			for(int i=0;i<(logs.length()+511)/512;i++){
+				int currLen=(i+1)*512>logs.length()?logs.length()-i*512:512;
+				int endIndex=i*512+currLen;
+				logger.d( "["+i+"][ "+currLen+"]: "+logs.substring(i*512, endIndex));
+			}
+		}
+	}
+	
+	public static void printTrace(String tag,Exception e){
+		StringWriter errors = new StringWriter();
+		e.printStackTrace(new PrintWriter(errors));
+		printflong(tag,errors.toString());
+	}
 }
