@@ -277,6 +277,18 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			this.deviceService.reportDeviceOnline(sn, DeviceProtocol.deviceName);
 			devicesConfigMap.put(sn, data);
 			dataService.put(sn, data);
+			
+			String module = getdeviceModuleFromSn(sn);
+			int addr = getdeviceAddrFromSn(sn);
+			SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
+			if(null == deviceProtocolMap.get(sn))
+			{
+				Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,sn ,DeviceProtocol.deviceId ,(short)addr);
+				deviceProtocolMap.put(sn, device);
+			}
+			String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
+			logger.d("<onUserDeviceAdd> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
+			SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());//发送查询指令
 		}
 	}
 
@@ -320,8 +332,6 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				if(DeviceControl.devicesStatusInfo.containsKey(sn))
 					DeviceControl.devicesStatusInfo.remove(sn);
 				
-				if(DeviceControl.expectStatusInfo.containsKey(sn))
-					DeviceControl.expectStatusInfo.remove(sn);
 			}
 			
 			this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
@@ -471,7 +481,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			}
 		}
 	}
-
+	
 	/**
 	 * 判断本地设备配置表中是否存在当前设备
 	 * @param sn 设备唯一识别码
