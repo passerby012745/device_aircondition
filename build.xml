@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="rule_service" default="war" basedir=".">
-	<property name="warname" value="device_aircondition.war"/>
-		
+<project name="device_aircondition" default="war" basedir=".">
+	<property name="jarname" value="device_aircondition"/>
+	<property name="warname" value="device_aircondition"/>
 	<property name="lib.dir" value="WebContent/WEB-INF/lib"/>
 	<property name="src.dir" value="src"/>
 	
@@ -11,8 +11,8 @@
 	<property name="target.dir" value="target"/>
 	<property name="target.ver" value="1.8"/>
 	<property name="source.ver" value="1.8"/>
-	
-	<property name="mainclass" value="com.szsbay.livehome.openlife.aircondition.TestMain"/>
+	<property name="version" value="1.0.0"/>
+	<property name="mainclass" value="com.szsbay.livehome.util"/>
 	
 	<!-- 第三方jar包的路径 -->    
 	<path id="lib-classpath">    
@@ -22,22 +22,23 @@
 	</path>
 	
 	<!-- 1. 初始化工作，如创建目录等 -->  
-    <target name="init">
-        <mkdir dir="${build.dir}"/>  
-        <mkdir dir="${output.dir}"/>  
-        <mkdir dir="${classes.dir}/resource"/>  
-        <mkdir dir="${output.dir}/lib"/>
-    	<mkdir dir="${target.dir}"/>
-        <copy todir="${build.dir}">  
-            <fileset dir="${basedir}/WebContent">  
-                <include name="WEB-INF/**"/>  
-                <include name="**" />
-            	<exclude name="**/web.xml"/>
-            </fileset>  
-        </copy>
-    	
-    </target>   
-	<!-- 2. 编译 -->    
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<mkdir dir="${output.dir}"/>  
+		<mkdir dir="${classes.dir}/resource"/>  
+		<mkdir dir="${output.dir}/lib"/>
+		<mkdir dir="${target.dir}/lib"/>
+		<mkdir dir="${target.dir}"/>
+	</target>   
+	
+	<!-- 2. 清除 -->    
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${target.dir}" />
+	</target>
+	
+	<!-- 3. 编译 -->    
 	<target name="compile" depends="init">
 	    <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="on">
 	    	<compilerarg line="-encoding UTF-8"/>    
@@ -45,26 +46,64 @@
 	    </javac>    
 	</target>
 
-	<!-- 2. 编译 -->    
-	<target name="clean">
-		<delete dir="build" />
-		<delete dir="target" />
-	</target>
 	
-	<!-- 3. war -->
-	<target name="war" depends="clean,compile">
-		<war warfile="${target.dir}/${warname}" webxml="${basedir}/web.xml">
+	<!-- 4. 打包jar文件 -->    
+	<target name="jar" depends="clean,compile">    
+		<copy todir="${target.dir}/lib">    
+			<fileset dir="${lib.dir}"/>    
+		</copy>
+		
+		<!--Create a property containing all .jar files,    
+		prefix lib/, and seperated with a space-->    
+		<pathconvert property="mf.classpath" pathsep=" ">    
+			<mapper>    
+				<chainedmapper>    
+					<!-- jar包文件只留文件名，去掉目录信息 -->    
+					<flattenmapper/>    
+					<!-- add lib/ prefix -->    
+					<globmapper from="*" to="lib/*"/>    
+				</chainedmapper>    
+			</mapper>    
+			<path refid="lib-classpath"/>    
+		</pathconvert>    
+		
+		<!-- jar文件的输出路径 -->    
+		<jar destfile="${target.dir}/${jarname}.jar" basedir="${classes.dir}">    
+			<manifest>    
+				<attribute name="Main-class" value="${mainclass}"/>    
+				<attribute name="Class-Path" value="${mf.classpath}"/>    
+			</manifest>    
+		</jar>
+		<copy tofile="${target.dir}/${jarname}-${version}.jar"  file="${target.dir}/${jarname}.jar">
+		</copy>
+	</target>
+
+	<!-- 5. war init-->  
+	<target name="warinit">
+		<copy todir="${build.dir}">  
+	            <fileset dir="${basedir}/WebContent">  
+	                <include name="WEB-INF/**"/>  
+	                <include name="**" />
+	            	<exclude name="**/web.xml"/>
+	            </fileset>  
+	        </copy>
+	</target>   
+	<!-- 6. war -->
+	<target name="war" depends="clean,compile,warinit">
+		<war warfile="${target.dir}/${warname}.war" webxml="${basedir}/web.xml">
 			<lib dir="${output.dir}/lib">  
 				<include name="**" />  
-        	</lib>  
-	        <classes dir="${classes.dir}"/>
-	        <fileset dir="${build.dir}">
-	        	<include name="***.*" />
-	        	<include name="livehome/**" />
-	        	<include name="resource/**" />
-	        	<include name="META-INF/**" />
-	        	<exclude name="**/web.xml"/>
-	        </fileset>
-        </war>   
+	        	</lib>  
+		        <classes dir="${classes.dir}"/>
+		        <fileset dir="${build.dir}">
+		        	<include name="***.*" />
+		        	<include name="livehome/**" />
+		        	<include name="resource/**" />
+		        	<include name="META-INF/**" />
+		        	<exclude name="**/web.xml"/>
+		        </fileset>
+        	</war>
+		<copy tofile="${target.dir}/${warname}_${version}.war"  file="${target.dir}/${warname}.war">
+		</copy>
 	</target>
 </project>
