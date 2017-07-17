@@ -63,6 +63,9 @@
 				<enum title="AIR_CONDITIONER_SLEEP_MODE_ON">on</enum>
 				<enum title="AIR_CONDITIONER_SLEEP_MODE_OFF">off</enum>
 			</property>
+			<!-- 时间戳-->
+			<property name="timestamp" type="long" description="the timestamp of status" title="AIR_CONDITIONER_PROPERTY_LAST_UPDATED_TITLE">
+			</property>
 		</properties>
 		
 		<!-- 自定义action动作，可选 -->
@@ -222,11 +225,12 @@
 		<view>
 			<!-- icon:在线设备图标路径
 				 icon-offline:离线设备图标路径
+				 device-status-entry:设备基本信息页面路径
 				 device-control-entry:设备控制页面路径
 				 device-guide-entry:设备安装指南页面路径 -->
 			<icon>device/images/icon.png</icon>
 			<icon-offline>device/images/icon_offline.png</icon-offline>
-			<device-control-entry>device/index.html</device-control-entry>
+			<device-control-entry>device/dev_control.html</device-control-entry>
 			<device-guide-entry>device/install_guide.html</device-guide-entry>
 		</view>
 

@@ -154,8 +154,8 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	public JSONObject doAction(String sn, String action, JSONObject parameter, String deviceClass) throws ActionException
 	{
 		logger.d("Begin doAction, sn={}, action={}, params={}, deviceClass={}", sn, action, parameter, deviceClass);
-		
-		if(true)
+	
+		if(deviceClass.equals(DeviceProtocol.deviceName) || deviceClass.equals("airConditioner"))
 		{
 			String SN = sn.toUpperCase();
 			
@@ -204,10 +204,14 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 					Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,SN ,DeviceProtocol.deviceId ,(short)getdeviceAddrFromSn(SN));
 					deviceProtocolMap.put(SN, device);
 				}
-				DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, deviceOrdersInfo.get(SN));
+				JSONObject result = DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, deviceOrdersInfo.get(SN));
+				result.put("lastUpdated", System.currentTimeMillis());//时间戳,最后更新
+				return result;
 			}
 			else//<标准>
 			{
+				DeviceControl.reportFlagInfo.put(SN, 1);//接收到设备设置指令时,屏蔽设备状态查询和上报
+				
 				if(cacheOrderFlag)
 				{
 					if(getDeviceFromLocalMap(SN))
@@ -231,7 +235,9 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 							Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,SN ,DeviceProtocol.deviceId ,(short)getdeviceAddrFromSn(SN));
 							deviceProtocolMap.put(SN, device);
 						}
-						DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, action, parameter);
+						JSONObject result = DeviceControl.parseAction(deviceProtocolMap.get(SN), SN, action, parameter);
+						result.put("timestamp", System.currentTimeMillis());//时间戳,最后更新
+						return result;
 					}
 					else
 					{
@@ -242,7 +248,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		}
 		else
 		{
-			logger.d("illegal deviceClass = {}", deviceClass);
+			logger.d("local = airConditioner/{}, illegal deviceClass = {}", DeviceProtocol.deviceName, deviceClass);
 		}
 
 		return null;
@@ -280,17 +286,27 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			devicesConfigMap.put(sn, data);
 			dataService.put(sn, data);
 			
-			String module = getdeviceModuleFromSn(sn);
-			int addr = getdeviceAddrFromSn(sn);
-			SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
-			if(null == deviceProtocolMap.get(sn))
+			if(sn.startsWith("AEH-W4A1-"))
 			{
-				Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,sn ,DeviceProtocol.deviceId ,(short)addr);
-				deviceProtocolMap.put(sn, device);
+				String module = getdeviceModuleFromSn(sn);
+				int addr = getdeviceAddrFromSn(sn);
+				SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
+				if(null == deviceProtocolMap.get(sn))
+				{
+					Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,sn ,DeviceProtocol.deviceId ,(short)addr);
+					deviceProtocolMap.put(sn, device);
+				}
+				if(null == DeviceControl.reportFlagInfo.get(sn))
+				{
+					DeviceControl.reportFlagInfo.put(sn, 0);
+				}
+				if(0 == DeviceControl.reportFlagInfo.get(sn))
+				{
+					String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
+					logger.d("<onUserDeviceAdd> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
+					SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());//发送查询指令
+				}
 			}
-			String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
-			logger.d("<onUserDeviceAdd> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
-			SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());//发送查询指令
 		}
 	}
 
@@ -334,6 +350,8 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				if(DeviceControl.devicesStatusInfo.containsKey(sn))
 					DeviceControl.devicesStatusInfo.remove(sn);
 				
+				if(DeviceControl.reportFlagInfo.containsKey(sn))
+					DeviceControl.reportFlagInfo.remove(sn);
 			}
 			
 			this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
@@ -387,20 +405,34 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 								deviceProtocolMap.put(sn, device);
 							}
 							
-							String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
-							logger.d("<ReportOnThread> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
-							SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());//发送查询指令
+							if(null == DeviceControl.reportFlagInfo.get(sn))
+							{
+								DeviceControl.reportFlagInfo.put(sn, 0);
+							}
+							
+							if(0 == DeviceControl.reportFlagInfo.get(sn))
+							{
+								String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
+								logger.d("<ReportOnThread> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
+								SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());
+							}
+							else
+							{
+								DeviceControl.reportFlagInfo.put(sn, 0);
+							}
 						}
 						else
 						{
 							this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
 						}
 							
-						printflong("getDeviceBySnList(" + sn + ')', dmService.getDeviceBySnList(new JSONArray().put(sn)).toString());//获取所有设备状态
+						printflong("getDeviceBySnList(" + sn + ')', dmService.getDeviceBySnList(new JSONArray().put(sn)).toString());
 					}
 				}
 				
-				printflong("getDeviceByClass(hisenseKelon)", dmService.getDeviceByClass(DeviceProtocol.deviceName).toString());//获取所有设备状态
+				printflong("getDeviceByClass(" + DeviceProtocol.deviceName +')', dmService.getDeviceByClass(DeviceProtocol.deviceName).toString());
+				
+				printflong("getDeviceList()", dmService.getDeviceList().toString());
 				
 				try
 				{
@@ -579,7 +611,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			{
 				int currLen = (i+1)*512>str_size?str_size-i*512:512;
 				int endIndex=i*512+currLen;
-				logger.d("[{0}] [{1}]: {2}",i ,currLen, logs.substring(i*512, endIndex));
+				logger.d("[{0}L] [{1}C]: {2}",i ,currLen, logs.substring(i*512, endIndex));
 			}
 		}
 	}
