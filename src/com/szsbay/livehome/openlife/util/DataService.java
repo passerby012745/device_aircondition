@@ -63,9 +63,7 @@ public class DataService
         ServerAddress serverAddress =new ServerAddress();
         serverAddress.setPort(configObject.optInt("port",0));
         serverAddress.setAddress(configObject.optString("address",""));
-        serverAddress.setDevice_url(configObject.optString("device_url",""));
-        serverAddress.setRoom_url(configObject.optString("room_url",""));
-        serverAddress.setScene_url(configObject.optString("scene_url",""));
+
         return serverAddress;
     }
     /**
@@ -85,9 +83,7 @@ public class DataService
         JSONObject paramObject= new JSONObject();
         paramObject.put("port",serverAddress.getPort());
         paramObject.put("address",serverAddress.getAddress());
-        paramObject.put("device_url",serverAddress.getDevice_url());
-        paramObject.put("room_url",serverAddress.getRoom_url());
-        paramObject.put("scene_url",serverAddress.getScene_url());
+
 		dataService.put(CONFIGURATION_SERVER, paramObject);
     }
 }
