@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!-- brand:品牌名
-	 manufacturer:厂商名  用于内部逻辑处理
-	 brand-resource:品牌的资源名 
-	 manufacturer-resource:厂商的资源名 用于界面显示 
+<!-- brand:品牌名,用于内部逻辑处理
+	 manufacturer:厂商名,用于内部逻辑处理
+	 brand-resource:品牌的资源名,用于界面显示 
+	 manufacturer-resource:厂商的资源名,用于界面显示 
 	 resource:国际化资源文件路径 -->
 <products brand="LIVE_HOME" 
 		  manufacturer="SMART_BAY" 
@@ -38,33 +38,39 @@
 				<enum title="AIR_CONDITIONER_AIR_QUALITY_BAD">bad</enum>
 				<enum title="AIR_CONDITIONER_AIR_QUALITY_EXBAD">exbad</enum>
 			</property>
+			
 			<!-- 上下风-->
 			<property name="verticalWind" type="enum" description="the status of vertical wind direction" title="AIR_CONDITIONER_PROPERTY_VERTICAL_WIND_STATE_TITLE">
 				<enum title="AIR_CONDITIONER_VERTICAL_WIND_SCAN">scan</enum>
 				<enum title="AIR_CONDITIONER_VERTICAL_WIND_FIX">fix</enum>
 			</property>
+			
 			<!-- 左右风-->
 			<property name="horizonWind" type="enum" description="the status of horizon wind direction" title="AIR_CONDITIONER_PROPERTY_HORIZON_WIND_STATE_TITLE">
 				<enum title="AIR_CONDITIONER_HORIZON_WIND_SCAN">scan</enum>
 				<enum title="AIR_CONDITIONER_HORIZON_WIND_FIX">fix</enum>
 			</property>
+			
 			<!-- 电热-->
 			<property name="electricHeat" type="enum" description="the status of electric heat" title="AIR_CONDITIONER_PROPERTY_ELECTRIC_HEAT_STATE_TITLE">
 				<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_ON">on</enum>
 				<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_OFF">off</enum>
 			</property>
+			
 			<!-- 强力模式-->
 			<property name="strongMode" type="enum" description="the status of normal strong mode" title="AIR_CONDITIONER_PROPERTY_STRONG_MODE_TITLE">
 				<enum title="AIR_CONDITIONER_STRONGE_MODE_ON">on</enum>
 				<enum title="AIR_CONDITIONER_STRONGE_MODE_OFF">off</enum>
 			</property>
+			
 			<!-- 睡眠模式-->
 			<property name="sleepMode" type="enum" description="the status of normal sleep mode" title="AIR_CONDITIONER_PROPERTY_SLEEP_MODE_TITLE">
 				<enum title="AIR_CONDITIONER_SLEEP_MODE_ON">on</enum>
 				<enum title="AIR_CONDITIONER_SLEEP_MODE_OFF">off</enum>
 			</property>
+			
 			<!-- 时间戳-->
-			<property name="timestamp" type="long" description="the timestamp of status" title="AIR_CONDITIONER_PROPERTY_LAST_UPDATED_TITLE">
+			<property name="timestamp" type="long" description="the timestamp of status" title="AIR_CONDITIONER_PROPERTY_TIMESTAMP_TITLE">
 			</property>
 		</properties>
 		

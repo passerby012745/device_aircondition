@@ -161,13 +161,29 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			
 			if(action.equals("configCDN"))//<非标>,配置CDN
 			{
-				if(parameter.has("ip"))
+				if(parameter.has("ip") && parameter.has("port"))
 				{
-					cdnServerIp = parameter.getString("ip");
-				}
-				if(parameter.has("port"))
-				{
-					cdnServerPort = parameter.getInt("port");
+					if(cdnServerIp != parameter.getString("ip") || cdnServerPort != parameter.getInt("port"))
+					{
+						if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
+						{
+							for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
+							{
+								String temp_sn = entry.getKey();
+								if(!temp_sn.startsWith("AEH-W4A1-"))
+									continue;
+								
+								String module = getdeviceModuleFromSn(temp_sn);
+								int addr = getdeviceAddrFromSn(temp_sn);
+								SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
+								SocketManager.getInstance().closeMobileClient(module);
+							}
+						}
+						
+						logger.d("<doAction> config cdn from {}:{} to {}:{}", cdnServerIp, cdnServerPort, parameter.getString("ip"), parameter.getInt("port"));
+						cdnServerIp = parameter.getString("ip");
+						cdnServerPort = parameter.getInt("port");
+					}
 				}
 			}
 			else if(action.equals("addDevice"))//<非标>,添加设备
@@ -394,7 +410,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 						int addr = getdeviceAddrFromSn(sn);
 						SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
 						boolean isOnline = SocketManager.getInstance().getMobileDeviceOnlineStatus(module);
-						logger.d("<ReportOnThread> sn = {}, module = {}, online = {}", sn, module , isOnline);
+						logger.d("<ReportOnThread> sn = {}, module = {}, CDN = {}:{}, online = {}", sn, module, cdnServerIp, cdnServerPort, isOnline);
 						if(isOnline)
 						{
 							this.deviceService.reportDeviceOnline(sn, DeviceProtocol.deviceName);

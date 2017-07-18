@@ -373,7 +373,7 @@ public class DeviceControl implements ISocketParser
 		switch(deviceProtocol.getAirConditionAirVolume())
 		{
 			case 0:windSpeed = "auto";		break;//自动风
-			case 1:windSpeed = "mute";	break;//静音风
+			case 1:windSpeed = "mute";		break;//静音风
 			case 2:windSpeed = "slow";		break;//低风
 			case 3:windSpeed = "medium";	break;//中风
 			case 4:windSpeed = "fast";		break;//高风
@@ -507,7 +507,7 @@ public class DeviceControl implements ISocketParser
 			devSta_js.put("temperature", indoorTemperature);
 		}
 		
-		JSONObject pm25SensorStatus = new JSONObject();//华为标准pm2.5传感器属性集
+		JSONObject pm25SensorStatus = new JSONObject();//华为标准PM2.5传感器属性集
 		if(indoorPm25 != devSta_js.getInt("particulates"))
 		{
 			pm25SensorStatus.put("particulates", indoorPm25);
