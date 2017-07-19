@@ -87,14 +87,12 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	/**
 	 * CDN服务器ip地址
 	 */
-	//public static String cdnServerIp = "203.195.160.110";
-	public static String cdnServerIp = "192.168.8.1";
+	public static String cdnServerIp = "203.195.160.110";
 	
 	/**
 	 * CDN服务器端口号
 	 */
-	//public static int cdnServerPort = 7820;
-	public static int cdnServerPort = 7821;
+	public static int cdnServerPort = 7820;
 	
 	/**
 	 * 虚拟设备SN
