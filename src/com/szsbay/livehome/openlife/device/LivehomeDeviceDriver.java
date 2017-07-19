@@ -160,7 +160,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			{
 				if(parameter.has("ip") && parameter.has("port"))
 				{
-					if(cdnServerIp != parameter.getString("ip") || cdnServerPort != parameter.getInt("port"))
+					if(!cdnServerIp.equals(parameter.optString("ip", "")) || cdnServerPort != parameter.getInt("port"))
 					{
 //						if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
 //						{
@@ -188,6 +188,10 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 						{
 							e.printStackTrace();
 						}
+					}
+					else
+					{
+						logger.d("<doAction> config cdn is not changed");
 					}
 				}
 			}
