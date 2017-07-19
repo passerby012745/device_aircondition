@@ -32,7 +32,6 @@ import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.SocketManager;
 import com.szsbay.livehome.socket.client.MobileSocketClientListener;
 import com.szsbay.livehome.util.StringUtils;
-import com.szsbay.livehome.util.Util;
 
 public class LivehomeDeviceDriver implements IIPDeviceDriver
 {
@@ -163,32 +162,32 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				{
 					if(cdnServerIp != parameter.getString("ip") || cdnServerPort != parameter.getInt("port"))
 					{
-						if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
-						{
-							for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
-							{
-								String temp_sn = entry.getKey();
-								if(!temp_sn.startsWith("AEH-W4A1-"))
-									continue;
-								
-								String module = getdeviceModuleFromSn(temp_sn);
-								int addr = getdeviceAddrFromSn(temp_sn);
-								SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
-								SocketManager.getInstance().closeMobileClient(module);
-							}
-							try
-							{
-								TimeUnit.SECONDS.sleep(10);
-							} 
-							catch(InterruptedException e) 
-							{
-								e.printStackTrace();
-							}
-						}
-						
+//						if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
+//						{
+//							for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
+//							{
+//								String temp_sn = entry.getKey();
+//								if(!temp_sn.startsWith("AEH-W4A1-"))
+//									continue;
+//								
+//								String module = getdeviceModuleFromSn(temp_sn);
+//								int addr = getdeviceAddrFromSn(temp_sn);
+//								SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
+//								SocketManager.getInstance().closeMobileClient(module);
+//							}
+//						}
+						SocketManager.getInstance().closeAllMobileClient();
 						logger.d("<doAction> config cdn from {}:{} to {}:{}", cdnServerIp, cdnServerPort, parameter.getString("ip"), parameter.getInt("port"));
 						cdnServerIp = parameter.getString("ip");
 						cdnServerPort = parameter.getInt("port");
+						try
+						{
+							TimeUnit.SECONDS.sleep(10);
+						} 
+						catch(InterruptedException e) 
+						{
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -484,60 +483,6 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		return familyId;
 	}
 
-	/**
-	 * 获取设备属性值
-	 * @param sn 设备唯一识别码
-	 * @param key 设备属性名称
-	 * @return !null:该设备的属性值 ,null:不存在该设备的属性
-	 */
-	public static String getDeviceValue(String sn, String key) 
-	{
-		if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
-		{
-			for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
-			{
-				if (null != sn && sn.equals(entry.getKey())) 
-				{
-					ConcurrentHashMap<String, String> deviceInfo = Util.jsonToHashMap(entry.getValue());
-					if (deviceInfo.containsKey(key)) 
-					{
-						return deviceInfo.get(key);
-					}
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * 设置设备属性值
-	 * @param sn 设备唯一识别码
-	 * @param parameter 设备的属性json
-	 */
-	public static void setDeviceValue(String sn, JSONObject parameter) 
-	{
-		if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
-		{
-			JSONObject json = null;
-			for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
-			{
-				if (null != sn && sn.equals(entry.getKey()))
-				{
-					json = entry.getValue();
-					Iterator<String> keys = parameter.keys();
-					while (keys.hasNext()) 
-					{
-						String key = keys.next();
-						json.put(key, parameter.get(key));
-					}
-					logger.d("<setDeviceValue> sn = {}, json = {}", sn , json.toString());
-					devicesConfigMap.put(sn, json);
-					break;
-				}
-			}
-		}
-	}
-	
 	/**
 	 * 判断本地设备配置表中是否存在当前设备
 	 * @param sn 设备唯一识别码
