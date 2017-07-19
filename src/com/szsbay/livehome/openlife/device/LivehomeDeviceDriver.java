@@ -162,22 +162,10 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				{
 					if(!cdnServerIp.equals(parameter.optString("ip", "")) || cdnServerPort != parameter.getInt("port"))
 					{
-//						if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
-//						{
-//							for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
-//							{
-//								String temp_sn = entry.getKey();
-//								if(!temp_sn.startsWith("AEH-W4A1-"))
-//									continue;
-//								
-//								String module = getdeviceModuleFromSn(temp_sn);
-//								int addr = getdeviceAddrFromSn(temp_sn);
-//								SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
-//								SocketManager.getInstance().closeMobileClient(module);
-//							}
-//						}
+						logger.d("<doAction> -1- close all device sockets");
 						SocketManager.getInstance().closeAllMobileClient();
-						logger.d("<doAction> config cdn from {}:{} to {}:{}", cdnServerIp, cdnServerPort, parameter.getString("ip"), parameter.getInt("port"));
+						
+						logger.d("<doAction> -2- shift cdn from {}:{} to {}:{}", cdnServerIp, cdnServerPort, parameter.getString("ip"), parameter.getInt("port"));
 						cdnServerIp = parameter.getString("ip");
 						cdnServerPort = parameter.getInt("port");
 						try
@@ -188,10 +176,26 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 						{
 							e.printStackTrace();
 						}
+						
+						logger.d("<doAction> -3- init all device sockets");
+						if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
+						{
+							for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
+							{
+								String temp_sn = entry.getKey();
+								if(!temp_sn.startsWith("AEH-W4A1-"))
+									continue;
+								
+								String module = getdeviceModuleFromSn(temp_sn);
+								int addr = getdeviceAddrFromSn(temp_sn);
+								SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
+								logger.d("<doAction> init device socket after shift cdn, sn = {} ,new cdn = {}:{}", temp_sn, cdnServerIp, cdnServerPort);
+							}
+						}
 					}
 					else
 					{
-						logger.d("<doAction> config cdn is not changed");
+						logger.d("<doAction> cdn info is not changed, {}:{}", cdnServerIp, cdnServerPort );
 					}
 				}
 			}
@@ -358,7 +362,6 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				if(1 == snList.size())
 				{
 					logger.d("make device <module = {}> return  to AP-Mode by 'AT+WFCLS'", module);
-					SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
 					SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
 				}
 				else
@@ -417,7 +420,6 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 						
 						String module = getdeviceModuleFromSn(sn);
 						int addr = getdeviceAddrFromSn(sn);
-						SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
 						boolean isOnline = SocketManager.getInstance().getMobileDeviceOnlineStatus(module);
 						logger.d("<ReportOnThread> sn = {}, module = {}, CDN = {}:{}, online = {}", sn, module, cdnServerIp, cdnServerPort, isOnline);
 						if(isOnline)
