@@ -176,6 +176,14 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 								SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
 								SocketManager.getInstance().closeMobileClient(module);
 							}
+							try
+							{
+								TimeUnit.SECONDS.sleep(10);
+							} 
+							catch(InterruptedException e) 
+							{
+								e.printStackTrace();
+							}
 						}
 						
 						logger.d("<doAction> config cdn from {}:{} to {}:{}", cdnServerIp, cdnServerPort, parameter.getString("ip"), parameter.getInt("port"));
