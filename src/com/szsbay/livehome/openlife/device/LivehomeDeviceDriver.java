@@ -150,9 +150,9 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public JSONObject doAction(String sn, String action, JSONObject parameter, String deviceClass) throws ActionException
 	{
-		logger.d("Begin doAction, sn={}, action={}, params={}, deviceClass={}", sn, action, parameter, deviceClass);
+		logger.d("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, parameter, deviceClass);
 	
-		if(deviceClass.equals(DeviceProtocol.deviceName) || deviceClass.equals("airConditioner"))
+		if(deviceClass.equals(DeviceProtocol.deviceName))
 		{
 			String SN = sn.toUpperCase();
 			
@@ -277,7 +277,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		}
 		else
 		{
-			logger.d("local = airConditioner/{}, illegal deviceClass = {}", DeviceProtocol.deviceName, deviceClass);
+			logger.d("Local driver plug-in = {}, input illegal deviceClass = {}", DeviceProtocol.deviceName, deviceClass);
 		}
 
 		return null;
@@ -406,7 +406,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			SocketManager.getInstance().setMobileClientListener(new MobileSocketClientListener(deviceControl));
 			while (!destroyed.get()) 
 			{
-				logger.d("<ReportOnThread> ====================> [size={}], devicesConfigMap = {}", devicesConfigMap.size(), devicesConfigMap);
+				logger.d("<ReportOnThread:{}> ====================> [size={}], devicesConfigMap = {}", DeviceProtocol.deviceName, devicesConfigMap.size(), devicesConfigMap);
 				
 				this.deviceService.reportDeviceOnline(falseDeviceSn, DeviceProtocol.deviceName);
 				

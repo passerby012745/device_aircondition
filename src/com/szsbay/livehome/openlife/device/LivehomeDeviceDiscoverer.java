@@ -114,7 +114,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 		{
 			while(!destroyed.get()) 
 			{
-				logger.d("<DiscoverThread> ............. [size={}], devicesWaitMap = {}", devicesWaitMap.size(), devicesWaitMap);
+				logger.d("<DiscoverThread:{}> --------------------> [size={}], devicesWaitMap = {}", DeviceProtocol.deviceName, devicesWaitMap.size(), devicesWaitMap);
 				
 				for (Iterator<String> it = devicesWaitMap.keySet().iterator(); it.hasNext(); ) 
 				{
