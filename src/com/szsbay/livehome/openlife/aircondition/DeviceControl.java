@@ -2,6 +2,7 @@ package com.szsbay.livehome.openlife.aircondition;
 
 import java.util.HashMap;
 import java.util.Iterator;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,6 +13,7 @@ import com.szsbay.livehome.openlife.device.LivehomeDeviceDriver;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.ISocketParser;
 import com.szsbay.livehome.socket.SocketManager;
+import com.szsbay.livehome.util.LogUtils;
 
 public class DeviceControl implements ISocketParser
 {
@@ -574,7 +576,7 @@ public class DeviceControl implements ISocketParser
 			if(null != device)
 			{
 				String j_str = device.upPropertyParse(str);
-				LivehomeDeviceDriver.printflong("return data j_str", j_str);
+				LogUtils.printflong("return data j_str", j_str);
 				
 				if(null != j_str)
 				{

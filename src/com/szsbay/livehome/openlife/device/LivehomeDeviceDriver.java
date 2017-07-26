@@ -31,11 +31,11 @@ import com.szsbay.livehome.mqtt.MqttManager;
 import com.szsbay.livehome.mqtt.MqttParse;
 import com.szsbay.livehome.openlife.aircondition.DeviceControl;
 import com.szsbay.livehome.openlife.aircondition.DeviceProtocol;
-import com.szsbay.livehome.openlife.util.HttpRequest;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.socket.SocketManager;
 import com.szsbay.livehome.socket.client.MobileSocketClientListener;
 import com.szsbay.livehome.util.LogUtils;
+import com.szsbay.livehome.util.MacUtils;
 import com.szsbay.livehome.util.StringUtils;
 
 public class LivehomeDeviceDriver implements IIPDeviceDriver
@@ -92,7 +92,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	private ReportOnThread reportOnThread = null;
 	
 	/**
-	 * CDN服务器ip地址
+	 * CDN服务器地址 
 	 */
 	public static String cdnServerIp = "203.195.160.110";
 	
@@ -114,7 +114,8 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public void setDeviceService(IDeviceService deviceService)
 	{
-		logger.d("<LivehomeDeviceDriver:setDeviceService>");
+		//系统调用驱动，安装设备管理服务
+		logger.d("<setDeviceService>");
 		this.deviceService = deviceService;
 	}
 	
@@ -123,14 +124,14 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	{
 		try 
 		{
-			logger.d("<LivehomeDeviceDriver:init> ......");
+			logger.d("<init>");
 			isExit=false;
 			SocketManager.getInstance().setMobileClientListener(new MobileSocketClientListener(new DeviceControl()));
 			
-			logger.d("<LivehomeDeviceDriver:init -1-> launch device service");
+			logger.d("<init -1-> launch device service");
 			DeviceControl.deviceService = this.deviceService;
 			
-			logger.d("<LivehomeDeviceDriver:init -2-> check devicesConfigMap");
+			logger.d("<init -2-> check devicesConfigMap");
 			if (null != dataService)
 			{
 				devicesConfigMap = (ConcurrentHashMap<String, JSONObject>)dataService.list();
@@ -142,32 +143,32 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				logger.d("create devicesConfigMap by user, devicesConfigMap = {}", devicesConfigMap.toString());
 			}
 			
-			logger.d("<LivehomeDeviceDriver:init -3-> launch device online status report thread");
+			logger.d("<init -3-> launch device online status report thread");
 			if (null == reportOnThread) 
 			{
 				reportOnThread = new ReportOnThread(this.deviceService);
-				reportOnThread.setName("airCondition report thread");
+				reportOnThread.setName(clientid+" report thread");
 				reportOnThread.start(); 
 			}
 			
 			
 			String mqttserver;
-			String routeMac=getMacByIp("192.168.8.1");
-			logger.d("<LivehomeDeviceDriver:init -4-> route {} for livehome",routeMac);
+			String routeMac=MacUtils.getMacByIp("192.168.8.1");
+			logger.d("<init -4-> route {} for livehome",routeMac);
 			topicName="family_" + routeMac;
 	        if(SZSBAYROUTE.contains(routeMac)){
 	        	mqttserver=RD_SERVER_ADDRESS;
 			}else{
 				mqttserver=SERVER_ADDRESS;
 			}
-	        logger.d("<LivehomeDeviceDriver:init -5-> connect {}","tcp://" + mqttserver + ":1883");
-	        logger.d("<LivehomeDeviceDriver:init -6-> clientid {} ",clientid);
-	        logger.d("<LivehomeDeviceDriver:init -7-> topic {}",topicName);
+	        logger.d("<init -5-> connect {}","tcp://" + mqttserver + ":1883");
+	        logger.d("<init -6-> clientid {} ",clientid);
+	        logger.d("<init -7-> topic {}",topicName);
 	        
 		    MqttManager.getInstance().setMqttConnectListener(new DeviceMqttChannelListener(new MqttParse(this,clientid)));
 	        MqttManager.getInstance().creatMqttClient("tcp://" + mqttserver + ":1883", clientid, "device", "szsbay2017");
 	        MqttManager.getInstance().mqttClientSubscribe(clientid, topicName, 2);
-	        logger.d("<LivehomeDeviceDriver:init -8-> finish");
+	        logger.d("<init -8-> finish");
 	        
 		}catch (Exception e) {
 			LogUtils.printTrace(DeviceProtocol.deviceName+"<init> Trace", e);
@@ -313,8 +314,9 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public void destroy()
 	{
+		// 销毁对象
 		isExit=true;
-		logger.d("<LivehomeDeviceDriver:destroy> ......");
+		logger.d("<destroy>");
 		try
 		{
 			if(!reportOnThread.isDestroy()) 
@@ -479,13 +481,13 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 							this.deviceService.reportDeviceOffline(sn, DeviceProtocol.deviceName);
 						}
 							
-						printflong("getDeviceBySnList(" + sn + ')', dmService.getDeviceBySnList(new JSONArray().put(sn)).toString());
+						LogUtils.printflong("getDeviceBySnList(" + sn + ')', dmService.getDeviceBySnList(new JSONArray().put(sn)).toString());
 					}
 				}
 				
-				printflong("getDeviceByClass(" + DeviceProtocol.deviceName +')', dmService.getDeviceByClass(DeviceProtocol.deviceName).toString());
+				LogUtils.printflong("getDeviceByClass(" + DeviceProtocol.deviceName +')', dmService.getDeviceByClass(DeviceProtocol.deviceName).toString());
 				
-				printflong("getDeviceList()", dmService.getDeviceList().toString());
+				LogUtils.printflong("getDeviceList()", dmService.getDeviceList().toString());
 				
 				try
 				{
@@ -571,48 +573,6 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		else
 		{
 			return sn.substring(0, index);
-		}
-	}
-	
-	/**
-	 * 根据ip地址转换为mac地址
-	 * @param ip
-	 * @return
-	 */
-	public static String getMacByIp(String ip) 
-	{
-		String mac = null;
-		byte[] addr = new byte[4];
-		int index = 0;
-		for (String retval : ip.split("\\.", 4)) 
-		{
-			addr[index++] = (byte) Integer.parseInt(retval);
-		}
-
-		try //获取华为网关的MAC地址
-		{
-			InetAddress a = InetAddress.getByAddress(addr);
-			mac = HttpRequest.getLocalMac(a);
-		} 
-		catch (UnknownHostException | SocketException e1) 
-		{
-			e1.printStackTrace();
-		}
-		return mac.toUpperCase();
-	}
-	
-	public static void printflong(String tag, String logs)
-	{
-		if(!StringUtils.isEmpty(logs))
-		{
-			int str_size = logs.length();
-			logger.d(tag);
-			for(int i=0; i<(str_size+511)/512; i++)
-			{
-				int currLen = (i+1)*512>str_size?str_size-i*512:512;
-				int endIndex=i*512+currLen;
-				logger.d("[{0}L] [{1}C]: {2}",i ,currLen, logs.substring(i*512, endIndex));
-			}
 		}
 	}
 	
