@@ -177,9 +177,9 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public JSONObject doAction(String sn, String action, JSONObject parameter, String deviceClass) throws ActionException
 	{
-		logger.d("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, parameter, deviceClass);
+		logger.d("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, null!=parameter?parameter.toString():"", deviceClass);
 	
-		if(deviceClass.equals(DeviceProtocol.deviceName))
+		if(null!=deviceClass && deviceClass.equals(DeviceProtocol.deviceName))
 		{
 			String SN = sn.toUpperCase();
 			
