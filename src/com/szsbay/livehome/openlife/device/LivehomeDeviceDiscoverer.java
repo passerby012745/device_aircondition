@@ -33,12 +33,12 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 	 * 设备发现等待表
 	 */
 	private static ConcurrentHashMap<String, JSONObject> devicesWaitMap = new ConcurrentHashMap<String, JSONObject>();
-
+	boolean isExit=false;
 	@Override
 	public void init()
 	{
 		logger.d("<LivehomeDeviceDiscoverer:init> ......");
-
+		isExit=false;
 		discoverThread = new DiscoverThread(this.deviceService);
 		discoverThread.setName("airCondition discover thread");
 		discoverThread.start();
@@ -48,6 +48,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 	public void destroy()
 	{
 		logger.d("<LivehomeDeviceDiscoverer:destroy> ......");
+		isExit=true;
 		try
 		{
 			if(!discoverThread.isDestroy()) 
@@ -112,7 +113,7 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 		@Override
 		protected void onRun() 
 		{
-			while(!destroyed.get()) 
+			while(!isExit && !destroyed.get()) 
 			{
 				logger.d("<DiscoverThread:{}> --------------------> [size={}], devicesWaitMap = {}", DeviceProtocol.deviceName, devicesWaitMap.size(), devicesWaitMap);
 				
@@ -147,6 +148,8 @@ public class LivehomeDeviceDiscoverer implements IDeviceDiscoverer
 					e.printStackTrace();
 				}
 			}
+			logger.d("<DiscoverThread:>exit!!!");
+			
 		}
 	}
 
