@@ -33,7 +33,7 @@ var _connectTimeout = "40";
 var _connectType = "TEXT"; 
 
 //var _cdnAddress = "cdn1.topfuturesz.com"; 
-var _cdnAddress = "203.195.160.110"; 
+var _cdnAddress = "192.168.8.1";//"203.195.160.110"; 
 //var _cdnAddress = null; 
 var _devCdnPort = "5820"
 

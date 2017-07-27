@@ -82,10 +82,7 @@ public class DeviceProtocol
 	
 	public DeviceProtocol(String json_string)
 	{
-		
 		JSONObject json_obj = new JSONObject(json_string);
-//		{"sub":0,"cmd":102,"value":[{"102_0_WindSpeedMode":0},{"102_0_AirVolume":2},{"102_0_SleepMode":0},{"102_0_WindDirectionSwitch":0},{"102_0_LaunchSwitch":1},{"102_0_WorkMode":2},{"102_0_IndoorSetTemp":30},{"102_0_IndoorCurrentTemp":-20},{"102_0_IndoorPipeTemp":-20},{"102_0_IndoorSetHumi":128},{"102_0_IndoorCurrentHumi":128},{"102_0_RecvFeelIndoorTemp":-128},{"102_0_FeelControl":0},{"102_0_FeelIndoorTempOffset":0},{"102_0_TempDisplayMode":0},{"102_0_AutoAndDehumiModeTempOffset":0},{"102_0_NormalTimingValue":0},{"102_0_NormalTimingValidity":0},{"102_0_RTCHourExplain":0},{"102_0_RTCHourValue":0},{"102_0_RTCMinuteExplain":0},{"102_0_RTCMinuteValue":0},{"102_0_RTCPowerOnHourExplain":1},{"102_0_RTCPowerOnControl":0},{"102_0_RTCPowerOnHourValue":16},{"102_0_RTCPowerOnMinuteExplain":1},{"102_0_RTCPowerOnMinuteValue":0},{"102_0_RTCPowerOffHourExplain":1},{"102_0_RTCPowerOffControl":0},{"102_0_RTCPowerOffHourValue":16},{"102_0_RTCPowerOffMinuteExplain":1},{"102_0_RTCPowerOffMinuteValue":0},{"102_0_WindValvePosition":2},{"102_0_DehumiMode":0},{"102_0_DualModeSwitch":0},{"102_0_StrongSwitch":0},{"102_0_CombinConserveEnergySwitch":0},{"102_0_ConserveEnergySwitch":0},{"102_0_ElectricHeatSwitch":0},{"102_0_NaturalWindSwitch":0},{"102_0_LeftRightWindSwitch":0},{"102_0_UpDownWindSwitch":0},{"102_0_SmokeSwitch":0},{"102_0_VoiceControl":0},{"102_0_MuteSwitch":0},{"102_0_SmartEyeSwitch":0},{"102_0_OutdoorCleanSwitch":0},{"102_0_FanSwitch":0},{"102_0_CleanerSwitch":0},{"102_0_IndoorElectricityBoard":0},{"102_0_RightWindSwingSwitch":0},{"102_0_LeftWindSwingSwitch":0},{"102_0_IndoorStrainerCleanStatus":0},{"102_0_TempDisplaySwitch":0},{"102_0_LedSwitch":0},{"102_0_DisplayScreenShineSwitch":0},{"102_0_BackgroundLightSwitch":1},{"102_0_IndoorEEPROMUpgrade":0},{"102_0_Model":0},{"102_0_BeforeWifiControl":0},{"102_0_BeforeIrAndButtonControl":0},{"102_0_IndoorAlarm1":192},{"102_0_IndoorAlarm2":0},{"102_0_CompressorRunHz":0},{"102_0_CompressorTargetHz":0},{"102_0_ToDriverHz":0},{"102_0_OutdoorEnvironmentTemp":-20},{"102_0_OutdoorCondenserTemp":-2},{"102_0_CompressorExhaustTemp":0},{"102_0_TargetExhaustTemp":0},{"102_0_OutdoorEXVOpening":0},{"102_0_Uab":0},{"102_0_Ubc":128},{"102_0_Uca":128},{"102_0_Iab":0},{"102_0_Ibc":0},{"102_0_Ica":0},{"102_0_UDCBus":0},{"102_0_Iuv":0},{"102_0_FanRunStatus":0},{"102_0_OutdoorUnitCurrentWorkStatus":0},{"102_0_FourWayValveStatus":0},{"102_0_OutdoorDefrostingCream":0},{"102_0_OutdoorFrost":0},{"102_0_DehumiValve":0},{"102_0_MultiSplit":0},{"102_0_TempControlPowerOff":0},{"102_0_ForceInnerStop":0},{"102_0_ForceInnerSpeed":0},{"102_0_ForceInnerWindValvePosition":0},{"102_0_FillGasIncreaseHan":0},{"102_0_CompressorPreheat":0},{"102_0_CompressorRibbonHeater":0},{"102_0_OutdoorElectricityBoard":0},{"102_0_OutdoorEEPROMUpgrade":0},{"102_0_OutdoorFaultDisplay":0},{"102_0_OilReturn":0},{"102_0_OutdoorAlarm1":0},{"102_0_OutdoorAlarm2":0},{"102_0_OutdoorAlarm3":0},{"102_0_OutdoorAlarm4":0},{"102_0_OutdoorAlarm5":0},{"102_0_OutdoorAlarm6":0},{"102_0_OutdoorAlarm7":0},{"102_0_OutdoorAlarm8":0},{"102_0_OutdoorAlarm9":0},{"102_0_IndoorFanRPM":0},{"102_0_OutdoorFanRPM":0},{"102_0_PM2.5Level":2},{"102_0_WhetherPM2.5":0},{"102_0_PM2.5%":128},{"102_0_DisplayScreenBrightness":4}]}
-		System.out.println("--------------------------" + json_obj.toString());
 		if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
 		{
 			JSONArray json_array = json_obj.getJSONArray("value");
@@ -114,7 +111,6 @@ public class DeviceProtocol
 	public String sendAirConditionCommand()
 	{
 		return this.device.downActionBuild(this.buildCommand.toString());
-//		this.buildCommand = null;
 	}
 	
 	/**
@@ -2365,6 +2361,5 @@ public class DeviceProtocol
 			return -1;
 		}
 	}
-
 	
 }
