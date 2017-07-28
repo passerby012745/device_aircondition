@@ -182,13 +182,13 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				logger.d("create devicesConfigMap by user, devicesConfigMap = {}", devicesConfigMap.toString());
 			}
 			
-			logger.d("<LivehomeDeviceDriver:init -3-> add a false device for livehome");
-			if(null == falseDeviceSn)
-			{
-				falseDeviceSn = "SZSBAY-" + DeviceProtocol.deviceName.toUpperCase() + '-' + GATEWAY_MAC + "-1";
-				logger.d("false device sn = {}", falseDeviceSn);
-			}
-			onUserDeviceAdd(falseDeviceSn, new JSONObject());
+//			logger.d("<LivehomeDeviceDriver:init -3-> add a false device for livehome");
+//			if(null == falseDeviceSn)
+//			{
+//				falseDeviceSn = "SZSBAY-" + DeviceProtocol.deviceName.toUpperCase() + '-' + GATEWAY_MAC + "-1";
+//				logger.d("false device sn = {}", falseDeviceSn);
+//			}
+//			onUserDeviceAdd(falseDeviceSn, new JSONObject());
 			
 			logger.d("<LivehomeDeviceDriver:init -4-> set CDN callback");
 			SocketManager.getInstance().setMobileClientListener(new MobileSocketClientListener(new DeviceControl()));
@@ -489,7 +489,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			{
 				logger.d("<ReportOnThread:{}> ====================> [size={}], devicesConfigMap = {}", DeviceProtocol.deviceName, devicesConfigMap.size(), devicesConfigMap);
 				
-				this.deviceService.reportDeviceOnline(falseDeviceSn, DeviceProtocol.deviceName);
+//				this.deviceService.reportDeviceOnline(falseDeviceSn, DeviceProtocol.deviceName);
 				
 				if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
 				{
