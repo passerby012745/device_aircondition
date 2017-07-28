@@ -38,13 +38,9 @@ import com.szsbay.livehome.util.MacUtils;
 public class LivehomeDeviceDriver implements IIPDeviceDriver
 {
 	/**
-	 * Flash中的文件夹
+	 * Flash中的文件
 	 */
 	private final String folderName = "livehome";
-	
-	/**
-	 * Flash中的文件名
-	 */
 	private final String fileName = "livehome_protocol.txt";
 	
 	/**
@@ -201,7 +197,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			if (null == reportOnThread) 
 			{
 				reportOnThread = new ReportOnThread(this.deviceService);
-				reportOnThread.setName(mqttClientId + " report thread");
+				reportOnThread.setName(DeviceProtocol.deviceName + " report thread");
 				reportOnThread.start(); 
 			}
 			
@@ -209,7 +205,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			if(null == mqttClientId)
 			{
 				mqttClientId = DeviceProtocol.deviceName;
-				logger.d("MQTT clientid = {}",mqttClientId);
+				logger.d("MQTT clientid = {}", mqttClientId);
 			}
 			if(null == mqttServerAddr)
 			{
@@ -251,7 +247,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	{
 		logger.v("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, parameter, deviceClass);
 	
-		if(null!=deviceClass && deviceClass.equals(DeviceProtocol.deviceName))
+		if(DeviceProtocol.deviceName.equals(deviceClass))
 		{
 			String SN = sn.toUpperCase();
 			
