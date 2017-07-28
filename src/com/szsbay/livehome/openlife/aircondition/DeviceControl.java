@@ -300,7 +300,7 @@ public class DeviceControl implements ISocketParser
 	 */
 	private void reportAlarm(DeviceProtocol deviceProtocol, String sn, String devicename) 
 	{
-		logger.d("<reportAlarm> sn = {}, productName = {}", sn , devicename);
+		logger.v("<reportAlarm> sn = {}, productName = {}", sn , devicename);
 		
 		int indoor_alarm1 = deviceProtocol.getAirConditionIndoorAlarm1();
 		if(1 == ((indoor_alarm1&0x80)>>7))//室内温度传感器故障:0x80
@@ -338,7 +338,7 @@ public class DeviceControl implements ISocketParser
 	 */
 	public static JSONObject reportStatus(DeviceProtocol deviceProtocol ,String sn ,String productName)
 	{
-		logger.d("<reportStatus> sn = {}, productName = {}", sn , productName);
+		logger.v("<reportStatus> sn = {}, productName = {}", sn , productName);
 		logger.d("<reportStatus> before flush, devicesStatusInfo = {}", devicesStatusInfo);
 		
 		int indoorTemperature = deviceProtocol.getAirConditionIndoorCurrentTemp();//室内温度
@@ -526,7 +526,7 @@ public class DeviceControl implements ISocketParser
 		deviceStatus.put("extend", extendStatus);
 		
 		logger.d("<reportStatus> devicesStatusInfo = {}", devicesStatusInfo);
-		logger.d("<reportStatus> sn = {}, deviceStatus = {}", sn , deviceStatus);
+		logger.v("<reportStatus> sn = {}, deviceStatus = {}", sn , deviceStatus);
 		
 		if(0 != deviceStatus.length())
 		{
@@ -557,7 +557,7 @@ public class DeviceControl implements ISocketParser
 	public String parseResult(String module, String str) 
 	{
 		// TODO Auto-generated method stub
-		logger.d("<parseResult> module = {}, str = {}", module , str);
+		logger.v("<parseResult> module = {}, str = {}", module , str);
 		
 		if(str.startsWith("F4F5"))
 		{

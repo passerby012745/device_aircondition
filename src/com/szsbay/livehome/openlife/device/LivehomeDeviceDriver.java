@@ -166,6 +166,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		{
 			logger.d("<LivehomeDeviceDriver:init> ......");
 			isExit = false;
+			PLog.setDebugLevel(PLog.LEVEL_NONE);
 			
 			logger.d("<LivehomeDeviceDriver:init -1-> launch device service");
 			DeviceControl.deviceService = this.deviceService;
@@ -237,9 +238,6 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			logger.d("<LivehomeDeviceDriver:init -10-> subscribe MQTT topic");
 			MqttManager.getInstance().mqttClientSubscribe(mqttClientId, mqttTopicName, 2);
 			
-			logger.d("<LivehomeDeviceDriver:init -11-> set protocol debug level");
-			PLog.setDebugLevel(PLog.LEVEL_NONE);
-			
 			logger.d("<LivehomeDeviceDriver:finish>");
 		}
 		catch (Exception e) 
@@ -251,7 +249,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public JSONObject doAction(String sn, String action, JSONObject parameter, String deviceClass) throws ActionException
 	{
-		logger.d("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, parameter, deviceClass);
+		logger.v("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, parameter, deviceClass);
 	
 		if(null!=deviceClass && deviceClass.equals(DeviceProtocol.deviceName))
 		{
@@ -357,7 +355,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		}
 		else
 		{
-			logger.d("Local driver plug-in = {}, input illegal deviceClass = {}", DeviceProtocol.deviceName, deviceClass);
+			logger.v("Local driver plug-in = {}, input illegal deviceClass = {}", DeviceProtocol.deviceName, deviceClass);
 		}
 
 		return null;
@@ -487,7 +485,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		{
 			while (!isExit && !destroyed.get()) 
 			{
-				logger.d("<ReportOnThread:{}> ====================> [size={}], devicesConfigMap = {}", DeviceProtocol.deviceName, devicesConfigMap.size(), devicesConfigMap);
+				logger.v("<ReportOnThread:{}> ====================> [size={}], devicesConfigMap = {}", DeviceProtocol.deviceName, devicesConfigMap.size(), devicesConfigMap);
 				
 //				this.deviceService.reportDeviceOnline(falseDeviceSn, DeviceProtocol.deviceName);
 				
