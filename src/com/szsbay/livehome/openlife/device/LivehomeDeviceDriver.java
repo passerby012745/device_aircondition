@@ -234,7 +234,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			logger.d("<LivehomeDeviceDriver:init -10-> subscribe MQTT topic");
 			MqttManager.getInstance().mqttClientSubscribe(mqttClientId, mqttTopicName, 2);
 			
-			logger.d("<LivehomeDeviceDriver:finish>");
+			logger.d("<LivehomeDeviceDriver:init finish>");
 		}
 		catch (Exception e) 
 		{
@@ -360,9 +360,10 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	@Override
 	public void destroy()
 	{
-		logger.d("<destroy> ......");
-		
+		logger.d("<LivehomeDeviceDriver:destroy> ......");
 		isExit = true;
+		
+		logger.d("<LivehomeDeviceDriver:destroy -1-> close reportOnThread");
 		try
 		{
 			if(!reportOnThread.isDestroy()) 
@@ -376,7 +377,37 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		{
 			e.printStackTrace();
 		}
+		
+		logger.d("<LivehomeDeviceDriver:destroy -2-> close all device sockets");
+		SocketManager.getInstance().closeAllMobileClient();
+		
+		logger.d("<LivehomeDeviceDriver:destroy -3-> delete MQTT client");
 		MqttManager.getInstance().delMqttclient(mqttClientId);
+		
+		logger.d("<LivehomeDeviceDriver:destroy -4-> delete device info hashMap");
+		if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
+		{
+			for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
+			{
+				String sn = entry.getKey();
+				if(!sn.startsWith("AEH-W4A1-"))
+					continue;
+				
+				if(deviceProtocolMap.containsKey(sn))
+				{
+					deviceProtocolMap.get(sn).removeDevice();
+					deviceProtocolMap.remove(sn);
+				}
+				
+				if(DeviceControl.devicesStatusInfo.containsKey(sn))
+					DeviceControl.devicesStatusInfo.remove(sn);
+				
+				if(DeviceControl.reportFlagInfo.containsKey(sn))
+					DeviceControl.reportFlagInfo.remove(sn);
+			}
+		}
+		
+		logger.d("<LivehomeDeviceDriver:destroy finish>");
 	}
 
 	@Override
