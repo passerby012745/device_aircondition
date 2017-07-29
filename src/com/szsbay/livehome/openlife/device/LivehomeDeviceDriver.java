@@ -482,7 +482,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			while (!isExit && !destroyed.get()) 
 			{
 				logger.v("<ReportOnThread:{}> ====================> [size={}], devicesConfigMap = {}", DeviceProtocol.deviceName, devicesConfigMap.size(), devicesConfigMap);
-				
+				logger.v("deviceProtocolMap = {}", LivehomeDeviceDriver.deviceProtocolMap);
 //				this.deviceService.reportDeviceOnline(falseDeviceSn, DeviceProtocol.deviceName);
 				
 				if (null != devicesConfigMap && devicesConfigMap.size() > 0) 

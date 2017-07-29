@@ -561,8 +561,9 @@ public class DeviceControl implements ISocketParser
 		
 		if(str.startsWith("F4F5"))
 		{
-			Device device = null;
+			logger.v("deviceProtocolMap = {}", LivehomeDeviceDriver.deviceProtocolMap);
 			
+			Device device = null;
 			for(Iterator<String> it = LivehomeDeviceDriver.deviceProtocolMap.keySet().iterator(); it.hasNext(); )
 			{
 				String sn = it.next();
