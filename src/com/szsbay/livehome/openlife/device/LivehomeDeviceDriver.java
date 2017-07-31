@@ -257,12 +257,12 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				{
 					if(!cdnServerIp.equals(parameter.optString("ip", "")) || cdnServerPort != parameter.getInt("port"))
 					{
-						logger.d("<doAction:configCDN> -1- close all device sockets");
-						SocketManager.getInstance().closeAllMobileClient();
-						
-						logger.d("<doAction:configCDN> -2- shift cdn from {}:{} to {}:{}", cdnServerIp, cdnServerPort, parameter.getString("ip"), parameter.getInt("port"));
+						logger.d("<doAction:configCDN> -1- shift cdn from {}:{} to {}:{}", cdnServerIp, cdnServerPort, parameter.getString("ip"), parameter.getInt("port"));
 						cdnServerIp = parameter.getString("ip");
 						cdnServerPort = parameter.getInt("port");
+						
+						logger.d("<doAction:configCDN> -2- close all device sockets");
+						SocketManager.getInstance().closeAllMobileClient();
 						
 						logger.d("<doAction:configCDN> -3- init all device sockets");
 						initDeviceClientSocket();
@@ -526,6 +526,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 						
 						String module = getdeviceModuleFromSn(sn);
 						int addr = getdeviceAddrFromSn(sn);
+						SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
 						boolean isOnline = SocketManager.getInstance().getMobileDeviceOnlineStatus(module);
 						logger.d("<ReportOnThread> sn = {}, module = {}, CDN = {}:{}, online = {}", sn, module, cdnServerIp, cdnServerPort, isOnline);
 						if(isOnline)
