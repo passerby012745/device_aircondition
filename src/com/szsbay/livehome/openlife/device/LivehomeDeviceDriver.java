@@ -116,7 +116,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	/**
 	 * CDN服务器ip地址
 	 */
-	private String cdnServerIp = "192.168.8.1";//"203.195.160.110";
+	private String cdnServerIp = "hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110";
 	
 	/**
 	 * CDN服务器端口号
@@ -471,6 +471,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				{
 					logger.d("make device <module = {}> return  to AP-Mode by 'AT+WFCLS'", module);
 					SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
+					SocketManager.getInstance().closeMobileClient(module);
 				}
 				else
 				{
@@ -554,6 +555,10 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 							{
 								DeviceControl.reportFlagInfo.put(sn, 0);
 							}
+							
+							String send_202_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":202,\"sub\":0,\"value\":[]}");
+							logger.d("<ReportOnThread> module = {}, addr = {}, 202-0-order = {}", module, addr, send_202_0);
+							SocketManager.getInstance().sendMessageToCdn(module, (send_202_0 + "\r\n").getBytes());
 						}
 						else
 						{

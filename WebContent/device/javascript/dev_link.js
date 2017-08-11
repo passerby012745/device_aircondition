@@ -33,7 +33,7 @@ var _connectTimeout = "40";
 var _connectType = "TEXT"; 
 
 //var _cdnAddress = "cdn1.topfuturesz.com"; 
-var _cdnAddress = "192.168.8.1";//"203.195.160.110"; 
+var _cdnAddress = "hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110"; 
 //var _cdnAddress = null; 
 var _devCdnPort = "5820"
 
@@ -544,10 +544,10 @@ var switchRoute = function (){
 //*************************************************************************
 var doConfig = function (msg){
 //	showLog("doConfig :"+" moduleId :"+moduleId+"\r\n");
-//	alert("doConfig :"+" moduleId :"+_moduleId+"\r\n");
+//	console.log("doConfig :"+" moduleId :"+_moduleId+"\r\n");
 	window.AppJsBridge.service.deviceService.doConfig ({
-		manufacturer : "SMART_BAY",  //厂商名 
-		brand : "LIVE_HOME", //品牌名
+		manufacturer : "HisenseAirCondition",  //厂商名 
+		brand : "HisenseAirCondition", //品牌名
 		action : "airconbind",
 		parameters :  {
 			"moduleId" : _moduleId

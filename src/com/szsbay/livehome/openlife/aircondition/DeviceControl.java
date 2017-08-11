@@ -595,6 +595,33 @@ public class DeviceControl implements ISocketParser
 								reportStatus(deviceProtocol, SN, DeviceProtocol.deviceName);
 								reportAlarm(deviceProtocol, SN, DeviceProtocol.deviceName);
 							}
+							
+							if(202 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
+							{
+								JSONArray json_array = new JSONObject(j_str).getJSONArray("value");
+								JSONObject temp = new JSONObject();
+								
+								for(int i=0; i<json_array.length() ;i++)
+								{
+									JSONObject json_temp = json_array.getJSONObject(i);
+									Iterator<String> it = json_temp.keySet().iterator();
+							        while(it.hasNext()) 
+							        {  
+							            String key = it.next();
+							            temp.put(key, json_temp.get(key));
+							        }
+								}
+								
+								for(int i=0; i<temp.optInt("202_0_DeviceCount", 0); i++)
+								{
+									if(temp.has("202_0_IpAddrLow#"+(i+1)))
+									{
+										int addr_temp = temp.getInt("202_0_IpAddrLow#"+(i+1));
+										String sn_temp = (module + '-' + addr_temp).toUpperCase();
+										deviceService.reportIncludeDevice(sn_temp, DeviceProtocol.deviceName, new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
+									}
+								}
+							}
 						}
 						else
 						{

@@ -48,3 +48,4 @@ function nextPage() {
 	window.location.href = "dev_link.html";
 //	window.location.href = "ap_bind.html";
 }
+

@@ -5,11 +5,11 @@
 	 brand-resource:品牌的资源名,用于界面显示 
 	 manufacturer-resource:厂商的资源名,用于界面显示 
 	 resource:国际化资源文件路径 -->
-<products brand="LIVE_HOME" 
-		  manufacturer="SMART_BAY" 
+<products brand="HisenseAirCondition" 
+		  manufacturer="HisenseAirCondition" 
 		  resource="resource/resource.properties"
-		  brand-resource="LIVE_HOME_BRAND" 
-		  manufacturer-resource="SMART_BAY_MANUFACTURER"
+		  brand-resource="HISENSE_AIR_CONDITION_MANUFACTURER" 
+		  manufacturer-resource="HISENSE_AIR_CONDITION_BRAND"
 		  alarm-template="resource/alarm-template.properties">
 	
 	<!-- implement-class: 驱动实现类类名-->
@@ -19,7 +19,7 @@
 	</driver-config>
 	
 	<!-- 产品名称：hisenseKelon-->
-	<product name ="hisenseKelon" description="LIVEHOME_AIRCONDITION_DESCRIPRION" title="LIVEHOME_AIRCONDITION_TITLE">
+	<product name ="hisenseKelon" description="The standard model of air condition" title="LIVEHOME_AIRCONDITION_TITLE">
 		<!-- 继承标准设备类 -->
 		<classes>
 			<class name="airConditioner" />
