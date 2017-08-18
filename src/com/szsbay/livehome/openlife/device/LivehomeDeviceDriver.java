@@ -26,6 +26,8 @@ import com.huawei.smarthome.log.LogServiceFactory;
 import com.szsbay.livehome.mqtt.DeviceMqttChannelListener;
 import com.szsbay.livehome.mqtt.MqttManager;
 import com.szsbay.livehome.mqtt.MqttParse;
+import com.szsbay.livehome.mqtt.MqttRevTest;
+import com.szsbay.livehome.mqtt.PubTestRunnable;
 import com.szsbay.livehome.openlife.aircondition.DeviceControl;
 import com.szsbay.livehome.openlife.aircondition.DeviceProtocol;
 import com.szsbay.livehome.protocol.Device;
@@ -235,6 +237,26 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			MqttManager.getInstance().mqttClientSubscribe(mqttClientId, mqttTopicName, 2);
 			
 			logger.d("<LivehomeDeviceDriver:init finish>");
+			/*用于测试mqtt*/
+			/*
+			PubTestRunnable sub=new PubTestRunnable();
+			MqttRevTest mqttRevTest = new MqttRevTest("device");
+			sub.init("10.204.104.27","1883","device","szsbay2017","configer","szsbay2017","OpenLife_Pub_Test_Topic",mqttRevTest,10);
+			new Thread(sub).start();
+		    while(true)  
+		    {
+		    	try   
+		        {  
+		    		mqttRevTest.printClient();
+		            Thread.sleep(3000);  
+		        }   
+		        catch (InterruptedException e)   
+		        {  
+		            // TODO: handle exception  
+		            System.err.println("Interrupted");  
+		        } 
+		    } 
+		    */
 		}
 		catch (Exception e) 
 		{
@@ -247,7 +269,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	{
 		logger.v("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, parameter, deviceClass);
 	
-		if(DeviceProtocol.deviceName.equals(deviceClass))
+		if(DeviceProtocol.deviceName.equals(deviceClass) || "airConditioner".equals(deviceClass))
 		{
 			String SN = sn.toUpperCase();
 			
