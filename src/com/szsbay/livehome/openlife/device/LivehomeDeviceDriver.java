@@ -206,7 +206,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			logger.d("<LivehomeDeviceDriver:init -7-> init MQTT parameters");
 			if(null == mqttClientId)
 			{
-				mqttClientId = DeviceProtocol.deviceName;
+				mqttClientId = DeviceProtocol.deviceName + '_' + GATEWAY_MAC;
 				logger.d("MQTT clientid = {}", mqttClientId);
 			}
 			if(null == mqttServerAddr)
@@ -237,26 +237,27 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			MqttManager.getInstance().mqttClientSubscribe(mqttClientId, mqttTopicName, 2);
 			
 			logger.d("<LivehomeDeviceDriver:init finish>");
-			/*用于测试mqtt*/
-			/*
-			PubTestRunnable sub=new PubTestRunnable();
+			
+			//用于测试mqtt
+/*			
+			PubTestRunnable sub = new PubTestRunnable();
 			MqttRevTest mqttRevTest = new MqttRevTest("device");
-			sub.init("10.204.104.27","1883","device","szsbay2017","configer","szsbay2017","OpenLife_Pub_Test_Topic",mqttRevTest,10);
+			sub.init("10.204.104.27", "1883", "device", "szsbay2017", "configer", "szsbay2017", "OpenLife_Pub_Test_Topic", mqttRevTest, 10);
 			new Thread(sub).start();
-		    while(true)  
-		    {
-		    	try   
-		        {  
-		    		mqttRevTest.printClient();
-		            Thread.sleep(3000);  
-		        }   
-		        catch (InterruptedException e)   
-		        {  
-		            // TODO: handle exception  
-		            System.err.println("Interrupted");  
-		        } 
-		    } 
-		    */
+			while (true) 
+			{
+				try 
+				{
+					mqttRevTest.printClient();
+					Thread.sleep(3000);
+				} 
+				catch (InterruptedException e) 
+				{
+					// TODO: handle exception
+					System.err.println("Interrupted");
+				}
+			}
+*/
 		}
 		catch (Exception e) 
 		{
