@@ -118,7 +118,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	/**
 	 * CDN服务器ip地址
 	 */
-	private String cdnServerIp = "hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110";
+	private String cdnServerIp = "119.29.55.235";//"hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110"
 	
 	/**
 	 * CDN服务器端口号
