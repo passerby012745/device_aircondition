@@ -22,6 +22,7 @@ const MSG_doConfig_fail = -10;
 
 var _routeSsid = null;
 var _routePassword = null;
+var _routeIp = null;
 var _moduleSsid = null;
 var _modulePassword = "12345678";
 var _moduleId = null;
@@ -33,9 +34,9 @@ var _connectTimeout = "40";
 var _connectType = "TEXT"; 
 
 //var _cdnAddress = "cdn1.topfuturesz.com"; 
-var _cdnAddress = "119.29.55.235"; //"hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110"
-//var _cdnAddress = null; 
-var _devCdnPort = "5820"
+//var _cdnAddress = "119.29.55.235"; //"hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110"
+var _cdnAddress = "192.168.8.1";//_routeIp 
+var _devCdnPort = "5820"//fix
 
 var _sleepTime = 1000;
 var _retrySleepTime = 5000;
@@ -309,6 +310,8 @@ var _getWifiInfo = function (){
 			
 			_routeSsid = res.ssid;
 			_routePassword = res.password;
+			_routeIp  = res.gatewayIP;
+			_cdnAddress = _routeIp;
 			if(_routeSsid && _routePassword){
 				send_msg(MSG_getWifiInfo_succ);
 			}else{

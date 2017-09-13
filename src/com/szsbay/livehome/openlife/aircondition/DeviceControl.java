@@ -11,9 +11,10 @@ import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
 import com.szsbay.livehome.openlife.device.LivehomeDeviceDriver;
 import com.szsbay.livehome.protocol.Device;
-import com.szsbay.livehome.socket.ISocketParser;
-import com.szsbay.livehome.socket.SocketManager;
-import com.szsbay.livehome.util.LogUtils;
+import com.xinlianfeng.android.livehome.devices.base.ISocketParser;
+import com.xinlianfeng.android.livehome.net.socket.SocketManager;
+import com.xinlianfeng.android.livehome.util.LogUtils;
+import com.xinlianfeng.android.livehome.util.Util;
 
 public class DeviceControl implements ISocketParser
 {
@@ -64,7 +65,7 @@ public class DeviceControl implements ISocketParser
 		
 		String module = LivehomeDeviceDriver.getdeviceModuleFromSn(sn);
 		logger.d("<parseAction Single> sn = {}, module = {}, sendCmd = {}", sn , module, deviceProtocol.sendAirConditionCommand());
-		SocketManager.getInstance().sendMessageToCdn(module, (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
+		SocketManager.getInstance().sendMessageToDevice(module, Util.hexStringToBytes(deviceProtocol.sendAirConditionCommand() + "\r\n"));
 		return result;
 	}
 	
@@ -99,7 +100,7 @@ public class DeviceControl implements ISocketParser
 		
 		String module = LivehomeDeviceDriver.getdeviceModuleFromSn(sn);
 		logger.d("<parseAction List> sn = {}, module = {}, sendCmd = {}", sn , module, deviceProtocol.sendAirConditionCommand());
-		SocketManager.getInstance().sendMessageToCdn(module, (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
+		SocketManager.getInstance().sendMessageToDevice(module, Util.hexStringToBytes(deviceProtocol.sendAirConditionCommand() + "\r\n"));
 		return result;
 	}
 	
@@ -408,13 +409,13 @@ public class DeviceControl implements ISocketParser
 			if(!devSta_js.has("screenState"))		devSta_js.put("screenState", "");
 			if(!devSta_js.has("ledState"))			devSta_js.put("ledState", "");
 			if(!devSta_js.has("mode"))				devSta_js.put("mode", "");
-			if(!devSta_js.has("configTemperature"))	devSta_js.put("configTemperature", 0);
-			if(!devSta_js.has("configHumidity"))	devSta_js.put("configHumidity", 0);
+			if(!devSta_js.has("configTemperature"))	devSta_js.put("configTemperature", -1);
+			if(!devSta_js.has("configHumidity"))	devSta_js.put("configHumidity", -1);
 			if(!devSta_js.has("windDirection"))		devSta_js.put("windDirection", "");
 			if(!devSta_js.has("windSpeed"))			devSta_js.put("windSpeed", "");
-			if(!devSta_js.has("humidity"))			devSta_js.put("humidity", 0);
-			if(!devSta_js.has("temperature"))		devSta_js.put("temperature", 0);
-			if(!devSta_js.has("particulates"))		devSta_js.put("particulates", 0);
+			if(!devSta_js.has("humidity"))			devSta_js.put("humidity", -1);
+			if(!devSta_js.has("temperature"))		devSta_js.put("temperature", -1);
+			if(!devSta_js.has("particulates"))		devSta_js.put("particulates", -1);
 		}
 		
 		logger.d("<reportStatus> begin to check device status, sn = {}", sn);
@@ -548,12 +549,6 @@ public class DeviceControl implements ISocketParser
 	}
 
 	@Override
-	public JSONObject parseCommand(String arg0, String arg1, JSONObject arg2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String parseResult(String module, String str) 
 	{
 		// TODO Auto-generated method stub
@@ -651,10 +646,19 @@ public class DeviceControl implements ISocketParser
 		return null;
 	}
 
+
 	@Override
-	public JSONObject queryDeviceStatus(String arg0) {
+	public void queryStatus(String sn) 
+	{
 		// TODO Auto-generated method stub
-		return null;
+		logger.d("@Override public void queryStatus(String sn = {})", sn);
+	}
+
+	@Override
+	public void reportOnlineStatus(String sn, boolean status) 
+	{
+		// TODO Auto-generated method stub
+		logger.d("@Override reportOnlineStatus(String sn = {}, boolean status = {})", sn , status);
 	}
 
 }

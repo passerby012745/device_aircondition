@@ -1,7 +1,10 @@
 package com.szsbay.livehome.openlife.device;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,48 +26,19 @@ import com.huawei.smarthome.driver.ip.IIPDeviceDriver;
 import com.huawei.smarthome.localapi.ServiceApi;
 import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
-import com.szsbay.livehome.mqtt.DeviceMqttChannelListener;
-import com.szsbay.livehome.mqtt.MqttManager;
-import com.szsbay.livehome.mqtt.MqttParse;
-import com.szsbay.livehome.mqtt.MqttRevTest;
-import com.szsbay.livehome.mqtt.PubTestRunnable;
 import com.szsbay.livehome.openlife.aircondition.DeviceControl;
 import com.szsbay.livehome.openlife.aircondition.DeviceProtocol;
 import com.szsbay.livehome.protocol.Device;
-import com.szsbay.livehome.socket.SocketManager;
-import com.szsbay.livehome.socket.client.MobileSocketClientListener;
 import com.szsbay.livehome.tool.PLog;
-import com.szsbay.livehome.util.LogUtils;
-import com.szsbay.livehome.util.MacUtils;
+import com.xinlianfeng.android.livehome.net.socket.DevicesChannelListener;
+import com.xinlianfeng.android.livehome.net.socket.DevicesSocketServer;
+import com.xinlianfeng.android.livehome.net.socket.SocketManager;
+import com.xinlianfeng.android.livehome.util.LogUtils;
+import com.xinlianfeng.android.livehome.util.MacUtils;
+import com.xinlianfeng.android.livehome.util.Util;
 
 public class LivehomeDeviceDriver implements IIPDeviceDriver
 {
-	/**
-	 * Flash中的文件
-	 */
-	private final String folderName = "livehome";
-	private final String fileName = "livehome_protocol.txt";
-	
-	/**
-	 * 公测服务器地址
-	 */
-	private final static String BETA_SERVER_ADDRESS = "119.29.80.30";
-	
-	/**
-	 * 内测服务器地址
-	 */
-	private final static String ALPHA_SERVER_ADDRESS = "10.204.104.26";
-	
-	/**
-	 * 内测华为网关MAC地址列表
-	 */
-	private final static List<String> SZSBAY_ROUTE = new ArrayList<>(Arrays.asList("BC9C31D84314","BC9C31D84CFB","BC9C31D83C12","BC9C31D83C6D","BC9C31D82D3E"));
-	
-	/**
-	 * 网关MAC地址
-	 */
-	private final static String GATEWAY_MAC = MacUtils.getMacByIp("192.168.8.1");
-	
 	/**
 	 * 日志 
 	 */
@@ -118,17 +92,12 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	/**
 	 * CDN服务器ip地址
 	 */
-	private String cdnServerIp = "119.29.55.235";//"hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110"
+	private String cdnServerIp = "192.168.8.1";//"hsc.topfuturesz.com";//"119.29.55.235";//"203.195.160.110"
 	
 	/**
 	 * CDN服务器端口号
 	 */
-	private int cdnServerPort = 7820;
-	
-	/**
-	 * 虚拟设备SN
-	 */
-	private String falseDeviceSn = null;
+	private int cdnServerPort = 5820;
 	
 	/**
 	 * 指令缓存标志位
@@ -136,19 +105,19 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	private boolean cacheOrderFlag = false;
 	
 	/**
-	 * MQTT服务地址
+	 * 
 	 */
-	private String mqttServerAddr = null;
+	private DevicesSocketServer devicesSocketServer = null;
 	
 	/**
-	 * MQTT客户端ID
+	 * 网关IP地址
 	 */
-	private String mqttClientId = null;
+	private String gatewayIp = null;
 	
 	/**
-	 * MQTT订阅推送主题
+	 * 网关MAC地址
 	 */
-	private String mqttTopicName = null;
+	private String gatewayMac = null;
 
 	@Override
 	public void setDeviceService(IDeviceService deviceService)
@@ -181,16 +150,28 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				logger.d("create devicesConfigMap by user, devicesConfigMap = {}", devicesConfigMap.toString());
 			}
 			
-//			logger.d("<LivehomeDeviceDriver:init -3-> add a false device for livehome");
-//			if(null == falseDeviceSn)
-//			{
-//				falseDeviceSn = "SZSBAY-" + DeviceProtocol.deviceName.toUpperCase() + '-' + GATEWAY_MAC + "-1";
-//				logger.d("false device sn = {}", falseDeviceSn);
-//			}
-//			onUserDeviceAdd(falseDeviceSn, new JSONObject());
+			logger.d("<LivehomeDeviceDriver:init -3-> get local host ip and mac");
+            NetworkInterface nwIf = NetworkInterface.getByName("br0");
+            Enumeration<InetAddress> inetAddresses = nwIf.getInetAddresses();
+            while(inetAddresses.hasMoreElements())
+            {
+                InetAddress addr = inetAddresses.nextElement();
+                gatewayIp = addr.getHostAddress();
+                if(addr instanceof Inet4Address)
+                {
+                    break;
+                }
+            }
+            gatewayMac = MacUtils.getMacByIp(gatewayIp);
+            logger.d("gatewayIp = {}, gatewayMac = {}", gatewayIp, gatewayMac);
+            cdnServerIp = gatewayIp;
 			
-			logger.d("<LivehomeDeviceDriver:init -4-> set CDN callback");
-			SocketManager.getInstance().setMobileClientListener(new MobileSocketClientListener(new DeviceControl()));
+			logger.d("<LivehomeDeviceDriver:init -4-> init CDN server");
+			DevicesChannelListener devicesChannelListener = new DevicesChannelListener(new DeviceControl());
+	    	SocketManager.getInstance().setDevicesChannelListener(devicesChannelListener);
+			devicesSocketServer = new DevicesSocketServer(cdnServerPort, devicesChannelListener);
+			devicesSocketServer.startSocketServer();
+			devicesSocketServer.startStatusListenThread();
 			
 			logger.d("<LivehomeDeviceDriver:init -5-> init all device sockets and send 102-0 order to query device status");
 			initDeviceClientSocket();
@@ -203,61 +184,8 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				reportOnThread.start(); 
 			}
 			
-			logger.d("<LivehomeDeviceDriver:init -7-> init MQTT parameters");
-			if(null == mqttClientId)
-			{
-				mqttClientId = DeviceProtocol.deviceName + '_' + GATEWAY_MAC;
-				logger.d("MQTT clientid = {}", mqttClientId);
-			}
-			if(null == mqttServerAddr)
-			{
-				if(SZSBAY_ROUTE.contains(GATEWAY_MAC))
-				{
-					mqttServerAddr = ALPHA_SERVER_ADDRESS;
-				}
-				else
-				{
-					mqttServerAddr = BETA_SERVER_ADDRESS;
-				}
-				logger.d("MQTT server = {}", "tcp://" + mqttServerAddr + ":1883");
-			}
-			if(null == mqttTopicName)
-			{
-				mqttTopicName = "family_" + GATEWAY_MAC;
-				logger.d("MQTT topic = {}", mqttTopicName);
-			}
-			
-			logger.d("<LivehomeDeviceDriver:init -8-> set MQTT callback");
-			MqttManager.getInstance().setMqttConnectListener(new DeviceMqttChannelListener(new MqttParse(this, mqttClientId)));
-			
-			logger.d("<LivehomeDeviceDriver:init -9-> creat MQTT client");
-			MqttManager.getInstance().creatMqttClient("tcp://" + mqttServerAddr + ":1883", mqttClientId, "device", "szsbay2017");
-			
-			logger.d("<LivehomeDeviceDriver:init -10-> subscribe MQTT topic");
-			MqttManager.getInstance().mqttClientSubscribe(mqttClientId, mqttTopicName, 2);
-			
 			logger.d("<LivehomeDeviceDriver:init finish>");
 			
-			//用于测试mqtt
-/*			
-			PubTestRunnable sub = new PubTestRunnable();
-			MqttRevTest mqttRevTest = new MqttRevTest("device");
-			sub.init("10.204.104.27", "1883", "device", "szsbay2017", "configer", "szsbay2017", "OpenLife_Pub_Test_Topic", mqttRevTest, 10);
-			new Thread(sub).start();
-			while (true) 
-			{
-				try 
-				{
-					mqttRevTest.printClient();
-					Thread.sleep(3000);
-				} 
-				catch (InterruptedException e) 
-				{
-					// TODO: handle exception
-					System.err.println("Interrupted");
-				}
-			}
-*/
 		}
 		catch (Exception e) 
 		{
@@ -270,7 +198,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 	{
 		logger.v("Begin doAction, Local driver plug-in = {}, sn={}, action={}, params={}, deviceClass={}", DeviceProtocol.deviceName, sn, action, parameter, deviceClass);
 	
-		if(DeviceProtocol.deviceName.equals(deviceClass) || "airConditioner".equals(deviceClass))
+		if(true)//DeviceProtocol.deviceName.equals(deviceClass) || "airConditioner".equals(deviceClass)
 		{
 			String SN = sn.toUpperCase();
 			
@@ -285,7 +213,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 						cdnServerPort = parameter.getInt("port");
 						
 						logger.d("<doAction:configCDN> -2- close all device sockets");
-						SocketManager.getInstance().closeAllMobileClient();
+						SocketManager.getInstance().closeAllCdnMobileClient();
 						
 						logger.d("<doAction:configCDN> -3- init all device sockets");
 						initDeviceClientSocket();
@@ -401,13 +329,10 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 			e.printStackTrace();
 		}
 		
-		logger.d("<LivehomeDeviceDriver:destroy -2-> close all device sockets");
-		SocketManager.getInstance().closeAllMobileClient();
+		logger.d("<LivehomeDeviceDriver:destroy -2-> close CDN server");
+		devicesSocketServer.stop();
 		
-		logger.d("<LivehomeDeviceDriver:destroy -3-> delete MQTT client");
-		MqttManager.getInstance().delMqttclient(mqttClientId);
-		
-		logger.d("<LivehomeDeviceDriver:destroy -4-> delete device info hashMap");
+		logger.d("<LivehomeDeviceDriver:destroy -3-> delete device info hashMap");
 		if (null != devicesConfigMap && devicesConfigMap.size() > 0) 
 		{
 			for (Map.Entry<String, JSONObject> entry : devicesConfigMap.entrySet()) 
@@ -443,14 +368,11 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 		{
 			this.deviceService.reportIncludeDevice(sn, DeviceProtocol.deviceName, new JSONObject());
 			this.deviceService.reportDeviceOnline(sn, DeviceProtocol.deviceName);
-			devicesConfigMap.put(sn, data);
-			dataService.put(sn, data);
 			
 			if(sn.startsWith("AEH-W4A1-"))
 			{
 				String module = getdeviceModuleFromSn(sn);
 				int addr = getdeviceAddrFromSn(sn);
-				SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
 				if(null == deviceProtocolMap.get(sn))
 				{
 					Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,sn ,DeviceProtocol.deviceId ,(short)addr);
@@ -464,9 +386,12 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				{
 					String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
 					logger.d("<onUserDeviceAdd> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
-					SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());//发送查询指令
+					SocketManager.getInstance().sendMessageToDevice(module, Util.hexStringToBytes(send_102_0 + "\r\n"));//发送查询指令
 				}
 			}
+			
+			devicesConfigMap.put(sn, data);//避免上报线程的并发,这会导致底层设备协议的注册出现致命异常
+			dataService.put(sn, data);
 		}
 	}
 
@@ -493,8 +418,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				if(1 == snList.size())
 				{
 					logger.d("make device <module = {}> return  to AP-Mode by 'AT+WFCLS'", module);
-					SocketManager.getInstance().sendMessageToCdn(module, ("AT+WFCLS=" + "\r\n").getBytes());
-					SocketManager.getInstance().closeMobileClient(module);
+					SocketManager.getInstance().sendMessageToDevice(module, ("AT+WFCLS=" + "\r\n").getBytes());
 				}
 				else
 				{
@@ -550,8 +474,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 						
 						String module = getdeviceModuleFromSn(sn);
 						int addr = getdeviceAddrFromSn(sn);
-						SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
-						boolean isOnline = SocketManager.getInstance().getMobileDeviceOnlineStatus(module);
+						boolean isOnline = SocketManager.getInstance().getDevicesOnlineStatus(module);
 						logger.d("<ReportOnThread> sn = {}, module = {}, CDN = {}:{}, online = {}", sn, module, cdnServerIp, cdnServerPort, isOnline);
 						if(isOnline)
 						{
@@ -572,7 +495,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 							{
 								String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
 								logger.d("<ReportOnThread> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
-								SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());
+								SocketManager.getInstance().sendMessageToDevice(module, Util.hexStringToBytes(send_102_0 + "\r\n"));
 							}
 							else
 							{
@@ -581,7 +504,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 							
 							String send_202_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":202,\"sub\":0,\"value\":[]}");
 							logger.d("<ReportOnThread> module = {}, addr = {}, 202-0-order = {}", module, addr, send_202_0);
-							SocketManager.getInstance().sendMessageToCdn(module, (send_202_0 + "\r\n").getBytes());
+							SocketManager.getInstance().sendMessageToDevice(module, Util.hexStringToBytes(send_202_0 + "\r\n"));
 						}
 						else
 						{
@@ -696,7 +619,6 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				
 				String module = getdeviceModuleFromSn(sn);
 				int addr = getdeviceAddrFromSn(sn);
-				SocketManager.getInstance().initMobileClientConnect(module, cdnServerIp, cdnServerPort, "test");
 				if(null == deviceProtocolMap.get(sn))
 				{
 					Device device = new Device(DeviceProtocol.deviceProtocol ,DeviceProtocol.OffsetAttribute ,DeviceProtocol.deviceName ,sn ,DeviceProtocol.deviceId ,(short)addr);
@@ -710,7 +632,7 @@ public class LivehomeDeviceDriver implements IIPDeviceDriver
 				{
 					String send_102_0 = deviceProtocolMap.get(sn).downActionBuild("{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":0}]}");
 					logger.d("<initDeviceClientSocket> module = {}, addr = {}, 102-0-order = {}", module, addr, send_102_0);
-					SocketManager.getInstance().sendMessageToCdn(module, (send_102_0 + "\r\n").getBytes());//发送查询指令
+					SocketManager.getInstance().sendMessageToDevice(module, Util.hexStringToBytes(send_102_0 + "\r\n"));//发送查询指令
 				}
 			}
 		}
