@@ -11,7 +11,7 @@
 	<property name="target.dir" value="target"/>
 	<property name="target.ver" value="1.8"/>
 	<property name="source.ver" value="1.8"/>
-	<property name="version" value="1.0.0"/>
+	<property name="version" value="1.0.3"/>
 	<property name="mainclass" value="com.szsbay.livehome.util"/>
 	
 	<!-- 第三方jar包的路径 -->    
@@ -97,7 +97,7 @@
 		        <classes dir="${classes.dir}"/>
 		        <fileset dir="${build.dir}">
 		        	<include name="***.*" />
-		        	<include name="livehome/**" />
+		        	<include name="device/**" />
 		        	<include name="resource/**" />
 		        	<include name="META-INF/**" />
 		        	<exclude name="**/web.xml"/>

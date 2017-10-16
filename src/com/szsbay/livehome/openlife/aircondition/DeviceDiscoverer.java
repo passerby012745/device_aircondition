@@ -1,8 +1,16 @@
 package com.szsbay.livehome.openlife.aircondition;
 
-import com.szsbay.livehome.openlife.device.LivehomeDeviceDiscoverer;
+import com.szsbay.livehome.openlife.device.ZAbstractDeviceDiscoverer;
 
-public class DeviceDiscoverer extends LivehomeDeviceDiscoverer
+public class DeviceDiscoverer extends ZAbstractDeviceDiscoverer
 {
-	//空调设备发现
+
+	public DeviceDiscoverer() {
+		super(DeviceProtocol.deviceName);
+	}
+	@Override
+	public void init()
+	{
+		initDiscoverer();
+	}
 }

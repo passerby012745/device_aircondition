@@ -5,10 +5,13 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.szsbay.livehome.openlife.device.IDeviceProtocol;
 import com.szsbay.livehome.protocol.Device;
+import com.szsbay.livehome.util.LogUtils;
 
-public class DeviceProtocol 
+public class DeviceProtocol implements IDeviceProtocol
 {
+	private static final String TAG = "[DeviceProtocol] ";
 	/**
 	 * 设备名称
 	 */
@@ -68,18 +71,37 @@ public class DeviceProtocol
 			+ ",{\"cmd\":102,\"sub\":0,\"dir\":1,\"parameters\":[{\"102_0_WindSpeedMode\":1},{\"102_0_AirVolume\":2},{\"102_0_SleepMode\":10},{\"102_0_WindDirectionSwitch\":18},{\"102_0_LaunchSwitch\":20},{\"102_0_WorkMode\":21},{\"102_0_IndoorSetTemp\":25},{\"102_0_IndoorCurrentTemp\":33},{\"102_0_IndoorPipeTemp\":41},{\"102_0_IndoorSetHumi\":49},{\"102_0_IndoorCurrentHumi\":57},{\"102_0_RecvFeelIndoorTemp\":65},{\"102_0_FeelControl\":74},{\"102_0_FeelIndoorTempOffset\":76},{\"102_0_TempDisplayMode\":82},{\"102_0_AutoAndDehumiModeTempOffset\":85},{\"102_0_NormalTimingValue\":90},{\"102_0_NormalTimingValidity\":96},{\"102_0_RTCHourExplain\":97},{\"102_0_RTCHourValue\":100},{\"102_0_RTCMinuteExplain\":105},{\"102_0_RTCMinuteValue\":107},{\"102_0_RTCPowerOnHourExplain\":113},{\"102_0_RTCPowerOnControl\":114},{\"102_0_RTCPowerOnHourValue\":117},{\"102_0_RTCPowerOnMinuteExplain\":121},{\"102_0_RTCPowerOnMinuteValue\":123},{\"102_0_RTCPowerOffHourExplain\":129},{\"102_0_RTCPowerOffControl\":130},{\"102_0_RTCPowerOffHourValue\":133},{\"102_0_RTCPowerOffMinuteExplain\":137},{\"102_0_RTCPowerOffMinuteValue\":139},{\"102_0_WindValvePosition\":146},{\"102_0_DehumiMode\":150},{\"102_0_DualModeSwitch\":153},{\"102_0_StrongSwitch\":154},{\"102_0_CombinConserveEnergySwitch\":155},{\"102_0_ConserveEnergySwitch\":156},{\"102_0_ElectricHeatSwitch\":157},{\"102_0_NaturalWindSwitch\":158},{\"102_0_LeftRightWindSwitch\":159},{\"102_0_UpDownWindSwitch\":160},{\"102_0_SmokeSwitch\":161},{\"102_0_VoiceControl\":162},{\"102_0_MuteSwitch\":163},{\"102_0_SmartEyeSwitch\":164},{\"102_0_OutdoorCleanSwitch\":165},{\"102_0_IndoorCleanSwitch\":166},{\"102_0_FanSwitch\":167},{\"102_0_CleanerSwitch\":168},{\"102_0_IndoorElectricityBoard\":169},{\"102_0_RightWindSwingSwitch\":170},{\"102_0_LeftWindSwingSwitch\":171},{\"102_0_IndoorStrainerCleanStatus\":172},{\"102_0_TempDisplaySwitch\":173},{\"102_0_LedSwitch\":174},{\"102_0_DisplayScreenShineSwitch\":175},{\"102_0_BackgroundLightSwitch\":176},{\"102_0_IndoorEEPROMUpgrade\":177},{\"102_0_Model\":178},{\"102_0_BeforeWifiControl\":179},{\"102_0_BeforeIrAndButtonControl\":180},{\"102_0_IndoorAlarm1\":185},{\"102_0_IndoorAlarm2\":193},{\"102_0_CompressorRunHz\":201},{\"102_0_CompressorTargetHz\":209},{\"102_0_ToDriverHz\":217},{\"102_0_OutdoorEnvironmentTemp\":225},{\"102_0_OutdoorCondenserTemp\":233},{\"102_0_CompressorExhaustTemp\":241},{\"102_0_TargetExhaustTemp\":249},{\"102_0_OutdoorEXVOpening\":257},{\"102_0_Uab\":265},{\"102_0_Ubc\":281},{\"102_0_Uca\":297},{\"102_0_Iab\":313},{\"102_0_Ibc\":321},{\"102_0_Ica\":329},{\"102_0_UDCBus\":337},{\"102_0_Iuv\":353},{\"102_0_FanRunStatus\":361},{\"102_0_OutdoorUnitCurrentWorkStatus\":364},{\"102_0_FourWayValveStatus\":365},{\"102_0_OutdoorDefrostingCream\":369},{\"102_0_OutdoorFrost\":370},{\"102_0_DehumiValve\":371},{\"102_0_MultiSplit\":372},{\"102_0_TempControlPowerOff\":373},{\"102_0_ForceInnerStop\":374},{\"102_0_ForceInnerSpeed\":375},{\"102_0_ForceInnerWindValvePosition\":376},{\"102_0_FillGasIncreaseHan\":378},{\"102_0_CompressorPreheat\":379},{\"102_0_CompressorRibbonHeater\":380},{\"102_0_OutdoorElectricityBoard\":381},{\"102_0_OutdoorEEPROMUpgrade\":382},{\"102_0_OutdoorFaultDisplay\":383},{\"102_0_OilReturn\":384},{\"102_0_OutdoorAlarm1\":385},{\"102_0_OutdoorAlarm2\":393},{\"102_0_OutdoorAlarm3\":401},{\"102_0_OutdoorAlarm4\":409},{\"102_0_OutdoorAlarm5\":417},{\"102_0_OutdoorAlarm6\":425},{\"102_0_OutdoorAlarm7\":433},{\"102_0_OutdoorAlarm8\":441},{\"102_0_OutdoorAlarm9\":449},{\"102_0_IndoorFanRPM\":457},{\"102_0_OutdoorFanRPM\":465},{\"102_0_PM2.5Level\":473},{\"102_0_WhetherPM2.5\":480},{\"102_0_PM2.5%\":481},{\"102_0_DisplayScreenBrightness\":490}]}"
 			+ ",{\"cmd\":202,\"sub\":0,\"dir\":1,\"parameters\":[{\"202_0_DeviceCount\":1},{\"202_0_OneParamsBytes\":9}]}"
 			+ "]}";
-		
 	/**
-	 * 具体设备协议通道对象
+	 * 空调下行设置指令测试用例
 	 */
-	private Device device = null;//设备协议通道对象
+	public static final String value_map_send_3_0 = "{\"cmd\":3,\"sub\":0,\"value\":[]}";
+	public static final String value_map_send_3_1 = "{\"cmd\":3,\"sub\":1,\"value\":[]}";
+	public static final String value_map_send_7_1 = "{\"cmd\":7,\"sub\":1,\"value\":[]}";
+	public static final String value_map_send_10_4 = "{\"cmd\":10,\"sub\":4,\"value\":[]}";
+	public static final String value_map_send_30_0 = "{\"cmd\":30,\"sub\":0,\"value\":[{\"101_0_SendOrderWay\":1}]}";
+	public static final String value_map_send_101_0 = "{\"cmd\":101,\"sub\":0,\"value\":[{\"101_0_SendOrderWay\":1}]}";
+	public static final String value_map_send_101_32 = "{\"cmd\":101,\"sub\":32,\"value\":[{\"101_32_Second\":11},{\"101_32_Minute\":22},{\"101_32_Hour\":12},{\"101_32_Week\":9},{\"101_32_Day\":27},{\"101_32_Month\":11},{\"101_32_Year\":2017}]}";
+	public static final String value_map_send_102_0 = "{\"cmd\":102,\"sub\":0,\"value\":[{\"102_0_SendOrderWay\":1}]}";
+	public static final String value_map_send_202_0 = "{\"cmd\":202,\"sub\":0,\"value\":[]}";
+	
+	/**
+	 * 空调上行状态指令测试用例
+	 */
+	public static final String device_3_0_response = "F4F501400B0100FE01010101000300010153F4FB";
+	public static final String device_3_1_response = "F4F501400B0100FE01010101000301010154F4FB";
+	public static final String device_7_1_response = "F4F501400F0100FE010101010007010100000211016FF4FB";
+	public static final String device_10_4_response = "F4F501400D0100FE01010101000A040101010162F4FB";
+	public static final String device_30_0_response = "F4F501400D0100FE01010101001E0001004001B0F4FB";
+	public static final String device_101_0_response = "F4F501400B0100FE010101010065000101B5F4FB";
+	public static final String device_101_32_response = "F4F501400B0100FE010101010065200101D5F4FB";
+	public static final String device_102_0_response = "f4f50140490100fe0101010100660001010018171a8080808080000000000000000000000000000000ffffff0000000000000080008000000000000000000000000000000000000000000000000008bbf4fb";
+	public static final String device_202_0_response = "F4F50140190100FE0101020100CA0001000002030101081919010808191902ADF4FB";//"F4F50140140100FE0101010100CA0001000001030108081919026AF4FB";//	
 	
 	private JSONObject buildCommand = null;//设备设置指令内容
 	private JSONObject returnResult = null;//设备返回状态内容
 	
-	public DeviceProtocol(Device device)
+	public DeviceProtocol()
 	{
-		this.device = device;
 		this.buildCommand = new JSONObject("{\"cmd\":101,\"sub\":0,\"value\":[]}");
 	}
 	
@@ -89,7 +111,7 @@ public class DeviceProtocol
 		if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
 		{
 			JSONArray json_array = json_obj.getJSONArray("value");
-			this.returnResult = new JSONObject();
+			returnResult = new JSONObject();
 			
 			for(int i=0; i<json_array.length() ;i++)
 			{
@@ -98,31 +120,41 @@ public class DeviceProtocol
 		        while(it.hasNext()) 
 		        {  
 		            String key = it.next();
-					this.returnResult.put(key, json_temp.get(key));
+					returnResult.put(key, json_temp.get(key));
 		        }
 			}
 		}
 		else
 		{
-			this.returnResult = null;
+			returnResult = null;
 		}
 	}
 
-	/**
-	 * 空调设置指令下发
-	 */
-	public String sendAirConditionCommand()
+	public void buildIntValue(String str,int value)
 	{
-		return this.device.downActionBuild(this.buildCommand.toString());
+		if(null!=buildCommand){
+			JSONArray jsonArray=buildCommand.optJSONArray("value");
+			jsonArray.put(new JSONObject().put(str, value));
+		}else{
+			LogUtils.e(TAG+"<buildIntValue>","buildCommand is null");
+		}
 	}
-	
+	public void buildDoubleValue(String str,double value)
+	{
+		if(null!=buildCommand){
+			JSONArray jsonArray=buildCommand.optJSONArray("value");
+			jsonArray.put(new JSONObject().put(str, value));
+		}else{
+			LogUtils.e(TAG+"<buildDoubleValue>","buildCommand is null");
+		}
+	}
 	/**
 	 * 设置空调风量档位
 	 * @param value	<自动风:0、静音风:1、低风:2、中风:3、高风:4>
 	 */
 	public void setAirConditionAirVolume(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_AirVolume", value));
+		buildIntValue("101_0_AirVolume",value);
 	}
 	
 	/**
@@ -131,7 +163,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionSleepMode(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_SleepMode", value));
+		buildIntValue("101_0_SleepMode",value);
 	}
 
 	/**
@@ -140,7 +172,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionWindDirSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_WindDirectionSwitch", value));
+		buildIntValue("101_0_WindDirectionSwitch",value);
 	}
 	
 	/**
@@ -149,7 +181,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionLaunchSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_LaunchSwitch", value));
+		buildIntValue("101_0_LaunchSwitch",value);
 	}
 	
 	/**
@@ -158,7 +190,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionWorkMode(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_WorkMode", value));
+		buildIntValue("101_0_WorkMode",value);
 	}
 	
 	/**
@@ -167,7 +199,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionIndoorTemp(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_SetIndoorTemp", value));
+		buildIntValue("101_0_SetIndoorTemp",value);
 	}
 	
 	/**
@@ -176,7 +208,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionIndoorHumi(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_SetIndoorHumi", value));
+		buildIntValue("101_0_Ai101_0_SetIndoorHumirVolume",value);
 	}
 
 	/**
@@ -185,7 +217,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionFeelIndoorTemp(double value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_FeelIndoorTemp", 2*value));
+		buildDoubleValue("101_0_FeelIndoorTemp",2*value);
 	}
 
 	/**
@@ -194,7 +226,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionFeelControl(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_FeelControl", value));
+		buildIntValue("101_0_FeelControl",value);
 	}
 	
 	/**
@@ -203,7 +235,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionFeelIndoorTempOffset(double value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_FeelIndoorTempOffset", value/0.5));
+		buildDoubleValue("101_0_FeelIndoorTempOffset",value/0.5);
 	}	
 	
 	/**
@@ -212,7 +244,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionTempDisplayMode(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_TempDisplayMode", value));
+		buildIntValue("101_0_TempDisplayMode",value);
 	}
 	
 	/**
@@ -221,7 +253,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionSendOrderWay(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_SendOrderWay", value));
+		buildIntValue("101_0_SendOrderWay",value);
 	}
 
 	/**
@@ -230,7 +262,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionAutoAndDehumiModeTempOffset(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_AutoAndDehumiModeTempOffset", value));
+		buildIntValue("101_0_AutoAndDehumiModeTempOffset",value);
 	}
 	
 	/**
@@ -239,7 +271,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionNormalTimingValue(double value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_NormalTimingValue", value));
+		buildDoubleValue("101_0_NormalTimingValue",value);
 	}
 
 	/**
@@ -248,7 +280,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionNormalTimingValidity(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_NormalTimingValidity", value));
+		buildIntValue("101_0_NormalTimingValidity",value);
 	}
 	
 	/**
@@ -257,7 +289,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCHourValue(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCHourValue", value));
+		buildIntValue("101_0_RTCHourValue",value);
 	}
 	
 	/**
@@ -266,7 +298,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCMinuteValue(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCMinuteValue", value));
+		buildIntValue("101_0_RTCMinuteValue",value);
 	}
 
 	/**
@@ -275,7 +307,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCPowerOnControl(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCPowerOnControl", value));
+		buildIntValue("101_0_RTCPowerOnControl",value);
 	}	
 	
 	/**
@@ -284,7 +316,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCPowerOnHourValue(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCPowerOnHourValue", value));
+		buildIntValue("101_0_RTCPowerOnHourValue",value);
 	}	
 
 	/**
@@ -293,7 +325,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCPowerOnMinuteValue(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCPowerOnMinuteValue", value));
+		buildIntValue("101_0_RTCPowerOnMinuteValue",value);
 	}
 
 	/**
@@ -302,7 +334,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCPowerOffControl(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCPowerOffControl", value));
+		buildIntValue("101_0_RTCPowerOffControl",value);
 	}	
 	
 	/**
@@ -311,7 +343,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCPowerOffHourValue(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCPowerOffHourValue", value));
+		buildIntValue("101_0_RTCPowerOffHourValue",value);
 	}	
 
 	/**
@@ -320,7 +352,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRTCPowerOffMinuteValue(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RTCPowerOffMinuteValue", value));
+		buildIntValue("101_0_RTCPowerOffMinuteValue",value);
 	}
 
 	/**
@@ -329,7 +361,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionWindValvePosition(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_WindValvePosition", value));
+		buildIntValue("101_0_WindValvePosition",value);
 	}
 
 	/**
@@ -338,7 +370,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionDehumiMode(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_DehumiMode", value));
+		buildIntValue("101_0_DehumiMode",value);
 	}
 	
 	/**
@@ -347,7 +379,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionElectricHeatSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_ElectricHeatSwitch", value));
+		buildIntValue("101_0_ElectricHeatSwitch",value);
 	}
 
 	/**
@@ -356,7 +388,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionNaturalWindSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_NaturalWindSwitch", value));
+		buildIntValue("101_0_NaturalWindSwitch",value);
 	}
 	
 	/**
@@ -365,7 +397,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionLeftRightWindSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_LeftRightWindSwitch", value));
+		buildIntValue("101_0_LeftRightWindSwitch",value);
 	}
 
 	/**
@@ -374,7 +406,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionUpDownWindSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_UpDownWindSwitch", value));
+		buildIntValue("101_0_UpDownWindSwitch",value);
 	}
 
 	/**
@@ -383,7 +415,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionDualModeSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_DualModeSwitch", value));
+		buildIntValue("101_0_DualModeSwitch",value);
 	}
 	
 	/**
@@ -392,7 +424,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionStrongSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_StrongSwitch", value));
+		buildIntValue("101_0_StrongSwitch",value);
 	}
 	
 	/**
@@ -401,7 +433,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionCombinConserveEnergySwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_CombinConserveEnergySwitch", value));
+		buildIntValue("101_0_CombinConserveEnergySwitch",value);
 	}
 
 	/**
@@ -410,7 +442,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionConserveEnergySwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_ConserveEnergySwitch", value));
+		buildIntValue("101_0_ConserveEnergySwitch",value);
 	}
 
 	/**
@@ -419,7 +451,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionOutdoorCleanSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_OutdoorCleanSwitch", value));
+		buildIntValue("101_0_OutdoorCleanSwitch",value);
 	}
 	
 	/**
@@ -428,7 +460,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionIndoorCleanSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_IndoorCleanSwitch", value));
+		buildIntValue("101_0_IndoorCleanSwitch",value);
 	}
 	
 	/**
@@ -437,7 +469,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionFanSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_FanSwitch", value));
+		buildIntValue("101_0_FanSwitch",value);
 	}
 	
 	/**
@@ -446,7 +478,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionCleanerSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_CleanerSwitch", value));
+		buildIntValue("101_0_CleanerSwitch",value);
 	}
 
 	/**
@@ -455,7 +487,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionSmokeSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_SmokeSwitch", value));
+		buildIntValue("101_0_SmokeSwitch",value);
 	}
 	
 	/**
@@ -464,7 +496,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionVoiceControl(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_VoiceControl", value));
+		buildIntValue("101_0_VoiceControl",value);
 	}
 	
 	/**
@@ -473,7 +505,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionMuteSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_MuteSwitch", value));
+		buildIntValue("101_0_MuteSwitch",value);
 	}
 	
 	/**
@@ -482,7 +514,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionSmartEyeSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_SmartEyeSwitch", value));
+		buildIntValue("101_0_SmartEyeSwitch",value);
 	}
 
 	/**
@@ -491,7 +523,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionTempDisplaySwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_TempDisplaySwitch", value));
+		buildIntValue("101_0_TempDisplaySwitch",value);
 	}
 	
 	/**
@@ -500,7 +532,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionLedSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_LedSwitch", value));
+		buildIntValue("101_0_LedSwitch",value);
 	}
 
 	/**
@@ -509,7 +541,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionDisplayScreenShineSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_DisplayScreenShineSwitch", value));
+		buildIntValue("101_0_DisplayScreenShineSwitch",value);
 	}
 	
 	/**
@@ -518,7 +550,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionBackgroundLightSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_BackgroundLightSwitch", value));
+		buildIntValue("101_0_BackgroundLightSwitch",value);
 	}
 	
 	/**
@@ -527,7 +559,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionRightWindSwingSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_RightWindSwingSwitch", value));
+		buildIntValue("101_0_RightWindSwingSwitch",value);
 	}
 
 	/**
@@ -536,7 +568,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionLeftWindSwingSwitch(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_LeftWindSwingSwitch", value));
+		buildIntValue("101_0_LeftWindSwingSwitch",value);
 	}
 
 	/**
@@ -545,7 +577,7 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionIndoorStrainerCleanResetControl(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_IndoorStrainerCleanResetControl", value));
+		buildIntValue("101_0_IndoorStrainerCleanResetControl",value);
 	}
 	
 	/**
@@ -554,7 +586,43 @@ public class DeviceProtocol
 	 */
 	public void setAirConditionDisplayScreenBrightness(int value)
 	{
-		this.buildCommand.getJSONArray("value").put(new JSONObject().put("101_0_DisplayScreenBrightness", value));
+		buildIntValue("101_0_DisplayScreenBrightness",value);
+	}
+	public int getIntResult(String str)
+	{
+		if(null!=returnResult){
+			if(returnResult.has(str))
+			{
+				return returnResult.optInt(str,-1);
+			}
+		}else{
+			LogUtils.e(TAG+"<getIntResult>","return "+str+" Result is null");
+		}
+		return -1;
+	}
+	public double getDoubleResult(String str)
+	{
+		if(null!=returnResult){
+			if(returnResult.has(str))
+			{
+				return returnResult.optDouble(str,-1);
+			}
+		}else{
+			LogUtils.e(TAG+"<getDoubleResult>","return "+str+" Result is null");
+		}
+		return -1;
+	}
+	public String getStringResult(String str)
+	{
+		if(null!=returnResult){
+			if(returnResult.has(str))
+			{
+				return returnResult.optString(str,"");
+			}
+		}else{
+			LogUtils.e(TAG+"<getStringResult>","return "+str+" Result is null");
+		}
+		return "";
 	}
 	
 	/**
@@ -563,14 +631,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionWindSpeedMode()
 	{
-		if(this.returnResult.has("102_0_WindSpeedMode"))
-		{
-			return this.returnResult.getInt("102_0_WindSpeedMode");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_WindSpeedMode");
 	}
 	
 	/**
@@ -579,14 +640,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionAirVolume()
 	{
-		if(this.returnResult.has("102_0_AirVolume"))
-		{
-			return this.returnResult.getInt("102_0_AirVolume");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_AirVolume");
 	}
 
 	/**
@@ -595,14 +649,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionSleepMode()
 	{
-		if(this.returnResult.has("102_0_SleepMode"))
-		{
-			return this.returnResult.getInt("102_0_SleepMode");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_SleepMode");
 	}
 	
 	/**
@@ -611,14 +658,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionWindDirectionSwitch()
 	{
-		if(this.returnResult.has("102_0_WindDirectionSwitch"))
-		{
-			return this.returnResult.getInt("102_0_WindDirectionSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_WindDirectionSwitch");
 	}
 	
 	/**
@@ -627,14 +667,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionLaunchSwitch()
 	{
-		if(this.returnResult.has("102_0_LaunchSwitch"))
-		{
-			return this.returnResult.getInt("102_0_LaunchSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_LaunchSwitch");
 	}
 	
 	/**
@@ -643,14 +676,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionWorkMode()
 	{
-		if(this.returnResult.has("102_0_WorkMode"))
-		{
-			return this.returnResult.getInt("102_0_WorkMode");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_WorkMode");
 	}
 	
 	/**
@@ -659,14 +685,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorSetTemp()
 	{
-		if(this.returnResult.has("102_0_IndoorSetTemp"))
-		{
-			return this.returnResult.getInt("102_0_IndoorSetTemp");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorSetTemp");
 	}
 	
 	/**
@@ -675,14 +694,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorCurrentTemp()
 	{
-		if(this.returnResult.has("102_0_IndoorCurrentTemp"))
-		{
-			return this.returnResult.getInt("102_0_IndoorCurrentTemp");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorCurrentTemp");
 	}
 	
 	/**
@@ -691,14 +703,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorPipeTemp()
 	{
-		if(this.returnResult.has("102_0_IndoorPipeTemp"))
-		{
-			return this.returnResult.getInt("102_0_IndoorPipeTemp");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorPipeTemp");
 	}
 	
 	/**
@@ -707,14 +712,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorSetHumi()
 	{
-		if(this.returnResult.has("102_0_IndoorSetHumi"))
-		{
-			return this.returnResult.getInt("102_0_IndoorSetHumi");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorSetHumi");
 	}
 	
 	/**
@@ -723,14 +721,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorCurrentHumi()
 	{
-		if(this.returnResult.has("102_0_IndoorCurrentHumi"))
-		{
-			return this.returnResult.getInt("102_0_IndoorCurrentHumi");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorCurrentHumi");
 	}
 	
 	/**
@@ -739,14 +730,11 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionRecvFeelIndoorTemp()
 	{
-		if(this.returnResult.has("102_0_RecvFeelIndoorTemp"))
-		{
-			return 0.5*this.returnResult.getInt("102_0_RecvFeelIndoorTemp");
+		double ret=getDoubleResult("102_0_RecvFeelIndoorTemp");
+		if(ret!=-1){
+			return 0.5*ret;
 		}
-		else
-		{
-			return -1;
-		}
+		return  -1;
 	}
 
 	/**
@@ -755,14 +743,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionFeelControl()
 	{
-		if(this.returnResult.has("102_0_FeelControl"))
-		{
-			return this.returnResult.getInt("102_0_FeelControl");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_FeelControl");
 	}	
 	
 	/**
@@ -771,14 +752,11 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionFeelIndoorTempOffset()
 	{
-		if(this.returnResult.has("102_0_FeelIndoorTempOffset"))
-		{
-			return 0.5*this.returnResult.getInt("102_0_FeelIndoorTempOffset");
+		double ret=getDoubleResult("102_0_FeelIndoorTempOffset");
+		if(ret!=-1){
+			return 0.5*ret;
 		}
-		else
-		{
-			return -1;
-		}
+		return  -1;
 	}
 	
 	/**
@@ -787,14 +765,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionTempDisplayMode()
 	{
-		if(this.returnResult.has("102_0_TempDisplayMode"))
-		{
-			return this.returnResult.getInt("102_0_TempDisplayMode");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_TempDisplayMode");
 	}
 	
 	/**
@@ -803,14 +774,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionAutoAndDehumiModeTempOffset()
 	{
-		if(this.returnResult.has("102_0_AutoAndDehumiModeTempOffset"))
-		{
-			return this.returnResult.getInt("102_0_AutoAndDehumiModeTempOffset");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_AutoAndDehumiModeTempOffset");
 	}
 	
 	/**
@@ -819,14 +783,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionNormalTimingValue()
 	{
-		if(this.returnResult.has("102_0_NormalTimingValue"))
-		{
-			return this.returnResult.getInt("102_0_NormalTimingValue");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_NormalTimingValue");
 	}
 	
 	/**
@@ -835,14 +792,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionNormalTimingValidity()
 	{
-		if(this.returnResult.has("102_0_NormalTimingValidity"))
-		{
-			return this.returnResult.getInt("102_0_NormalTimingValidity");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_NormalTimingValidity");
 	}
 	
 	/**
@@ -851,14 +801,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCHourExplain()
 	{
-		if(this.returnResult.has("102_0_RTCHourExplain"))
-		{
-			return this.returnResult.getInt("102_0_RTCHourExplain");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCHourExplain");
 	}
 	
 	/**
@@ -867,14 +810,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCHourValue()
 	{
-		if(this.returnResult.has("102_0_RTCHourValue"))
-		{
-			return this.returnResult.getInt("102_0_RTCHourValue");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCHourValue");
 	}
 	
 	/**
@@ -883,14 +819,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCMinuteExplain()
 	{
-		if(this.returnResult.has("102_0_RTCMinuteExplain"))
-		{
-			return this.returnResult.getInt("102_0_RTCMinuteExplain");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCMinuteExplain");
 	}
 	
 	/**
@@ -899,14 +828,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCMinuteValue()
 	{
-		if(this.returnResult.has("102_0_RTCMinuteValue"))
-		{
-			return this.returnResult.getInt("102_0_RTCMinuteValue");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCMinuteValue");
 	}
 	
 	/**
@@ -915,14 +837,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOnHourExplain()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOnHourExplain"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOnHourExplain");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOnHourExplain");
 	}
 	
 	/**
@@ -931,14 +846,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOnControl()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOnControl"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOnControl");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOnControl");
 	}
 	
 	/**
@@ -947,14 +855,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOnHourValue()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOnHourValue"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOnHourValue");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOnHourValue");
 	}
 	
 	/**
@@ -963,14 +864,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOnMinuteExplain()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOnMinuteExplain"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOnMinuteExplain");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOnMinuteExplain");
 	}
 	
 	/**
@@ -979,14 +873,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOnMinuteValue()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOnMinuteValue"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOnMinuteValue");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOnMinuteValue");
 	}
 	
 	/**
@@ -995,14 +882,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOffHourExplain()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOffHourExplain"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOffHourExplain");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOffHourExplain");
 	}
 	
 	/**
@@ -1011,14 +891,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOffControl()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOffControl"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOffControl");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOffControl");
 	}
 	
 	/**
@@ -1027,14 +900,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOffHourValue()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOffHourValue"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOffHourValue");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOffHourValue");
 	}
 	
 	/**
@@ -1043,14 +909,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOffMinuteExplain()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOffMinuteExplain"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOffMinuteExplain");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOffMinuteExplain");
 	}
 	
 	/**
@@ -1059,14 +918,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRTCPowerOffMinuteValue()
 	{
-		if(this.returnResult.has("102_0_RTCPowerOffMinuteValue"))
-		{
-			return this.returnResult.getInt("102_0_RTCPowerOffMinuteValue");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RTCPowerOffMinuteValue");
 	}
 
 	/**
@@ -1075,14 +927,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionWindValvePosition()
 	{
-		if(this.returnResult.has("102_0_WindValvePosition"))
-		{
-			return this.returnResult.getInt("102_0_WindValvePosition");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_WindValvePosition");
 	}
 	
 	/**
@@ -1091,14 +936,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionDehumiMode()
 	{
-		if(this.returnResult.has("102_0_DehumiMode"))
-		{
-			return this.returnResult.getInt("102_0_DehumiMode");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_DehumiMode");
 	}
 	
 	/**
@@ -1107,14 +945,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionDualModeSwitch()
 	{
-		if(this.returnResult.has("102_0_DualModeSwitch"))
-		{
-			return this.returnResult.getInt("102_0_DualModeSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_DualModeSwitch");
 	}
 	
 	/**
@@ -1123,14 +954,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionStrongSwitch()
 	{
-		if(this.returnResult.has("102_0_StrongSwitch"))
-		{
-			return this.returnResult.getInt("102_0_StrongSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_StrongSwitch");
 	}
 	
 	/**
@@ -1139,14 +963,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionCombinConserveEnergySwitch()
 	{
-		if(this.returnResult.has("102_0_CombinConserveEnergySwitch"))
-		{
-			return this.returnResult.getInt("102_0_CombinConserveEnergySwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_CombinConserveEnergySwitch");
 	}
 	
 	/**
@@ -1155,14 +972,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionConserveEnergySwitch()
 	{
-		if(this.returnResult.has("102_0_ConserveEnergySwitch"))
-		{
-			return this.returnResult.getInt("102_0_ConserveEnergySwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_ConserveEnergySwitch");
 	}
 	
 	/**
@@ -1171,14 +981,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionElectricHeatSwitch()
 	{
-		if(this.returnResult.has("102_0_ElectricHeatSwitch"))
-		{
-			return this.returnResult.getInt("102_0_ElectricHeatSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_ElectricHeatSwitch");
 	}
 	
 	/**
@@ -1187,14 +990,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionNaturalWindSwitch()
 	{
-		if(this.returnResult.has("102_0_NaturalWindSwitch"))
-		{
-			return this.returnResult.getInt("102_0_NaturalWindSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_NaturalWindSwitch");
 	}
 	
 	/**
@@ -1203,14 +999,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionLeftRightWindSwitch()
 	{
-		if(this.returnResult.has("102_0_LeftRightWindSwitch"))
-		{
-			return this.returnResult.getInt("102_0_LeftRightWindSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_LeftRightWindSwitch");
 	}
 	
 	/**
@@ -1219,14 +1008,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionUpDownWindSwitch()
 	{
-		if(this.returnResult.has("102_0_UpDownWindSwitch"))
-		{
-			return this.returnResult.getInt("102_0_UpDownWindSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_UpDownWindSwitch");
 	}
 	
 	/**
@@ -1235,14 +1017,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionSmokeSwitch()
 	{
-		if(this.returnResult.has("102_0_SmokeSwitch"))
-		{
-			return this.returnResult.getInt("102_0_SmokeSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_SmokeSwitch");
 	}
 	
 	/**
@@ -1251,14 +1026,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionVoiceControl()
 	{
-		if(this.returnResult.has("102_0_VoiceControl"))
-		{
-			return this.returnResult.getInt("102_0_VoiceControl");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_VoiceControl");
 	}
 	
 	/**
@@ -1267,14 +1035,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionMuteSwitch()
 	{
-		if(this.returnResult.has("102_0_MuteSwitch"))
-		{
-			return this.returnResult.getInt("102_0_MuteSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_MuteSwitch");
 	}
 	
 	/**
@@ -1283,14 +1044,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionSmartEyeSwitch()
 	{
-		if(this.returnResult.has("102_0_SmartEyeSwitch"))
-		{
-			return this.returnResult.getInt("102_0_SmartEyeSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_SmartEyeSwitch");
 	}
 	
 	/**
@@ -1299,14 +1053,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorCleanSwitch()
 	{
-		if(this.returnResult.has("102_0_OutdoorCleanSwitch"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorCleanSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorCleanSwitch");
 	}
 	
 	/**
@@ -1315,14 +1062,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorCleanSwitch()
 	{
-		if(this.returnResult.has("102_0_IndoorCleanSwitch"))
-		{
-			return this.returnResult.getInt("102_0_IndoorCleanSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorCleanSwitch");
 	}
 	
 	/**
@@ -1331,14 +1071,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionFanSwitch()
 	{
-		if(this.returnResult.has("102_0_FanSwitch"))
-		{
-			return this.returnResult.getInt("102_0_FanSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_FanSwitch");
 	}
 	
 	/**
@@ -1347,14 +1080,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionCleanerSwitch()
 	{
-		if(this.returnResult.has("102_0_CleanerSwitch"))
-		{
-			return this.returnResult.getInt("102_0_CleanerSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_CleanerSwitch");
 	}
 	
 	/**
@@ -1363,14 +1089,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorElectricityBoard()
 	{
-		if(this.returnResult.has("102_0_IndoorElectricityBoard"))
-		{
-			return this.returnResult.getInt("102_0_IndoorElectricityBoard");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorElectricityBoard");
 	}
 	
 	/**
@@ -1379,14 +1098,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionRightWindSwingSwitch()
 	{
-		if(this.returnResult.has("102_0_RightWindSwingSwitch"))
-		{
-			return this.returnResult.getInt("102_0_RightWindSwingSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_RightWindSwingSwitch");
 	}
 	
 	/**
@@ -1395,14 +1107,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionLeftWindSwingSwitch()
 	{
-		if(this.returnResult.has("102_0_LeftWindSwingSwitch"))
-		{
-			return this.returnResult.getInt("102_0_LeftWindSwingSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_LeftWindSwingSwitch");
 	}
 	
 	/**
@@ -1411,14 +1116,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorStrainerCleanStatus()
 	{
-		if(this.returnResult.has("102_0_IndoorStrainerCleanStatus"))
-		{
-			return this.returnResult.getInt("102_0_IndoorStrainerCleanStatus");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorStrainerCleanStatus");
 	}
 	
 	/**
@@ -1427,14 +1125,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionTempDisplaySwitch()
 	{
-		if(this.returnResult.has("102_0_TempDisplaySwitch"))
-		{
-			return this.returnResult.getInt("102_0_TempDisplaySwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_TempDisplaySwitch");
 	}
 	
 	/**
@@ -1443,14 +1134,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionLedSwitch()
 	{
-		if(this.returnResult.has("102_0_LedSwitch"))
-		{
-			return this.returnResult.getInt("102_0_LedSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_LedSwitch");
 	}
 	
 	/**
@@ -1459,14 +1143,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionDisplayScreenShineSwitch()
 	{
-		if(this.returnResult.has("102_0_DisplayScreenShineSwitch"))
-		{
-			return this.returnResult.getInt("102_0_DisplayScreenShineSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_DisplayScreenShineSwitch");
 	}
 	
 	/**
@@ -1475,14 +1152,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionBackgroundLightSwitch()
 	{
-		if(this.returnResult.has("102_0_BackgroundLightSwitch"))
-		{
-			return this.returnResult.getInt("102_0_BackgroundLightSwitch");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_BackgroundLightSwitch");
 	}
 	
 	/**
@@ -1491,14 +1161,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorEEPROMUpgrade()
 	{
-		if(this.returnResult.has("102_0_IndoorEEPROMUpgrade"))
-		{
-			return this.returnResult.getInt("102_0_IndoorEEPROMUpgrade");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorEEPROMUpgrade");
 	}
 	
 	/**
@@ -1507,14 +1170,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionModel()
 	{
-		if(this.returnResult.has("102_0_Model"))
-		{
-			return this.returnResult.getInt("102_0_Model");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_Model");
 	}
 	
 	/**
@@ -1523,14 +1179,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionBeforeWifiControl()
 	{
-		if(this.returnResult.has("102_0_BeforeWifiControl"))
-		{
-			return this.returnResult.getInt("102_0_BeforeWifiControl");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_BeforeWifiControl");
 	}
 	
 	/**
@@ -1539,14 +1188,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionBeforeIrAndButtonControl()
 	{
-		if(this.returnResult.has("102_0_BeforeIrAndButtonControl"))
-		{
-			return this.returnResult.getInt("102_0_BeforeIrAndButtonControl");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_BeforeIrAndButtonControl");
 	}
 	
 	/**
@@ -1555,14 +1197,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorAlarm1()
 	{
-		if(this.returnResult.has("102_0_IndoorAlarm1"))
-		{
-			return this.returnResult.getInt("102_0_IndoorAlarm1");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorAlarm1");
 	}
 	
 	/**
@@ -1571,14 +1206,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorAlarm2()
 	{
-		if(this.returnResult.has("102_0_IndoorAlarm2"))
-		{
-			return this.returnResult.getInt("102_0_IndoorAlarm2");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorAlarm2");
 	}
 	
 	/**
@@ -1587,14 +1215,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionCompressorRunHz()
 	{
-		if(this.returnResult.has("102_0_CompressorRunHz"))
-		{
-			return this.returnResult.getInt("102_0_CompressorRunHz");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_CompressorRunHz");
 	}
 	
 	/**
@@ -1603,14 +1224,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionCompressorTargetHz()
 	{
-		if(this.returnResult.has("102_0_CompressorTargetHz"))
-		{
-			return this.returnResult.getInt("102_0_CompressorTargetHz");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_CompressorTargetHz");
 	}
 	
 	/**
@@ -1619,14 +1233,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionToDriverHz()
 	{
-		if(this.returnResult.has("102_0_ToDriverHz"))
-		{
-			return this.returnResult.getInt("102_0_ToDriverHz");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_ToDriverHz");
 	}
 	
 	/**
@@ -1635,14 +1242,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionOutdoorEnvironmentTemp()
 	{
-		if(this.returnResult.has("102_0_OutdoorEnvironmentTemp"))
-		{
-			return 0.5*this.returnResult.getInt("102_0_OutdoorEnvironmentTemp");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_OutdoorEnvironmentTemp");
 	}
 	
 	/**
@@ -1651,14 +1251,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionOutdoorCondenserTemp()
 	{
-		if(this.returnResult.has("102_0_OutdoorCondenserTemp"))
-		{
-			return 0.5*this.returnResult.getInt("102_0_OutdoorCondenserTemp");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_OutdoorCondenserTemp");
 	}
 	
 	/**
@@ -1667,14 +1260,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionCompressorExhaustTemp()
 	{
-		if(this.returnResult.has("102_0_CompressorExhaustTemp"))
-		{
-			return 0.5*this.returnResult.getInt("102_0_CompressorExhaustTemp");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_CompressorExhaustTemp");
 	}
 	
 	/**
@@ -1683,14 +1269,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionTargetExhaustTemp()
 	{
-		if(this.returnResult.has("102_0_TargetExhaustTemp"))
-		{
-			return 0.5*this.returnResult.getInt("102_0_TargetExhaustTemp");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_TargetExhaustTemp");
 	}
 	
 	/**
@@ -1699,14 +1278,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorEXVOpening()
 	{
-		if(this.returnResult.has("102_0_OutdoorEXVOpening"))
-		{
-			return 2*this.returnResult.getInt("102_0_OutdoorEXVOpening");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorEXVOpening");
 	}
 	
 	/**
@@ -1715,14 +1287,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionUab()
 	{
-		if(this.returnResult.has("102_0_Uab"))
-		{
-			return this.returnResult.getInt("102_0_Uab");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_Uab");
 	}
 	
 	/**
@@ -1731,14 +1296,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionUbc()
 	{
-		if(this.returnResult.has("102_0_Ubc"))
-		{
-			return this.returnResult.getInt("102_0_Ubc");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_Ubc");
 	}
 	
 	/**
@@ -1747,14 +1305,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionUca()
 	{
-		if(this.returnResult.has("102_0_Uca"))
-		{
-			return this.returnResult.getInt("102_0_Uca");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_Uca");
 	}
 	
 	/**
@@ -1763,14 +1314,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionIab()
 	{
-		if(this.returnResult.has("102_0_Iab"))
-		{
-			return 0.2*this.returnResult.getInt("102_0_Iab");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_Iab");
 	}
 	
 	/**
@@ -1779,14 +1323,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionIbc()
 	{
-		if(this.returnResult.has("102_0_Ibc"))
-		{
-			return 0.2*this.returnResult.getInt("102_0_Ibc");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_Ibc");
 	}
 	
 	/**
@@ -1795,14 +1332,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionIca()
 	{
-		if(this.returnResult.has("102_0_Ica"))
-		{
-			return 0.2*this.returnResult.getInt("102_0_Ica");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_Ica");
 	}
 	
 	/**
@@ -1811,14 +1341,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionUDCBus()
 	{
-		if(this.returnResult.has("102_0_UDCBus"))
-		{
-			return this.returnResult.getInt("102_0_UDCBus");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_UDCBus");
 	}
 	
 	/**
@@ -1827,14 +1350,7 @@ public class DeviceProtocol
 	 */
 	public double getAirConditionIuv()
 	{
-		if(this.returnResult.has("102_0_Iuv"))
-		{
-			return 0.2*this.returnResult.getInt("102_0_Iuv");
-		}
-		else
-		{
-			return -1;
-		}
+		return getDoubleResult("102_0_Iuv");
 	}
 	
 	/**
@@ -1843,14 +1359,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorFanRunStatus()
 	{
-		if(this.returnResult.has("102_0_FanRunStatus"))
-		{
-			return this.returnResult.getInt("102_0_FanRunStatus");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_FanRunStatus");
 	}
 	
 	/**
@@ -1859,14 +1368,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorUnitCurrentWorkStatus()
 	{
-		if(this.returnResult.has("102_0_OutdoorUnitCurrentWorkStatus"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorUnitCurrentWorkStatus");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorUnitCurrentWorkStatus");
 	}
 	
 	/**
@@ -1875,14 +1377,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionFourWayValveStatus()
 	{
-		if(this.returnResult.has("102_0_FourWayValveStatus"))
-		{
-			return this.returnResult.getInt("102_0_FourWayValveStatus");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_FourWayValveStatus");
 	}
 	
 	/**
@@ -1891,14 +1386,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorDefrostingCream()
 	{
-		if(this.returnResult.has("102_0_OutdoorDefrostingCream"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorDefrostingCream");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorDefrostingCream");
 	}
 	
 	/**
@@ -1907,14 +1395,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorFrost()
 	{
-		if(this.returnResult.has("102_0_OutdoorFrost"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorFrost");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorFrost");
 	}
 	
 	/**
@@ -1923,14 +1404,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionDehumiValve()
 	{
-		if(this.returnResult.has("102_0_DehumiValve"))
-		{
-			return this.returnResult.getInt("102_0_DehumiValve");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_DehumiValve");
 	}
 	
 	/**
@@ -1939,14 +1413,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionMultiSplit()
 	{
-		if(this.returnResult.has("102_0_MultiSplit"))
-		{
-			return this.returnResult.getInt("102_0_MultiSplit");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_MultiSplit");
 	}
 	
 	/**
@@ -1955,14 +1422,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionTempControlPowerOff()
 	{
-		if(this.returnResult.has("102_0_TempControlPowerOff"))
-		{
-			return this.returnResult.getInt("102_0_TempControlPowerOff");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_TempControlPowerOff");
 	}
 	
 	/**
@@ -1971,14 +1431,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionForceInnerStop()
 	{
-		if(this.returnResult.has("102_0_ForceInnerStop"))
-		{
-			return this.returnResult.getInt("102_0_ForceInnerStop");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_ForceInnerStop");
 	}
 	
 	/**
@@ -1987,14 +1440,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionForceInnerSpeed()
 	{
-		if(this.returnResult.has("102_0_ForceInnerSpeed"))
-		{
-			return this.returnResult.getInt("102_0_ForceInnerSpeed");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_ForceInnerSpeed");
 	}
 	
 	/**
@@ -2003,14 +1449,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionForceInnerWindValvePosition()
 	{
-		if(this.returnResult.has("102_0_ForceInnerWindValvePosition"))
-		{
-			return this.returnResult.getInt("102_0_ForceInnerWindValvePosition");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_ForceInnerWindValvePosition");
 	}
 	
 	/**
@@ -2019,14 +1458,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionFillGasIncreaseHan()
 	{
-		if(this.returnResult.has("102_0_FillGasIncreaseHan"))
-		{
-			return this.returnResult.getInt("102_0_FillGasIncreaseHan");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_FillGasIncreaseHan");
 	}
 	
 	/**
@@ -2035,14 +1467,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionCompressorPreheat()
 	{
-		if(this.returnResult.has("102_0_CompressorPreheat"))
-		{
-			return this.returnResult.getInt("102_0_CompressorPreheat");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_CompressorPreheat");
 	}
 	
 	/**
@@ -2051,14 +1476,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionCompressorRibbonHeater()
 	{
-		if(this.returnResult.has("102_0_CompressorRibbonHeater"))
-		{
-			return this.returnResult.getInt("102_0_CompressorRibbonHeater");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_CompressorRibbonHeater");
 	}
 	
 	/**
@@ -2067,14 +1485,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorElectricityBoard()
 	{
-		if(this.returnResult.has("102_0_OutdoorElectricityBoard"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorElectricityBoard");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorElectricityBoard");
 	}
 	
 	/**
@@ -2083,14 +1494,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorEEPROMUpgrade()
 	{
-		if(this.returnResult.has("102_0_OutdoorEEPROMUpgrade"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorEEPROMUpgrade");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorEEPROMUpgrade");
 	}
 	
 	/**
@@ -2099,14 +1503,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorFaultDisplay()
 	{
-		if(this.returnResult.has("102_0_OutdoorFaultDisplay"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorFaultDisplay");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorFaultDisplay");
 	}
 	
 	/**
@@ -2115,14 +1512,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOilReturn()
 	{
-		if(this.returnResult.has("102_0_OilReturn"))
-		{
-			return this.returnResult.getInt("102_0_OilReturn");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OilReturn");
 	}
 	
 	/**
@@ -2131,14 +1521,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm1()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm1"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm1");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm1");
 	}
 	
 	/**
@@ -2147,14 +1530,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm2()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm2"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm2");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm2");
 	}
 	
 	/**
@@ -2163,14 +1539,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm3()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm3"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm3");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm3");
 	}
 	
 	/**
@@ -2179,14 +1548,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm4()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm4"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm4");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm4");
 	}
 	
 	/**
@@ -2195,14 +1557,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm5()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm5"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm5");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm5");
 	}
 	
 	/**
@@ -2211,14 +1566,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm6()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm6"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm6");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm6");
 	}
 
 	/**
@@ -2227,14 +1575,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm7()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm7"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm7");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm7");
 	}
 	
 	/**
@@ -2243,14 +1584,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm8()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm8"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm8");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm8");
 	}
 	
 	/**
@@ -2259,14 +1593,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorAlarm9()
 	{
-		if(this.returnResult.has("102_0_OutdoorAlarm9"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorAlarm9");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_OutdoorAlarm9");
 	}
 	
 	/**
@@ -2275,14 +1602,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionIndoorFanRPM()
 	{
-		if(this.returnResult.has("102_0_IndoorFanRPM"))
-		{
-			return this.returnResult.getInt("102_0_IndoorFanRPM");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_IndoorFanRPM");
 	}
 
 	/**
@@ -2291,14 +1611,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionOutdoorFanRPM()
 	{
-		if(this.returnResult.has("102_0_OutdoorFanRPM"))
-		{
-			return this.returnResult.getInt("102_0_OutdoorFanRPM");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_DualMod102_0_OutdoorFanRPMSwitch");
 	}
 	
 	/**
@@ -2307,14 +1620,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionPM25Level()
 	{
-		if(this.returnResult.has("102_0_PM2.5Level"))
-		{
-			return this.returnResult.getInt("102_0_PM2.5Level");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_PM2.5Level");
 	}
 	
 	/**
@@ -2323,14 +1629,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionWhetherPM25()
 	{
-		if(this.returnResult.has("102_0_WhetherPM2.5"))
-		{
-			return this.returnResult.getInt("102_0_WhetherPM2.5");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_WhetherPM2.5");
 	}
 	
 	/**
@@ -2339,14 +1638,7 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionPM25()
 	{
-		if(this.returnResult.has("102_0_PM2.5%"))
-		{
-			return this.returnResult.getInt("102_0_PM2.5%");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_PM2.5%");
 	}
 	
 	/**
@@ -2355,14 +1647,37 @@ public class DeviceProtocol
 	 */
 	public int getAirConditionDisplayScreenBrightness()
 	{
-		if(this.returnResult.has("102_0_DisplayScreenBrightness"))
-		{
-			return this.returnResult.getInt("102_0_DisplayScreenBrightness");
-		}
-		else
-		{
-			return -1;
-		}
+		return getIntResult("102_0_DisplayScreenBrightness");
 	}
-	
+
+	@Override
+	public String getDeviceName() {
+		// TODO Auto-generated method stub
+		return deviceName;
+	}
+
+	@Override
+	public short getDeviceId() {
+		// TODO Auto-generated method stub
+		return deviceId;
+	}
+
+	@Override
+	public String getProtocol() {
+		// TODO Auto-generated method stub
+		return deviceProtocol;
+	}
+
+	@Override
+	public String getAttribute() {
+		// TODO Auto-generated method stub
+		return OffsetAttribute;
+	}
+	/**
+	 * 设置指令下发
+	 */
+	@Override
+	public String sendCommand(Device device) {
+		return device.downActionBuild(this.buildCommand.toString());
+	}
 }
