@@ -420,7 +420,12 @@ public class DeviceControl extends AbstractDeviceControl
 		try{
 			logger.v("<reportStatus> sn = {}, productName = {}", sn , deviceProtocol.getDeviceName());
 			logger.d("<reportStatus> before flush, devicesStatusInfo = {}", devicesStatusInfo);
-			
+			JSONObject devSta_old=devicesStatusInfo.get(sn);
+			if(null!=devSta_old){
+				devSta_old=new JSONObject(devSta_old.toString());
+			}else{
+				devSta_old=new JSONObject();
+			}
 			int indoorTemperature = deviceProtocol.getAirConditionIndoorCurrentTemp();//室内温度
 			int indoorHumidity = deviceProtocol.getAirConditionIndoorCurrentHumi();//室内湿度
 			int indoorPm25 = deviceProtocol.getAirConditionPM25();//室内pm2.5 质量百分比
@@ -601,7 +606,7 @@ public class DeviceControl extends AbstractDeviceControl
 			if(null==snum){
 				snum=new Integer(0);
 			}
-			JSONObject devSta_old = devicesStatusInfo.get(sn);
+			
 			if(!(devSta_old.toString().equals(devSta_js.toString())) || (0 == snum)){
 				devicesStatusInfo.put(sn, devSta_js);
 				reportFlagInfo.put(sn, 1);
@@ -651,6 +656,7 @@ public class DeviceControl extends AbstractDeviceControl
 					String j_str = device.upPropertyParse(str);
 					if(null != j_str)
 					{
+						deviceProtocol.update(j_str);
 						LogUtils.printflong("return data j_str", j_str);
 						JSONObject json_obj = new JSONObject(j_str);
 						int addr = json_obj.optInt("addr",1);

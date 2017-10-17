@@ -5,11 +5,9 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.szsbay.livehome.openlife.device.IDeviceProtocol;
-import com.szsbay.livehome.protocol.Device;
-import com.szsbay.livehome.util.LogUtils;
+import com.szsbay.livehome.openlife.device.AbstractHisenseProtocol;
 
-public class DeviceProtocol implements IDeviceProtocol
+public class DeviceProtocol extends AbstractHisenseProtocol
 {
 	private static final String TAG = "[DeviceProtocol] ";
 	/**
@@ -20,12 +18,12 @@ public class DeviceProtocol implements IDeviceProtocol
 	/**
 	 * 设备类型ID
 	 */
-	public static final short deviceId = 0x01;
+	public static  short deviceId = 0x01;
 
 	/**
 	 * 设备协议属性定义
 	 */
-	public static final String deviceProtocol = "{\"protocols\":["
+	public static  String deviceProtocol = "{\"protocols\":["
 			+ "{\"cmd\":3,\"sub\":0,\"dir\":0,\"flag\":0,\"parameters\":[]}"
 			+ ",{\"cmd\":3,\"sub\":1,\"dir\":0,\"flag\":0,\"parameters\":[]}"
 			+ ",{\"cmd\":7,\"sub\":1,\"dir\":0,\"flag\":0,\"parameters\":[]}"
@@ -50,7 +48,7 @@ public class DeviceProtocol implements IDeviceProtocol
 	/**
 	 * 设备协议名称定义
 	 */
-	public static final String OffsetAttribute = "{\"attributes\":["
+	public static  String OffsetAttribute = "{\"attributes\":["
 			+ "{\"cmd\":3,\"sub\":0,\"dir\":0,\"parameters\":[]}"
 			+ ",{\"cmd\":3,\"sub\":1,\"dir\":0,\"parameters\":[]}"
 			+ ",{\"cmd\":7,\"sub\":1,\"dir\":0,\"parameters\":[]}"
@@ -97,12 +95,10 @@ public class DeviceProtocol implements IDeviceProtocol
 	public static final String device_102_0_response = "f4f50140490100fe0101010100660001010018171a8080808080000000000000000000000000000000ffffff0000000000000080008000000000000000000000000000000000000000000000000008bbf4fb";
 	public static final String device_202_0_response = "F4F50140190100FE0101020100CA0001000002030101081919010808191902ADF4FB";//"F4F50140140100FE0101010100CA0001000001030108081919026AF4FB";//	
 	
-	private JSONObject buildCommand = null;//设备设置指令内容
-	private JSONObject returnResult = null;//设备返回状态内容
 	
 	public DeviceProtocol()
 	{
-		this.buildCommand = new JSONObject("{\"cmd\":101,\"sub\":0,\"value\":[]}");
+		buildCommand = new JSONObject("{\"cmd\":101,\"sub\":0,\"value\":[]}");
 	}
 	
 	public DeviceProtocol(String json_string)
@@ -129,25 +125,31 @@ public class DeviceProtocol implements IDeviceProtocol
 			returnResult = null;
 		}
 	}
-
-	public void buildIntValue(String str,int value)
+	public void update(String json_string)
 	{
-		if(null!=buildCommand){
-			JSONArray jsonArray=buildCommand.optJSONArray("value");
-			jsonArray.put(new JSONObject().put(str, value));
-		}else{
-			LogUtils.e(TAG+"<buildIntValue>","buildCommand is null");
+		JSONObject json_obj = new JSONObject(json_string);
+		if(102 == json_obj.getInt("cmd") && 0 == json_obj.getInt("sub"))
+		{
+			JSONArray json_array = json_obj.getJSONArray("value");
+			returnResult = new JSONObject();
+			
+			for(int i=0; i<json_array.length() ;i++)
+			{
+				JSONObject json_temp = json_array.getJSONObject(i);
+				Iterator<String> it = json_temp.keySet().iterator();
+		        while(it.hasNext()) 
+		        {  
+		            String key = it.next();
+					returnResult.put(key, json_temp.get(key));
+		        }
+			}
+		}
+		else
+		{
+			returnResult = null;
 		}
 	}
-	public void buildDoubleValue(String str,double value)
-	{
-		if(null!=buildCommand){
-			JSONArray jsonArray=buildCommand.optJSONArray("value");
-			jsonArray.put(new JSONObject().put(str, value));
-		}else{
-			LogUtils.e(TAG+"<buildDoubleValue>","buildCommand is null");
-		}
-	}
+	
 	/**
 	 * 设置空调风量档位
 	 * @param value	<自动风:0、静音风:1、低风:2、中风:3、高风:4>
@@ -587,42 +589,6 @@ public class DeviceProtocol implements IDeviceProtocol
 	public void setAirConditionDisplayScreenBrightness(int value)
 	{
 		buildIntValue("101_0_DisplayScreenBrightness",value);
-	}
-	public int getIntResult(String str)
-	{
-		if(null!=returnResult){
-			if(returnResult.has(str))
-			{
-				return returnResult.optInt(str,-1);
-			}
-		}else{
-			LogUtils.e(TAG+"<getIntResult>","return "+str+" Result is null");
-		}
-		return -1;
-	}
-	public double getDoubleResult(String str)
-	{
-		if(null!=returnResult){
-			if(returnResult.has(str))
-			{
-				return returnResult.optDouble(str,-1);
-			}
-		}else{
-			LogUtils.e(TAG+"<getDoubleResult>","return "+str+" Result is null");
-		}
-		return -1;
-	}
-	public String getStringResult(String str)
-	{
-		if(null!=returnResult){
-			if(returnResult.has(str))
-			{
-				return returnResult.optString(str,"");
-			}
-		}else{
-			LogUtils.e(TAG+"<getStringResult>","return "+str+" Result is null");
-		}
-		return "";
 	}
 	
 	/**
@@ -1649,13 +1615,6 @@ public class DeviceProtocol implements IDeviceProtocol
 	{
 		return getIntResult("102_0_DisplayScreenBrightness");
 	}
-
-	@Override
-	public String getDeviceName() {
-		// TODO Auto-generated method stub
-		return deviceName;
-	}
-
 	@Override
 	public short getDeviceId() {
 		// TODO Auto-generated method stub
@@ -1673,11 +1632,10 @@ public class DeviceProtocol implements IDeviceProtocol
 		// TODO Auto-generated method stub
 		return OffsetAttribute;
 	}
-	/**
-	 * 设置指令下发
-	 */
 	@Override
-	public String sendCommand(Device device) {
-		return device.downActionBuild(this.buildCommand.toString());
+	public String getDeviceName() {
+		// TODO Auto-generated method stub
+		return deviceName;
 	}
+	
 }
