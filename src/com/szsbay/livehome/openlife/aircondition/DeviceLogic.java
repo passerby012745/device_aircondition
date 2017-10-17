@@ -1,6 +1,6 @@
 package com.szsbay.livehome.openlife.aircondition;
 
-public class AirconditionLogic 
+public class DeviceLogic 
 {
 	//空调设备互斥操作
 }

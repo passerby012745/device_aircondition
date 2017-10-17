@@ -10,13 +10,12 @@ import org.json.JSONObject;
 import com.huawei.smarthome.driver.IDeviceService;
 import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
-import com.szsbay.livehome.openlife.device.AbstractDeviceControl;
-import com.szsbay.livehome.openlife.device.IDeviceProtocol;
+import com.szsbay.livehome.openlife.device.AbstractHisenseControl;
 import com.szsbay.livehome.openlife.device.ZAbstractDeviceDriver;
 import com.szsbay.livehome.protocol.Device;
 import com.szsbay.livehome.util.LogUtils;
 
-public class DeviceControl extends AbstractDeviceControl
+public class DeviceControl extends AbstractHisenseControl
 {
 	
 	/**
@@ -32,17 +31,20 @@ public class DeviceControl extends AbstractDeviceControl
 	/**
 	 * 设备SN与设备真实状态集映射表
 	 */
-	public  HashMap<String, JSONObject> devicesStatusInfo = new HashMap<String, JSONObject>();
+	private  HashMap<String, JSONObject> devicesStatusInfo = new HashMap<String, JSONObject>();
 	
 	/**
 	 * 设备SN与设备状态上报标志映射表
 	 */
-	public  HashMap<String, Integer> reportFlagInfo = new HashMap<String, Integer>();
-	private DeviceProtocol deviceProtocol=null;
+	private  HashMap<String, Integer> reportFlagInfo = new HashMap<String, Integer>();
+
 	public DeviceControl( ZAbstractDeviceDriver zDriver) {
 		super(zDriver);
 		deviceProtocol=new DeviceProtocol();
-		//deviceProtocol.setDevice(new Device(deviceProtocol.getProtocol(),deviceProtocol.getAttribute(),deviceProtocol.getDeviceName(),deviceProtocol.getDeviceId()));
+		//getProtocol().setDevice(new Device(getProtocol().getProtocol(),getProtocol().getAttribute(),getProtocol().getDeviceName(),getProtocol().getDeviceId()));
+	}
+	private DeviceProtocol getProtocol(){
+		return (DeviceProtocol)deviceProtocol;
 	}
 	/**
 	 * 华为标准空调设备模型动作能力解析
@@ -64,20 +66,20 @@ public class DeviceControl extends AbstractDeviceControl
 			buildCommand(sn, action, params, result);
 			
 			if(null == params)
-				deviceProtocol.setAirConditionSendOrderWay(1);//有声音
+				getProtocol().setAirConditionSendOrderWay(1);//有声音
 			else
 			{
 				if(params.has("mute"))
-					deviceProtocol.setAirConditionSendOrderWay(0);//无声音
+					getProtocol().setAirConditionSendOrderWay(0);//无声音
 				else
-					deviceProtocol.setAirConditionSendOrderWay(1);//有声音
+					getProtocol().setAirConditionSendOrderWay(1);//有声音
 			}
 			//String module = LivehomeDeviceDriver.getdeviceModuleFromSn(sn);
-			//logger.d("<parseAction Single> sn = {}, module = {}, sendCmd = {}", sn , module, deviceProtocol.sendAirConditionCommand());
-			//SocketManager.getInstance().sendMessageToCdn(module, (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
+			//logger.d("<parseAction Single> sn = {}, module = {}, sendCmd = {}", sn , module, getProtocol().sendAirConditionCommand());
+			//SocketManager.getInstance().sendMessageToCdn(module, (getProtocol().sendAirConditionCommand() + "\r\n").getBytes());
 	
 			if(null!=getDriver()){
-				getDriver().sentMessage(sn,deviceProtocol.sendCommand(getDriver().getDevice(sn)) );
+				getDriver().sentMessage(sn,getProtocol().sendCommand(getDriver().getDevice(sn)) );
 				if(null!=reportFlagInfo){
 					reportFlagInfo.put(sn, 0);
 				}
@@ -113,21 +115,21 @@ public class DeviceControl extends AbstractDeviceControl
 				JSONObject params =temp.getJSONObject("params");
 				buildCommand(sn, action, params, result);
 				if(null == params)
-					deviceProtocol.setAirConditionSendOrderWay(1);//有声音
+					getProtocol().setAirConditionSendOrderWay(1);//有声音
 				else
 				{
 					if(params.has("mute"))
-						deviceProtocol.setAirConditionSendOrderWay(0);//无声音
+						getProtocol().setAirConditionSendOrderWay(0);//无声音
 					else
-						deviceProtocol.setAirConditionSendOrderWay(1);//有声音
+						getProtocol().setAirConditionSendOrderWay(1);//有声音
 				}
 			}
 			
 			//String module = LivehomeDeviceDriver.getdeviceModuleFromSn(sn);
-			//logger.d("<parseAction List> sn = {}, module = {}, sendCmd = {}", sn , module, deviceProtocol.sendAirConditionCommand());
-			//SocketManager.getInstance().sendMessageToCdn(module, (deviceProtocol.sendAirConditionCommand() + "\r\n").getBytes());
+			//logger.d("<parseAction List> sn = {}, module = {}, sendCmd = {}", sn , module, getProtocol().sendAirConditionCommand());
+			//SocketManager.getInstance().sendMessageToCdn(module, (getProtocol().sendAirConditionCommand() + "\r\n").getBytes());
 			if(null!=getDriver()){
-				getDriver().sentMessage(sn,deviceProtocol.sendCommand(getDriver().getDevice(sn)) );
+				getDriver().sentMessage(sn,getProtocol().sendCommand(getDriver().getDevice(sn)) );
 				if(null!=reportFlagInfo){
 					reportFlagInfo.put(sn, 0);
 				}
@@ -157,14 +159,14 @@ public class DeviceControl extends AbstractDeviceControl
 			{
 				case "turnOn"://开机<标准模型>
 					result.put("state", "on");
-					deviceProtocol.setAirConditionLaunchSwitch(1);
-					deviceService.reportDeviceProperty(sn, deviceProtocol.getDeviceName(), new JSONObject().put("airConditioner", new JSONObject().put("state", "on")));
+					getProtocol().setAirConditionLaunchSwitch(1);
+					deviceService.reportDeviceProperty(sn, getProtocol().getDeviceName(), new JSONObject().put("airConditioner", new JSONObject().put("state", "on")));
 					break;
 					
 				case "turnOff"://关机<标准模型>
 					result.put("state", "off");
-					deviceProtocol.setAirConditionLaunchSwitch(0);
-					deviceService.reportDeviceProperty(sn, deviceProtocol.getDeviceName(), new JSONObject().put("airConditioner", new JSONObject().put("state", "off")));
+					getProtocol().setAirConditionLaunchSwitch(0);
+					deviceService.reportDeviceProperty(sn, getProtocol().getDeviceName(), new JSONObject().put("airConditioner", new JSONObject().put("state", "off")));
 					break;
 					
 				case "toggle"://切换 <标准模型>
@@ -176,26 +178,26 @@ public class DeviceControl extends AbstractDeviceControl
 						String state = params.getString("state");
 						result.put("state", state);
 						int flag = state.equals("off")?0:1;
-						deviceProtocol.setAirConditionLaunchSwitch(flag);
+						getProtocol().setAirConditionLaunchSwitch(flag);
 					}
 					if(params.has("screenState"))
 					{
 						String screenState = params.getString("screenState");
 						result.put("screenState", screenState);
 						int flag = screenState.equals("off")?0:1;
-						deviceProtocol.setAirConditionDisplayScreenShineSwitch(flag);
-						deviceProtocol.setAirConditionBackgroundLightSwitch(flag);
+						getProtocol().setAirConditionDisplayScreenShineSwitch(flag);
+						getProtocol().setAirConditionBackgroundLightSwitch(flag);
 						if(0==flag)
-							deviceProtocol.setAirConditionDisplayScreenBrightness(0);
+							getProtocol().setAirConditionDisplayScreenBrightness(0);
 						else
-							deviceProtocol.setAirConditionDisplayScreenBrightness(127);
+							getProtocol().setAirConditionDisplayScreenBrightness(127);
 					}
 					if(params.has("ledState"))
 					{
 						String ledState = params.getString("ledState");
 						result.put("ledState", ledState);
 						int flag = ledState.equals("off")?0:1;
-						deviceProtocol.setAirConditionLedSwitch(flag);
+						getProtocol().setAirConditionLedSwitch(flag);
 					}
 					if(params.has("mode"))
 					{
@@ -214,21 +216,21 @@ public class DeviceControl extends AbstractDeviceControl
 								logger.d("<parseAction> 'mode' error params = '{}'", mode);
 								break;
 						}
-						deviceProtocol.setAirConditionStrongSwitch(0);
-						deviceProtocol.setAirConditionMuteSwitch(0);
-						deviceProtocol.setAirConditionWorkMode(flag);
+						getProtocol().setAirConditionStrongSwitch(0);
+						getProtocol().setAirConditionMuteSwitch(0);
+						getProtocol().setAirConditionWorkMode(flag);
 					}
 					if(params.has("temperature"))
 					{
 						int temp = params.getInt("temperature");
 						result.put("configTemperature", temp);
-						deviceProtocol.setAirConditionIndoorTemp(temp);
+						getProtocol().setAirConditionIndoorTemp(temp);
 					}
 					if(params.has("humidity"))
 					{
 						int humi = params.getInt("humidity");
 						result.put("configHumidity", humi);
-						deviceProtocol.setAirConditionIndoorHumi(humi);
+						getProtocol().setAirConditionIndoorHumi(humi);
 					}
 					if(params.has("windDirection"))//风向，可选属性
 					{
@@ -236,10 +238,10 @@ public class DeviceControl extends AbstractDeviceControl
 						result.put("windDirection", windDirection);
 						switch(windDirection)
 						{
-							case "auto":	/*deviceProtocol.setAirConditionNaturalWindSwitch(1);*/		break;//自动
-							case "horizon":	/*deviceProtocol.setAirConditionLeftRightWindSwitch(1);*/	break;//水平
-							case "vertical":/*deviceProtocol.setAirConditionUpDownWindSwitch(1);*/		break;//垂直 
-							case "fix":		/*deviceProtocol.setAirConditionWindValvePosition(1);*/		break;//固定  
+							case "auto":	/*getProtocol().setAirConditionNaturalWindSwitch(1);*/		break;//自动
+							case "horizon":	/*getProtocol().setAirConditionLeftRightWindSwitch(1);*/	break;//水平
+							case "vertical":/*getProtocol().setAirConditionUpDownWindSwitch(1);*/		break;//垂直 
+							case "fix":		/*getProtocol().setAirConditionWindValvePosition(1);*/		break;//固定  
 							default:
 								logger.d("<parseAction> 'windDirection' error params = '{}'", windDirection);
 								break;
@@ -263,36 +265,36 @@ public class DeviceControl extends AbstractDeviceControl
 								break;
 						}
 						if(1 == flag) 
-							deviceProtocol.setAirConditionMuteSwitch(1);
+							getProtocol().setAirConditionMuteSwitch(1);
 						else
-							deviceProtocol.setAirConditionMuteSwitch(0);
-						deviceProtocol.setAirConditionAirVolume(flag);
+							getProtocol().setAirConditionMuteSwitch(0);
+						getProtocol().setAirConditionAirVolume(flag);
 					}
 					break;
 					
 				case "fastCool"://快速制冷<标准模型>
 					result.put("strongMode", "on");
-					deviceProtocol.setAirConditionWorkMode(2);
-					deviceProtocol.setAirConditionStrongSwitch(1);
+					getProtocol().setAirConditionWorkMode(2);
+					getProtocol().setAirConditionStrongSwitch(1);
 					break;
 					
 				case "fastHeat"://快速制热<标准模型>
 					result.put("strongMode", "on");
-					deviceProtocol.setAirConditionWorkMode(1);
-					deviceProtocol.setAirConditionStrongSwitch(1);
+					getProtocol().setAirConditionWorkMode(1);
+					getProtocol().setAirConditionStrongSwitch(1);
 					break;
 					
 				case "startSleepMode"://开始睡眠模式<标准模型>
 					result.put("sleepMode", "on");
 					result.put("strongMode", "off");
-					deviceProtocol.setAirConditionStrongSwitch(0);
-					deviceProtocol.setAirConditionMuteSwitch(0);
-					deviceProtocol.setAirConditionSleepMode(1);
+					getProtocol().setAirConditionStrongSwitch(0);
+					getProtocol().setAirConditionMuteSwitch(0);
+					getProtocol().setAirConditionSleepMode(1);
 					break;
 					
 				case "stopSleepMode"://停止睡眠模式<标准模型>
 					result.put("sleepMode", "off");
-					deviceProtocol.setAirConditionSleepMode(0);
+					getProtocol().setAirConditionSleepMode(0);
 					break;
 					
 				case "assistFunction"://辅助功能<非标准>
@@ -307,7 +309,7 @@ public class DeviceControl extends AbstractDeviceControl
 								logger.d("<parseAction> 'verticalWind' error params = '{}'", params.getString("verticalWind"));
 								break;
 						}
-						deviceProtocol.setAirConditionUpDownWindSwitch(flag);
+						getProtocol().setAirConditionUpDownWindSwitch(flag);
 					}
 					if(params.has("horizonWind"))
 					{
@@ -320,12 +322,12 @@ public class DeviceControl extends AbstractDeviceControl
 								logger.d("<parseAction> 'horizonWind' error params = '{}'", params.getString("horizonWind"));
 								break;
 						}
-						deviceProtocol.setAirConditionLeftRightWindSwitch(flag);
+						getProtocol().setAirConditionLeftRightWindSwitch(flag);
 					}
 					if(params.has("electricHeat"))
 					{
 						int flag = params.getString("electricHeat").equals("off")?0:1;
-						deviceProtocol.setAirConditionElectricHeatSwitch(flag);
+						getProtocol().setAirConditionElectricHeatSwitch(flag);
 					}
 			}
 		
@@ -354,9 +356,9 @@ public class DeviceControl extends AbstractDeviceControl
 			return ;
 		}
 		try{
-			logger.v("<reportAlarm> sn = {}, productName = {}", sn , deviceProtocol.getDeviceName());
+			logger.v("<reportAlarm> sn = {}, productName = {}", sn , getProtocol().getDeviceName());
 	
-			int indoor_alarm1 = deviceProtocol.getAirConditionIndoorAlarm1();
+			int indoor_alarm1 = getProtocol().getAirConditionIndoorAlarm1();
 			if(1 == ((indoor_alarm1&0x80)>>7)){//室内温度传感器故障:0x80
 				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT");
 				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT", new JSONObject());
@@ -381,17 +383,17 @@ public class DeviceControl extends AbstractDeviceControl
 				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT");
 				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT", new JSONObject());	
 			}
-			int indoor_alarm2 = deviceProtocol.getAirConditionIndoorAlarm2();
+			int indoor_alarm2 = getProtocol().getAirConditionIndoorAlarm2();
 			if(1 == ((indoor_alarm2&0x80)>>7)){//室内控制板与显示板通信故障:0x80
 				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT");
 				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT", new JSONObject());
 			}
-			int outdoor_alarm1 = deviceProtocol.getAirConditionOutdoorAlarm1();
+			int outdoor_alarm1 = getProtocol().getAirConditionOutdoorAlarm1();
 			if(1 == ((outdoor_alarm1&0x20)>>5)){//室外盘管温度传感器故障:0x20
 				logger.d("<reportAlarm> ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT");
 				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT", new JSONObject());
 			}
-			int indoor_alarm4 = deviceProtocol.getAirConditionOutdoorAlarm4();
+			int indoor_alarm4 = getProtocol().getAirConditionOutdoorAlarm4();
 			if(1 == ((indoor_alarm4&0x40)>>6)){//冷媒泄漏:0x40
 				logger.d("<reportAlarm> ALARM_AIRCON_REFRIGERANT_LEAKAGE");
 				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_REFRIGERANT_LEAKAGE", new JSONObject());
@@ -418,7 +420,7 @@ public class DeviceControl extends AbstractDeviceControl
 			return null;
 		}
 		try{
-			logger.v("<reportStatus> sn = {}, productName = {}", sn , deviceProtocol.getDeviceName());
+			logger.v("<reportStatus> sn = {}, productName = {}", sn , getProtocol().getDeviceName());
 			logger.d("<reportStatus> before flush, devicesStatusInfo = {}", devicesStatusInfo);
 			JSONObject devSta_old=devicesStatusInfo.get(sn);
 			if(null!=devSta_old){
@@ -426,11 +428,11 @@ public class DeviceControl extends AbstractDeviceControl
 			}else{
 				devSta_old=new JSONObject();
 			}
-			int indoorTemperature = deviceProtocol.getAirConditionIndoorCurrentTemp();//室内温度
-			int indoorHumidity = deviceProtocol.getAirConditionIndoorCurrentHumi();//室内湿度
-			int indoorPm25 = deviceProtocol.getAirConditionPM25();//室内pm2.5 质量百分比
+			int indoorTemperature = getProtocol().getAirConditionIndoorCurrentTemp();//室内温度
+			int indoorHumidity = getProtocol().getAirConditionIndoorCurrentHumi();//室内湿度
+			int indoorPm25 = getProtocol().getAirConditionPM25();//室内pm2.5 质量百分比
 			String indoorAirQuality = null;//室内污染程度
-			switch(deviceProtocol.getAirConditionPM25Level())
+			switch(getProtocol().getAirConditionPM25Level())
 			{
 				case 0:	indoorAirQuality = "excellent";		break;//优
 				case 1:	indoorAirQuality = "good";			break;//良
@@ -441,11 +443,11 @@ public class DeviceControl extends AbstractDeviceControl
 				case 7:	indoorAirQuality = "exbad";			break;//严重污染
 			}
 			
-			String state = (deviceProtocol.getAirConditionLaunchSwitch()==0)?"off":"on";//电源开关状态
-			int configTemperature = deviceProtocol.getAirConditionIndoorSetTemp();//设定温度
-			int configHumidity = deviceProtocol.getAirConditionIndoorSetHumi();//设定湿度
+			String state = (getProtocol().getAirConditionLaunchSwitch()==0)?"off":"on";//电源开关状态
+			int configTemperature = getProtocol().getAirConditionIndoorSetTemp();//设定温度
+			int configHumidity = getProtocol().getAirConditionIndoorSetHumi();//设定湿度
 			String mode = null;//工作模式
-			switch(deviceProtocol.getAirConditionWorkMode())
+			switch(getProtocol().getAirConditionWorkMode())
 			{
 				case 0:	mode = "blast";				break;//送风
 				case 1:	mode = "heating";			break;//制热
@@ -457,7 +459,7 @@ public class DeviceControl extends AbstractDeviceControl
 				case 7:	mode = "auto";				break;//自动除湿
 			}
 			String windSpeed = null;//风速
-			switch(deviceProtocol.getAirConditionAirVolume())
+			switch(getProtocol().getAirConditionAirVolume())
 			{
 				case 0:windSpeed = "auto";		break;//自动风
 				case 1:windSpeed = "mute";		break;//静音风
@@ -465,14 +467,14 @@ public class DeviceControl extends AbstractDeviceControl
 				case 3:windSpeed = "medium";	break;//中风
 				case 4:windSpeed = "fast";		break;//高风
 			}
-			String sleepModeState = (deviceProtocol.getAirConditionSleepMode()==0)?"off":"on";//睡眠开关状态
-			String upDownWindState = (deviceProtocol.getAirConditionLeftRightWindSwitch()==0)?"fix":"scan";//上下风状态
-			String leftRightWindState = (deviceProtocol.getAirConditionUpDownWindSwitch()==0)?"fix":"scan";//左右风状态
-			String elecHeatState = (deviceProtocol.getAirConditionElectricHeatSwitch()==0)?"off":"on";//电热开关状态
+			String sleepModeState = (getProtocol().getAirConditionSleepMode()==0)?"off":"on";//睡眠开关状态
+			String upDownWindState = (getProtocol().getAirConditionLeftRightWindSwitch()==0)?"fix":"scan";//上下风状态
+			String leftRightWindState = (getProtocol().getAirConditionUpDownWindSwitch()==0)?"fix":"scan";//左右风状态
+			String elecHeatState = (getProtocol().getAirConditionElectricHeatSwitch()==0)?"off":"on";//电热开关状态
 			
-			String strongState = (deviceProtocol.getAirConditionStrongSwitch()==0)?"off":"on";//强力状态
-			String screenState = (deviceProtocol.getAirConditionBackgroundLightSwitch()==0)?"off":"on";//屏幕开关状态
-			String ledState = (deviceProtocol.getAirConditionLedSwitch()==0)?"off":"on";//指示灯开关状态
+			String strongState = (getProtocol().getAirConditionStrongSwitch()==0)?"off":"on";//强力状态
+			String screenState = (getProtocol().getAirConditionBackgroundLightSwitch()==0)?"off":"on";//屏幕开关状态
+			String ledState = (getProtocol().getAirConditionLedSwitch()==0)?"off":"on";//指示灯开关状态
 	
 			logger.d("<reportStatus> get device status from 102 order, sn = {}", sn);
 			
@@ -615,7 +617,7 @@ public class DeviceControl extends AbstractDeviceControl
 				if(0 != humiditySensorStatus.length())		deviceStatus.put("humiditySensor", humiditySensorStatus);
 				if(0 != temperatureSensorStatus.length())	deviceStatus.put("temperatureSensor", temperatureSensorStatus);
 				if(0 != pm25SensorStatus.length())			deviceStatus.put("PM25Sensor", pm25SensorStatus);
-				if(0 != hisenseKelonStatus.length())		deviceStatus.put(deviceProtocol.getDeviceName(), hisenseKelonStatus);
+				if(0 != hisenseKelonStatus.length())		deviceStatus.put(getProtocol().getDeviceName(), hisenseKelonStatus);
 				
 				deviceStatus.put("extend", extendStatus);
 				logger.d("<reportStatus> devicesStatusInfo = {}", devicesStatusInfo);
@@ -624,7 +626,7 @@ public class DeviceControl extends AbstractDeviceControl
 				{
 					if(null!=deviceService){
 						logger.e("<reportStatus> sn = {} device status update !",sn);
-						deviceService.reportDeviceProperty(sn, deviceProtocol.getDeviceName(), deviceStatus);
+						deviceService.reportDeviceProperty(sn, getProtocol().getDeviceName(), deviceStatus);
 					}else{
 						logger.e("<reportStatus> deviceService is null !");
 					}
@@ -643,114 +645,7 @@ public class DeviceControl extends AbstractDeviceControl
 		return null;
 	}
 
-	@Override
-	public String parseResult(String module, String str) 
-	{
-		logger.d("<parseResult> module = {}, str = {}", module , str);
-		try{
-			if(str.startsWith("F4F5"))
-			{
-				Device device = getDriver().getDeviceByModule(module);
-				if(null != device)
-				{
-					String j_str = device.upPropertyParse(str);
-					if(null != j_str)
-					{
-						deviceProtocol.update(j_str);
-						LogUtils.printflong("return data j_str", j_str);
-						JSONObject json_obj = new JSONObject(j_str);
-						int addr = json_obj.optInt("addr",1);
-						logger.d("<parseResult> addr = {}", addr );
-						String SN = (module + '-' + addr).toUpperCase();
-						logger.d("<parseResult> SN = {}", SN );
-						if(null != getDriver().getDevice(SN))
-						{
-							logger.d("<parseResult> cmd={} sub={}", json_obj.optInt("cmd",0),json_obj.optInt("sub",-1));
-							logger.d("<parseResult> 102 +++ {}", SN);
-							
-							if(102 == json_obj.optInt("cmd",0) && 0 == json_obj.optInt("sub",-1))
-							{
-								logger.d("<parseResult> 102 ");
-								
-								logger.d("<parseResult> reportStatus {}", SN);
-								reportStatus(SN);
-								logger.d("<parseResult> reportAlarm {}", SN);
-								reportAlarm(SN);
-							}
-							logger.d("<parseResult> 102 ---");
-							logger.d("<parseResult> 202 +++ {}", SN);
-							
-							if(202 == json_obj.optInt("cmd",0) && 0 == json_obj.optInt("sub",-1))
-							{
-								logger.d("<parseResult> 202 ");
-								JSONArray json_array = new JSONObject(j_str).optJSONArray("value");
-								JSONObject temp = new JSONObject();
-								if(null!=json_array){
-									logger.d("<parseResult> json_array {} !",json_array.toString());
-									for(int i=0; i<json_array.length() ;i++)
-									{
-										JSONObject json_temp = json_array.optJSONObject(i);
-										if(null!=json_temp){
-											logger.d("<parseResult> json_temp {} !",json_temp.toString());
-											Set<String> set=json_temp.keySet();
-											if(null!=set){
-												Iterator<String> it = set.iterator();
-												if(null!=it){
-											        while(it.hasNext()) 
-											        {  
-											            String key = it.next();
-											            temp.put(key, json_temp.get(key));
-											        }
-												}
-											}
-										}
-									}
-									int deviceNum=temp.optInt("202_0_DeviceCount", 0);
-									logger.e("<parseResult> DeviceCount {} !",deviceNum);
-									for(int i=0; i<deviceNum; i++)
-									{
-										if(temp.has("202_0_IpAddrLow#"+(i+1)))
-										{
-											int addr_temp = temp.optInt("202_0_IpAddrLow#"+(i+1),-1);
-											if(addr_temp!=-1){
-												String sn_temp = (module + '-' + addr_temp).toUpperCase();
-												deviceService.reportIncludeDevice(sn_temp, deviceProtocol.getDeviceName(), new JSONObject());//驱动通知设备管理服务一个新的设备加入网络了
-											}else{
-												logger.e("<parseResult> get {} fail!","202_0_IpAddrLow#"+(i+1));
-											}
-										}
-									}
-								}else{
-									logger.d("<parseResult> 202 not value");
-								}
-							}
-							logger.d("<parseResult> 202 ---");
-						}
-						else
-						{
-							logger.d("can not find <sn = {}> in deviceProtocolMap", SN);
-						}
-					}
-					else
-					{
-						logger.d("upPropertyParse error");
-					}
-				}
-				else
-				{
-					logger.d("please bind this device <module = {}> at first!", module);
-				}
-			}
-			else
-			{
-				logger.d("error msg, is not begin with 'F4F5', str = {}", str);
-			}
-		}catch (Exception e) 
-		{
-			LogUtils.printTrace("<parseResult> Trace", e);
-		}
-		return null;
-	}
+	
 
 	@Override
 	public JSONObject parseCommand(String arg0, String arg1, JSONObject arg2) {

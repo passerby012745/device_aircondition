@@ -25,8 +25,6 @@ public class DeviceDriver extends ZAbstractDeviceDriver
 	public void init()
 	{
 		logger.d("Aircondition:init");
-		this.setDeviceControl(deviceControl);
-		this.setDeviceProtocol(deviceProtocol);
 		this.setConnectType(ConnectType.CONN_DEVICE);
 		initDriver();
 		logger.d("Aircondition:finish");

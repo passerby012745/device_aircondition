@@ -33,19 +33,15 @@ public class TestAIRCONDITION
 	}
 	public static class AirconditionTestDriver extends ZAbstractDeviceDriver
 	{
-		DeviceControl control=null;
-		DeviceProtocol protocol=null;
 		public AirconditionTestDriver() {
 			LogUtils.setDebugLevel(LogUtils.LEVEL_DEBUG);
 			PLog.setDebugLevel(PLog.LEVEL_NONE);
-			control=new DeviceControl(this);
-			protocol=new DeviceProtocol();
+			deviceControl=new DeviceControl(this);
+			deviceProtocol=new DeviceProtocol();
 		}
 		@Override
 		public void init()
 		{
-			this.setDeviceControl(control);
-			this.setDeviceProtocol(protocol);
 			this.setConnectType(ConnectType.CONN_DEVICE);
 			initDriver();
 		}
