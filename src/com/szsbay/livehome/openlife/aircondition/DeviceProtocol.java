@@ -13,7 +13,7 @@ public class DeviceProtocol extends AbstractHisenseProtocol
 	/**
 	 * 设备名称
 	 */
-	public static final String deviceName = "hisenseKelon";//海信科龙空调
+	public static final String deviceName = "SmartAirCondition";//海信科龙空调
 
 	/**
 	 * 设备类型ID

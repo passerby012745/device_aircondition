@@ -49,7 +49,6 @@ var _getsocketConnectRetryCnt =99;
 var _getgetDeviceModuleIdRetryCnt =99;
 var CNT_socket_lost = 12;
 var _socketLostCnt = 12;	
-
 var resource = null;
 
 function getResource(){
@@ -110,7 +109,18 @@ var _handleBindTimeout = function(){
 	        });
 	}
 }
-
+/*
+ * 获取路由信息_getWifiInfo()->MSG_getWifiInfo_succ ->  
+ * +++判断SSID是否有值，有值，直接到switchWifi+++
+ * 获取WIFI列表，过滤设备APgetWifiList()->MSG_getWifiList_succ->
+ * 切换到设备switchWifi()->MSG_switchWifi_succ->
+ * 连接设备socketConnect->MSG_socketConnect_succ->
+ * 配置WIFI模块sendWifiInfo->MSG_SendCdnInfo_succ->
+ * 获取模块信息getDeviceModuleId->MSG_getDeviceModuleId_succ->
+ * 配置服务器信息connectServer->MSG_connectServer_succ->
+ * 切换回路由器switchRoute
+ * 
+ * */
 //*************************************************************************
 //安装消息处理函数
 //*************************************************************************
@@ -121,7 +131,11 @@ var _handleBindingMsg = function(){
 	case MSG_getWifiInfo_succ: //连接网关wifi成功
 		_curMsgID = 0;
 		showResult(getResource()["LIVEHOME_Install_msg_get_Wifi_List"]);//正在扫描wifi列表...
-		setTimeout(getWifiList, _sleepTime);
+		if(_moduleSsid!=null){
+			setTimeout(switchWifi, _sleepTime);
+		}else{
+			setTimeout(getWifiList, _sleepTime);
+		}
 		break;
 		
 	case MSG_getWifiInfo_fail:
@@ -334,6 +348,7 @@ var getWifiList = function (){
 		"success":function(res){
 			var bfind=0;
 			var level = -100;
+			var index=0;
 			for(var i = 0; i < res.length; i++){
 				var levelValue = parseInt(res[i].level);
 				var res1 = res[i].ssid.indexOf("AIH-");
@@ -346,6 +361,8 @@ var getWifiList = function (){
 					break;
 				}
 			}
+			alert("wifi列表扫描完成");
+			showApResult();
 			showLog("Module SSID:" + _moduleSsid + " PWD:" + _modulePassword);
 			console.log("Module SSID:" + _moduleSsid + " PWD:" + _modulePassword);
 			
@@ -361,6 +378,13 @@ var getWifiList = function (){
 			send_msg(MSG_getWifiList_fail);
 		}
 	});
+}
+//*************************************************************************
+//扫描wifi列表，获取设备AP信息
+//*************************************************************************
+var getApInfo = function (){
+	_moduleSsid = res[i].ssid;
+	_modulePassword = "12345678";
 }
 
 //*************************************************************************
@@ -549,9 +573,9 @@ var doConfig = function (msg){
 //	showLog("doConfig :"+" moduleId :"+moduleId+"\r\n");
 //	console.log("doConfig :"+" moduleId :"+_moduleId+"\r\n");
 	window.AppJsBridge.service.deviceService.doConfig ({
-		manufacturer : "HisenseAirCondition",  //厂商名 
-		brand : "HisenseAirCondition", //品牌名
-		action : "airconbind",
+		manufacturer : "AirCondition",  //厂商名 
+		brand : "Livehome", //品牌名
+		action : "apBind",
 		parameters :  {
 			"moduleId" : _moduleId
 		}, //参数JSON字符串
@@ -567,6 +591,7 @@ var doConfig = function (msg){
 	});
 }
 
+/*+++改成手动触发+++*/
 function runBinding()
 {
 	//获取路由器信息
@@ -585,8 +610,15 @@ $(document).ready(function(){
 			//alert("success: " + JSON.stringify(data));
 			resource = data;
 			initPage();
-			runBinding();  
+			//runBinding();  
 			},
 		"error" : function(data) {}
 		});
+	$('#module_ap_scan').click(function(){
+		runBinding();
+	})
+	$('#module_ap_bind').click(function(){
+		_moduleSsid = $('#ap_ssid').val();
+		runBinding();
+	})
 });

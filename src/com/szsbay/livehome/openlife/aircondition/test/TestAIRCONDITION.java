@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import com.szsbay.livehome.openlife.aircondition.DeviceControl;
 import com.szsbay.livehome.openlife.aircondition.DeviceProtocol;
-import com.szsbay.livehome.openlife.device.ZAbstractDeviceDiscoverer;
+import com.szsbay.livehome.openlife.device.AbstractHisenseDiscoverer;
 import com.szsbay.livehome.openlife.device.ZAbstractDeviceDriver;
 import com.szsbay.livehome.protocol.util.PLog;
 import com.szsbay.livehome.util.LogUtils;
@@ -46,16 +46,18 @@ public class TestAIRCONDITION
 			initDriver();
 		}
 	}
-	public static class AirconditionTestDiscoverer extends ZAbstractDeviceDiscoverer
+	public static class AirconditionTestDiscoverer extends AbstractHisenseDiscoverer
 	{
 
 		public AirconditionTestDiscoverer() {
-			super(DeviceProtocol.deviceName);
+			super(DeviceProtocol.deviceName,DeviceProtocol.deviceId);
 		}
 		@Override
 		public void init()
 		{
 			initDiscoverer();
+			startQueryModule();
+			
 		}
 	}
 }

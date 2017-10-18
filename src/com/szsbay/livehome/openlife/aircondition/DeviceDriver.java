@@ -2,11 +2,11 @@ package com.szsbay.livehome.openlife.aircondition;
 
 import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
-import com.szsbay.livehome.openlife.device.ZAbstractDeviceDriver;
+import com.szsbay.livehome.openlife.device.AbstractHisenseDriver;
 import com.szsbay.livehome.protocol.util.PLog;
 import com.szsbay.livehome.util.LogUtils;
 
-public class DeviceDriver extends ZAbstractDeviceDriver
+public class DeviceDriver extends AbstractHisenseDriver
 {
 	/**
 	 * 日志 
@@ -25,8 +25,10 @@ public class DeviceDriver extends ZAbstractDeviceDriver
 	public void init()
 	{
 		logger.d("Aircondition:init");
-		this.setConnectType(ConnectType.CONN_DEVICE);
+		setConnectType(ConnectType.CONN_DEVICE);
+		setReportTimes(5000);
 		initDriver();
+		
 		logger.d("Aircondition:finish");
 	}
 }

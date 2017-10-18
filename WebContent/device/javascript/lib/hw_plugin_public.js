@@ -34,7 +34,7 @@ var maxReqNumOnce = 26;
 //设定同一时间内最大的请求数量，防止回调被覆盖。
 function getMagicNum(){
 	reqNum++
-	var templeNum = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
+	var templeNum = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	var tmpNum = reqNum%maxReqNumOnce;
 	return templeNum.charAt(tmpNum);
 }
@@ -100,6 +100,8 @@ function checkStringArray(data)
     }
     return isChecked;
 }
+
+
 
 //注册回调方法。
 var regesterCallback = function(data){
@@ -193,6 +195,12 @@ window.AppJsBridge = {
 			var callback = regesterCallback(data);
 			_init();
 			_openConfirm(data.msg, callback.success);
+		},
+		
+		getAppConfigInfo : function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_getAppConfigInfo(callback.success,callback.error,data.tag);
 		}
 	}
 
@@ -208,6 +216,14 @@ var _getFrameName = function(){
 		frameName = "";
 	}
 	return frameName;
+}
+
+window.AppJsBridge.service.deviceFeatureService = {
+   getFeatureList:function(data){
+        var callback = regesterCallback(data)
+        _init();
+        _getFeatureList(data.features, callback.success, callback.error);
+   }
 }
 
 
@@ -313,6 +329,51 @@ window.AppJsBridge.service.networkService = {
 		_getNetworkInfo(callback.success, callback.error);
 	}
 }
+
+window.AppJsBridge.service.nativeNetworkService = {
+        //获取连接wifi基本信息
+        getNativeWifiInfo : function(data){
+            var callback = regesterCallback(data);
+            _init();
+            if (isIOS) {
+                // IOS请求。
+                callback = data;
+            }
+            _getNativeWifiInfo(callback.success,callback.error);
+        },
+        //获取连接wifi基本信息
+        getNeighborInterference : function(data){
+            var callback = regesterCallback(data);
+            _init();
+            if (isIOS) {
+                // IOS请求。
+                callback = data;
+            }
+            _getNeighborInterference(callback.success,callback.error);
+        },
+        
+        //获取所有WIFI信道
+        getAllWiFiChannel : function(data){
+            var callback = regesterCallback(data);
+            _init();
+            if (isIOS) {
+                // IOS请求。
+                callback = data;
+            }
+            _getAllWiFiChannel(callback.success,callback.error);
+        },
+        
+        //跳转到WIFI设置界面
+        jumpSwitchWifiPage : function(data){
+            var callback = regesterCallback(data);
+            _init();
+            if (isIOS) {
+                // IOS请求。
+                callback = data;
+            }
+            _jumpSwitchWifiPage(callback.success,callback.error);
+        }
+    }
 
 
 window.AppJsBridge.service.localNetworkService = {
@@ -466,9 +527,101 @@ window.AppJsBridge.service.deviceService = {
             eval(callback.error)({"errCode":"-5","errMsg":"invalid parameter"});
             return;
         }
-		_smartDeviceDoConfig(data,callback.success, callback.error)
-	}
+        _smartDeviceDoConfig(data,callback.success, callback.error);
+	},
 
+    queryRoomList : function(data){
+        var callback = regesterCallback(data);
+        _init();
+        _queryRoomList(callback.success,callback.error);
+    },
+    
+    addDiscoverDevice : function(data){
+        var callback = regesterCallback(data);
+        _init();
+
+		if(!checkObject(data.discoveredDevice))
+        {
+            eval(callback.error)({"errCode":"-5","errMsg":"invalid parameter"});
+            return;
+        }
+        _addDiscoverDevice(data.discoveredDevice, data.deviceAuthInfo, callback.success, callback.error);
+    },
+    setAddingDevicePassword:function(data){
+		  var callback = regesterCallback(data);
+        _init();
+        _setAddingDevicePassword(data.sn, data.password,callback.success, callback.error);
+	},
+    getDeviceListByParent : function(data){
+        var callback = regesterCallback(data);
+        _init();
+
+		if(!checkString(data.parentDeviceSn))
+        {
+            eval(callback.error)({"errCode":"-5","errMsg":"invalid parameter"});
+            return;
+        }
+        _getDeviceListByParent(data.parentDeviceSn,callback.success, callback.error);
+    },
+    
+    
+    setAddingDevicePassword:function(data){
+        
+        var callback = regesterCallback(data);
+        _init();
+        _setAddingDevicePassword(data.sn, data.password,callback.success, callback.error);
+    },
+	
+	getDiscoveredDeviceList : function(data) {
+		var callback = regesterCallback(data);
+		_init();
+		_getDiscoveredDeviceList(callback.success, callback.error);
+	}
+}
+
+window.AppJsBridge.service.controllerService = {
+	getWirelessAccessPointList:function(data){
+		var callback = regesterCallback(data);
+		_init();
+		_getWirelessAccessPointList(callback.success, callback.error);
+	}
+}
+
+var _setAddingDevicePassword = function(sn,password,success, error)
+{
+    if (isAndroid) {
+        //android请求
+        var frameName = null;
+        try {
+            if (getUrlParams(location.href).frameName) {
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            } else {
+                frameName = null;
+            }
+        } catch (e) {
+            frameName = null;
+        }
+        if(frameName == null){
+            _currentBridge.setAddingDevicePassword (sn,password,"", success, error);
+        }else{
+            _currentBridge.setAddingDevicePassword(sn,password,frameName, success, error);
+        }
+    }else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        var param = {};
+        param.sn = sn;
+        param.password = password;
+        param.request = "deviceService.setAddingDevicePassword";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
 }
 
 /**
@@ -636,17 +789,175 @@ window.AppJsBridge.service.wifiService = {
  	}
 }
 
+window.AppJsBridge.service.wifiTestService = {
+		beginNewTest:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_beginNewTest(callback.success,callback.error);
+		},
+		
+		getLastTransactionByCurrentWifi:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_getLastTransactionByCurrentWifi(callback.success,callback.error);
+		},
+		
+		getCurrentBroadbandAccount:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_getCurrentBroadbandAccount(callback.success,callback.error);
+		},
+		
+		startTestAtPoint:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_startTestAtPoint(data.wifiEstimateTransaction.txId,data.singlePointTestParam,callback.success,callback.error);
+		},
+		
+		saveSinglePointTestResult:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_saveSinglePointTestResult(data.wifiEstimateTransaction.txId,data.singlePointTestResult,callback.success,callback.error);
+		},
+		
+		deleteSinglePointTestResult:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_deleteSinglePointTestResult(data.wifiEstimateTransaction.txId,data.singlePointTestResultId,callback.success,callback.error);
+		},
+		
+		getSinglePointTestResultList:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_getSinglePointTestResultList(data.wifiEstimateTransaction.txId,callback.success,callback.error);
+		},
+		
+		comprehensiveEvaluationByAllPoint:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_comprehensiveEvaluationByAllPoint(data.wifiEstimateTransaction.txId,data.userInfo,data.contractedBandwidthInKbps,callback.success,callback.error);
+		},
+		
+		saveComprehensiveEvaluationResult:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_saveComprehensiveEvaluationResult(data.userInfo,data.comprehensiveEvaluationResult,callback.success,callback.error);
+		},
+		
+		queryComprehensiveEvaluationList:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_queryComprehensiveEvaluationList(data.userInfo,callback.success,callback.error);
+		},
+		
+		deleteComprehensiveEvaluation:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_deleteComprehensiveEvaluation(data.comprehensiveEvaluationResultIdList,callback.success,callback.error);
+		},
+		
+		compareEvaluationResult:function(data){
+			var callback = regesterCallback(data);
+			_init();
+			_compareEvaluationResult(data.first,data.second,callback.success,callback.error);
+		},
+		
+		//查询WIFI测试配置信息
+	    getWifiTestSetting : function(data){
+	        var callback = regesterCallback(data);
+	        _init();
+	        if (isIOS) {
+	            // IOS请求。
+	            callback = data;
+	        }
+	        _getWifiTestSetting(callback.success,callback.error);
+	    },
+	    
+	    //wifi测试参数设置
+        setWifiTestSetting:function(data){
+            var callback = regesterCallback(data);
+            _init();
+            if (isIOS) {
+                // IOS请求。
+                callback = data;
+            }
+            _setWifiTestSetting(data,callback.success,callback.error);
+        },
+        
+        //获取房间列表
+        queryWifiTestRoomList : function(data){
+            var callback = regesterCallback(data);
+            _init();
+            if (isIOS) {
+                // IOS请求。
+                callback = data;
+            }
+            _queryWifiTestRoomList(callback.success,callback.error);
+        },
+    
+       // 创建房间
+       createWifiTestRoom : function(data)
+       {
+           var callback = regesterCallback(data);
+           _init();
+           if (isIOS) {
+               // IOS请求。
+               callback = data;
+           }
+           _createWifiTestRoom(data,callback.success,callback.error);
+      },
+    
+    // 修改房间
+    modifyWifiTestRoom : function(data)
+    {
+        var callback = regesterCallback(data);
+        _init();
+        if (isIOS) {
+            // IOS请求。
+            callback = data;
+        }
+        _modifyWifiTestRoom(data,callback.success,callback.error);
+    },
+    
+    // 删除房间
+    deleteWifiTestRoom : function(data)
+    {
+        var callback = regesterCallback(data);
+        _init();
+        if (isIOS) {
+            // IOS请求。
+            callback = data;
+        }
+        _deleteWifiTestRoom(data,callback.success,callback.error);
+    }
+}
+
 /**
  * 二维码扫描
  */
-window.AppJsBridge.service.scanService = {
+window.AppJsBridge.service.barcodeScannerService = {
 	scan : function(data) {
 		var callback = regesterCallback(data);
 		_init();
 		_scan(callback.success,callback.error);
+	},
+	scanBarcode : function(data) {
+		var callback = regesterCallback(data);
+		_init();
+		_scanBarcode(callback.success,callback.error);
 	}
 }
 
+/**
+*Wi-Fi质量评估保存图片
+*/
+window.AppJsBridge.service.fileService = {
+	savePicture : function(data) {
+		var callback = regesterCallback(data);
+		_init();
+		_savePicture(data.base64Data,callback.success,callback.error);
+	}
+}
 
 //
 window.AppJsBridge.service.storageService = {
@@ -724,14 +1035,7 @@ window.AppJsBridge.service.storageService = {
 		_init();
 		_moveObject(type, srcPath, destPath,callback.success);
 	},
-	
-	getExternalStorageStorageData: function(data) {
 		
-		var callback = regesterCallback(data);
-		_init();
-		_getExternalStorageData(callback.success,callback.error);
-	},
-	
 	getCloudStorageData: function(data) {
 		
 		var callback = regesterCallback(data);
@@ -767,37 +1071,6 @@ window.AppJsBridge.service.broadbandService = {
 		}
 	}
 }
-
-window.AppJsBridge.service.vpnService = {
-	
-	wanGetL2tpTunnelStatus:function(data){
-		var callback = regesterCallback(data);
-		_init();
-		_wanGetL2tpTunnelStatus(data.data,callback.success,callback.error);
-	},
-	wanCreateL2tpTunnel:function(data){
-		var callback = regesterCallback(data);
-		_init();
-		_wanCreateL2tpTunnel(data.data,callback.success,callback.error);
-	},
-	wanAttachL2tpTunnel:function(data){
-		var callback = regesterCallback(data);
-		_init();
-		_wanAttachL2tpTunnel(data.data,callback.success,callback.error);
-	},
-	wanRemoveL2tpTunnel:function(data){
-		var callback = regesterCallback(data);
-		_init();
-		_wanRemoveL2tpTunnel(data.data,callback.success,callback.error);
-	},
-	wanDetachL2tpTunnel:function(data){
-		var callback = regesterCallback(data);
-		_init();
-		_wanDetachL2tpTunnel(data.data,callback.success,callback.error);
-	}
-
-}
-
 
 window.AppJsBridge.service.messageService = {
 	sendMsgToGateway: function(data) {
@@ -846,24 +1119,6 @@ window.AppJsBridge.service.perfDataService = {
 }
 
 /**
- * 测速
- */
-window.AppJsBridge.service.testSpeedService = {
-		startWifiSpeedTest:function(data){
-			var callback = regesterCallback(data);
-			var handler = registerHandler(data);
-			_init();
-			_startWifiSpeedTest(data.wifiSpeedTestParam,handler.handle,callback.success,callback.error);
-		},
-		
-		stopWifiSpeedTest:function(data){
-			var callback = regesterCallback(data);
-			_init();
-			_stopWifiSpeedTest(callback.success,callback.error);
-		}
-}
-
-/**
  * 智能场景
  */
 window.AppJsBridge.service.sceneService = {
@@ -904,7 +1159,96 @@ window.AppJsBridge.service.sceneService = {
 	}
 }
 
+window.AppJsBridge.service.networkCheckService = {
+		getSupportedCheckItemList:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_getSupportedCheckItemList(callback.success,callback.error);
+	},
+	
+	startCheck:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_startCheck(data.startCheckParam, callback.success,callback.error);
+	},
+	
+	getCheckResult:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_getCheckResult(data.getCheckResultParam, callback.success,callback.error);
+	},
+	
+	cancelCheck:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_cancelCheck(data.cancelCheckParam, callback.success,callback.error);
+	},
+	
+	startOptimization:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_startOptimization(data.startOptimizationParam, callback.success,callback.error);
+	}
+	
+}
 
+window.AppJsBridge.service.iBridgeService = {
+	chooseImages:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_chooseImages(callback.success,callback.error);
+	},
+	sign:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_sign(callback.success,callback.error);		
+	},
+	getLocation:function(data){
+		var callback = regesterCallback(data);
+		_init();
+        if(isIOS)
+        {
+            //iOS请求
+            callback = data;
+        }
+		_getLocation(callback.success,callback.error);	
+	}
+}
 
 // 初始化设备信息。
 var _init = function() {
@@ -948,6 +1292,8 @@ function recogniseDevice() {
 	} else {
 		isPC = true;
 	}
+	
+	return isAndroid;
 }
 
 var _sendMsgToGateway = function(params, success) {
@@ -1133,17 +1479,28 @@ var _openURL = function(data, _successCallback, _failCallback){
 	var title = data.title;
 	var url = data.url;
 	var urlRoot = url.substring(0,url.indexOf("/")+1);
+    
 	var currentUrl = window.location.href;
 	
 	var realUrl = null;
 	if(currentUrl.lastIndexOf(urlRoot)>0){
 		realUrl = currentUrl.substring(0,currentUrl.lastIndexOf(urlRoot))+url
 	}else{
-		var markStr = "/smarthome/";
-		if(currentUrl.indexOf(markStr) > 0){
-			var tmpUrlArr = currentUrl.split(markStr);
-			realUrl = tmpUrlArr[0]+markStr+tmpUrlArr[1].substring(0,tmpUrlArr[1].indexOf("/")+1)+url
-		}
+	    if(isIOS)
+        {
+            var markStr = "/SmartHomePlugin/";
+            if(currentUrl.indexOf(markStr) > 0){
+                var tmpUrlArr = currentUrl.split(markStr);
+                realUrl = tmpUrlArr[0]+markStr+tmpUrlArr[1].substring(0,tmpUrlArr[1].indexOf("/",tmpUrlArr[1].indexOf("/") + 1)+1)+url
+            }
+        }else
+        {
+	        var markStr = "/smarthome/";
+    		if(currentUrl.indexOf(markStr) > 0){
+    			var tmpUrlArr = currentUrl.split(markStr);
+    			realUrl = tmpUrlArr[0]+markStr+tmpUrlArr[1].substring(0,tmpUrlArr[1].indexOf("/")+1)+url
+    		}
+        }
 	}
 	realUrl = encodeURI(realUrl);
 	if(isAndroid)
@@ -2147,19 +2504,36 @@ var _serviceSocketConnect = function(data,_messageCallback,_successCallback,_fai
 		 };
 		_currentBridge.socketConnect(JSON.stringify(connectData), frameName, "_messageCallback", "_successCallback", "_failCallback");
 	} else if (isIOS) {
-		param.request = "serviceSocketConnect";
+		var param = {};
+		param.request = "socketService.connect";
+        param.mode = data['mode'];
 		param.ip = data['ip'];
-		param.port = data["port"];
-		param.type = data["type"];
-		param.timeout = data["timeout"];
+		param.port = data['port'];
+		param.type = data['type'];
+
+		var successCallbackTemp = function(jsbReturnObjString) {
+            var returnObj = JSON.parse(jsbReturnObjString);
+            if (returnObj) {
+                if (returnObj.isSendDataSucc == 1) {
+                    if ("function" == typeof successCb) {
+                        _messageCallback(returnObj.sendData);
+                    } else {
+                        eval(_messageCallback)(returnObj.sendData);
+                    }
+                    
+                }
+            } else {
+                console.log("into _iOSResponseDispatch unknow error");
+                failCb({});
+            }
+		};
+			
 		initBridge(function(){
-					_currentBridge.send(param, _successCallback);
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	}
 
 }
-
-
 
 /**
  * 1.2* 断开连接
@@ -2180,10 +2554,16 @@ var _serviceSocketDisconnect = function(connectId,_successCallback) {
 		}
 		_currentBridge.socketDisconnect(connectId, frameName, "_successCallback");
 	} else if (isIOS) {
-		param.request = "serviceSocketConnect";
+	    var param = {};
+		param.request = "socketService.disConnect";
 		param.connectId = connectId;
+		
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _successCallback);
+		};
 		initBridge(function(){
-					_currentBridge.send(param, _successCallback);
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	}
 
@@ -2210,11 +2590,18 @@ var _serviceSocketSend = function(connectId,sendData,_successCallback) {
 		}
 		_currentBridge.socketSend(connectId, sendData, frameName, "_successCallback");
 	} else if (isIOS) {
-		param.request = "serviceSocketConnect";
+		var param = {};
+		param.request = "socketService.sendData";
 		param.connectId = connectId;
 		param.sendData = sendData;
+		
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _successCallback);
+		};
+		
 		initBridge(function(){
-					_currentBridge.send(param, _successCallback);
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	}
 
@@ -2312,6 +2699,149 @@ var _getDeviceList = function(success, error) {
 	}
 }
 
+var _queryRoomList = function(success,error){
+    if (isAndroid) {
+       //android请求
+		var frameName = null;
+		try {
+			if (getUrlParams(location.href).frameName) {
+				frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+			} else {
+				frameName = null;
+			}
+		} catch (e) {
+			frameName = null;
+		}
+		
+		if(frameName == null){
+			_currentBridge.queryRoomList(frameName,success, error);
+		}else{
+			_currentBridge.queryRoomList("",success, error);
+		}
+    }else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+
+        var param = {};
+        param.request = "deviceService.queryRoomList";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+var _addDiscoverDevice = function(discoveredDevice,deviceAuthInfo,success, error)
+{
+    if (isAndroid) {
+        //android请求
+		var frameName = null;
+		try {
+			if (getUrlParams(location.href).frameName) {
+				frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+			} else {
+				frameName = null;
+			}
+		} catch (e) {
+			frameName = null;
+		}
+		if(frameName == null){
+			_currentBridge.addDiscoverDevice(JSON.stringify(discoveredDevice),JSON.stringify(deviceAuthInfo),"", success, error);
+		}else{
+			_currentBridge.addDiscoverDevice(JSON.stringify(discoveredDevice),JSON.stringify(deviceAuthInfo),frameName, success, error);
+		}
+    }else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        var param = {};
+        param.discoveredDevice = discoveredDevice;
+        param.deviceAuthInfo = deviceAuthInfo;
+        param.request = "deviceService.addDiscoverDevice";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+var _setAddingDevicePassword = function(sn,password,success, error)
+{
+    if (isAndroid) {
+        //android请求
+		var frameName = null;
+		try {
+			if (getUrlParams(location.href).frameName) {
+				frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+			} else {
+				frameName = null;
+			}
+		} catch (e) {
+			frameName = null;
+		}
+		if(frameName == null){
+			_currentBridge.setAddingDevicePassword (sn,password,"", success, error);
+		}else{
+			_currentBridge.setAddingDevicePassword(sn,password,frameName, success, error);
+		}
+    }else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        var param = {};
+        param.sn = sn;
+        param.password = password;
+        param.request = "deviceService.setAddingDevicePassword";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _getDeviceListByParent = function(parentDeviceSn,success, error)
+{
+    if (isAndroid) {
+        //android请求
+		var frameName = null;
+		try {
+			if (getUrlParams(location.href).frameName) {
+				frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+			} else {
+				frameName = null;
+			}
+		} catch (e) {
+			frameName = null;
+		}
+		
+		if(frameName != null){
+			_currentBridge.getSmartDeviceListByParent(parentDeviceSn,frameName, success,error);
+		}else{
+			_currentBridge.getSmartDeviceListByParent(parentDeviceSn,"", success,error);
+		}
+    }else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        var param = {};
+        param.parentDeviceSn = parentDeviceSn;
+        param.request = "deviceService.getDeviceListByParent";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
 
 
 // 启动提速的接口
@@ -2342,80 +2872,6 @@ var _speedupStop=function(params,success,error){
                 });
 	}
 }
-
-// 查询L2TP VPN通道的接口
-var _wanGetL2tpTunnelStatus=function(params,success,error){
-
-	if(isAndroid){
-		//android请求。
-		_currentBridge.wanGetL2tpTunnelStatus(JSON.stringify(params),success,error);
-	}
-	else if (isIOS) {
-		params.request = "getWanl2tpTunnel";
-		initBridge(function(){
-					_currentBridge.send(params, eval(success));
-                });
-	}
-}
-		
-// 创建L2TP VPN通道的接口
-var _wanCreateL2tpTunnel = function(params,success,error){
-
-	if(isAndroid){
-		//android请求。
-		_currentBridge.wanCreateL2tpTunnel(JSON.stringify(params),success,error);
-	}
-	else if (isIOS) {
-		params.request = "createWanl2tpTunnel";
-		initBridge(function(){
-					_currentBridge.send(params, eval(success));
-                });
-	}
-}
-
-// 关联数据流到L2TP VPN 通道上
-var _wanAttachL2tpTunnel=function(params,success,error){
-
-	if(isAndroid){
-		//android请求。
-		_currentBridge.wanAttachL2tpTunnel(JSON.stringify(params),success,error);
-	}
-	else if (isIOS) {
-		params.request = "attachWanl2tpTunnel";
-		initBridge(function(){
-					_currentBridge.send(params, eval(success));
-                });
-	}
-}
-
-// APP提供删除L2TP VPN通道的接口
-var _wanRemoveL2tpTunnel=function(params,success,error){
-
-	if(isAndroid){
-		//android请求。
-		_currentBridge.wanRemoveL2tpTunnel(JSON.stringify(params),success,error);
-	}
-	else if (isIOS) {
-		params.request = "removeWanl2tpTunnel";
-		initBridge(function(){
-					_currentBridge.send(params, eval(success));
-                });
-	}
-}
-var _wanDetachL2tpTunnel=function(params,success,error){
-
-	if(isAndroid){
-		//android请求。
-		_currentBridge.wanDetachL2tpTunnel(JSON.stringify(params),success,error);
-	}
-	else if (isIOS) {
-		params.request = "wanDetachL2tpTunnel";
-		initBridge(function(){
-					_currentBridge.send(params, eval(success));
-                });
-	}
-}
-
 
 
 String.prototype.endWith = function(endStr) {
@@ -2448,10 +2904,29 @@ var _redirectURL = function(param, success,error) {
 		if (param.data) {
 			jsonObj.data = param.data;
 		}
+        
 		// 暂时没有对入参做校验
-		_currentBridge.redirectAuthURL(JSON.stringify(jsonObj),
-				 success,error);
-	}
+        if (isIOS) {
+            // IOS请求。
+            
+            var successCallbackTemp = function(jsbReturnObjString) {
+                // 由于JS框架不能传多个回调，所以这里再来重新划分
+                _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+            };
+            
+            _failCallback = error;
+            // IOS请求。
+            // 调用原生。
+            jsonObj.request = "securityService.redirectURL";
+            initBridge(function(){
+                       _currentBridge.send(jsonObj, successCallbackTemp);
+                       });
+        } else {
+            _currentBridge.redirectAuthURL(JSON.stringify(jsonObj),
+                                           success,error);
+        }
+
+    }
 }
 
 var _operate = function(param,success,error) {
@@ -2628,9 +3103,37 @@ var _queryUseRecord = function(param, _successCallback, _failCallback) {
 
 var _scan = function(success,error) {
 		if(isAndroid){
-		//android请求。
-		_currentBridge.scan(success,error);
-	   }
+				//android请求。
+		//_currentBridge.scan(success,error);
+		var frameName = null;
+		try {
+			if(getUrlParams(location.href).frameName){
+				frameName = decodeURIComponent(getUrlParams(location.href).frameName);
+			}
+		} catch (e) {
+			frameName = null;
+		}
+		
+		if(frameName == null){
+			frameName = "";
+		}
+		_currentBridge.scan(frameName,
+				success,error);
+        } else if (isIOS) {
+            var successCallbackTemp = function(jsbReturnObjString) {
+                // 由于JS框架不能传多个回调，所以这里再来重新划分
+                _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+            };
+            
+            _failCallback = error;
+            // IOS请求。
+            // 调用原生。
+            var param = {};
+            param.request = "barcodeScannerService.scan";
+            initBridge(function(){
+                       _currentBridge.send(param, successCallbackTemp);
+                       });
+        }
 }
 
 var _wifiSwitch = function(ssid,password,success,error){
@@ -2961,8 +3464,14 @@ var _putObject = function(type, url, files, process, success) {
         param.type = type;
         param.url = url;
         param.files = files;
+		
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _failCallback);
+		};
+			
 		initBridge(function(){
-					_currentBridge.send(param,eval(success));
+					_currentBridge.send(param, successCallbackTemp);
                 });
     } 
 }
@@ -2978,9 +3487,13 @@ var _createDirectory = function(type, url, name, success) {
 		param.type = type;
 		param.url = url;
 		param.name = name;
-		
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _failCallback);
+		};
+			
 		initBridge(function(){
-					_currentBridge(param,eval(success));
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	}
 }
@@ -2994,8 +3507,13 @@ var _getObject = function(type, url, success) {
 		param.request = "getObject";
 		param.type = type;
 		param.url = url;
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _failCallback);
+		};
+			
 		initBridge(function(){
-					_currentBridge.send(param,eval(success));
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	}
 }
@@ -3011,8 +3529,13 @@ var _renameObject = function(type, url, newName, success) {
 		param.type = type;
 		param.url = url;
 		param.newName = newName;
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _failCallback);
+		};
+			
 		initBridge(function(){
-					_currentBridge.send(param,eval(success));
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	}
 }
@@ -3028,8 +3551,13 @@ var _deleteObject = function(type, url, success) {
 		param.type = type;
 		param.url = url;
 		
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _failCallback);
+		};
+			
 		initBridge(function(){
-					_currentBridge.send(param,eval(success));
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	
 	
@@ -3047,8 +3575,13 @@ var _moveObject = function(type, srcPath, destPath, success) {
 		param.srcPath = srcPath;
 		param.destPath = destPath;
 		
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, _successCallback, _failCallback);
+		};
+			
 		initBridge(function(){
-					_currentBridge.send(param,eval(success));
+					_currentBridge.send(param, successCallbackTemp);
                 });
 	}
 }
@@ -3213,8 +3746,14 @@ var _getGateWayIp = function(success, error) {
         //IOS请求.
         var param = {};
         param.request = "getGateWayIp";
-	   initBridge(function(){
-					_currentBridge.send(param, _successCallback);
+		
+		var successCallbackTemp = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+		};
+		
+		initBridge(function(){
+					_currentBridge.send(param, successCallbackTemp);
                 });
     }
 }
@@ -3262,33 +3801,6 @@ var _getCloudStorageData = function(success, error) {
 					_currentBridge.send(param, eval(success));
                 });
 	}
-}
-
-/**
- * 获取外置容量大小
- */
-var _getExternalStorageData = function(success, error) {
-	if (isAndroid) {
-		var frameName = null;
-		try {
-			if (getUrlParams(location.href).frameName) {
-				frameName = decodeURIComponent(getUrlParams(location.href).frameName)
-			} else {
-				frameName = null;
-			}
-		} catch (e) {
-			frameName = null;
-		}
-		_currentBridge.getExternalStorageStorageData(frameName,
-				success);
-	} else if (isIOS) {
-		var param = {};
-		param.request = "getExternalStorageStorageData";
-		initBridge(function(){
-					_currentBridge.send(param, eval(success));
-                });
-	}
-
 }
 
 /**
@@ -3385,9 +3897,9 @@ var _getPerfDataList = function(data,success,error){
 		}*/
 		
 		if(frameName == null){
-			_currentBridge.getPerfDataList(JSON.stringify(data),"",success);
+			_currentBridge.getPerfDataList(JSON.stringify(data),"",success,error);
 		}else{
-			_currentBridge.getPerfDataList(JSON.stringify(data),frameName,success);
+			_currentBridge.getPerfDataList(JSON.stringify(data),frameName,success,error);
 		}
 	} else if (isIOS) {
 		
@@ -3411,10 +3923,21 @@ var _iOSResponseDispatch = function(dataType, jsbReturnObjString, successCb, fai
         if (returnObj.isSuccess == 1) {
          //   alert("into _iOSResponseDispatch success");
          //   alert("returnObj.successData:" + returnObj.successData);
-            successCb(returnObj.successData);
+	 
+            if ("function" == typeof successCb) {
+                successCb(returnObj.successData);
+            } else {
+                eval(successCb)(returnObj.successData);
+            }
+            
         } else {
           //  alert("into _iOSResponseDispatch failed");
-            failCb(JSON.parse(returnObj.errorData));
+            if ("function" == typeof failCb) {
+                failCb(returnObj.errorData);
+            } else {
+                eval(failCb)(returnObj.errorData);
+            }
+            
         }
     } else {
         // Unknow error
@@ -3957,8 +4480,600 @@ window.AppJsBridge.service.gatewayService = {
 	        callback = data;
 	    }
 	    _getAttachParentControlTemplate(templateName,callback.success,callback.error);
-	}
+	},
+	getWLANNeighbor : function(data){
+		var callback = regesterCallback(data);
+		_init();
+		var radioType = data.radioType;
+		if (isIOS) {
+			// IOS请求。
+			callback = data;
+		}
+		_getWLANNeighbor(radioType,callback.success,callback.error);
+    },
+    acknowledgeSelfCheckResult : function(data){
+        var callback = regesterCallback(data);
+        _init();
+        if(isIOS){
+        }
+
+        _acknowledgeSelfCheckResult(data.params,callback.success,callback.error);
+    },
+    getSelfCheckResult:function(data){
+       var callback = regesterCallback(data);
+       _init();
+       if(isIOS){
+       }
+       _getSelfCheckResult(callback.success,callback.error);
+   },
 }
+
+window.AppJsBridge.service.testSpeedService = {
+    phoneSpeedTest : function(data){
+        var callback = regesterCallback(data);
+        _init();
+        if (isIOS) {
+            // IOS请求。
+            callback = data;
+        }
+        _testSpeedService(data.phoneSpeedTestParam,callback.success,callback.error);
+    },
+}
+
+window.AppJsBridge.service.homeStorageService =
+{
+    listHomeStorageDevice :function(data){
+        var callback = regesterCallback(data);
+        _init();
+        if (isIOS) {
+            // IOS请求。
+            callback = data;
+        }
+        _listHomeStorageDevice(callback.success,callback.error);
+    },
+    
+    getStorageDevice: function(data){
+        var callback = regesterCallback(data);
+        _init();
+        if (isIOS) {
+            // IOS请求。
+            callback = data;
+        }
+        _getStorageDevice(data,callback.success,callback.error);
+    },
+    
+    getHomeStorageDisk:function(data){
+        var callback = regesterCallback(data);
+        _init();
+        if (isIOS) {
+            // IOS请求。
+            callback = data;
+        }
+        _getHomeStorageDisk(data,callback.success,callback.error);
+    },
+}
+
+var _listHomeStorageDevice = function(success,error){
+    if (isAndroid) {
+		 // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.listHomeStorageDevice(frameName,success, error);
+		
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        var param = {};
+        param.request = "homeStorageService.listHomeStorageDevice";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _getHomeStorageDisk = function(data,success,error){
+    if (isAndroid) {
+				 // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getHomeStorageDisk(data.storageDeviceId,data.diskName, frameName,success, error);
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        var param = {};
+        param.request = "homeStorageService.getHomeStorageDisk";
+        param.storageDeviceId = data.storageDeviceId;
+        param.diskName = data.diskName;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _getStorageDevice = function(data,success,error){
+    if (isAndroid) {
+				 // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getStorageDevice(data.storageDeviceId,frameName,success, error);
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        var param = {};
+        param.request = "homeStorageService.getStorageDevice";
+        param.storageDeviceId = data.storageDeviceId;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+/**
+ * 获取房间列表
+ */
+var _queryWifiTestRoomList = function(success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.queryWifiTestRoomList(frameName,success, error);
+
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+		var params = {};
+        param.request = "wifiTestService.queryWifiTestRoomList";
+        param.params = params;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+/**
+ * 创建房间
+ */
+var _createWifiTestRoom = function(data,success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+		var param = {};
+        param.roomName = data.roomName;
+        _currentBridge.createWifiTestRoom(JSON.stringify(param), frameName,success, error);
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.createWifiTestRoom";
+        param.roomName = data.roomName;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+/**
+ * 修改房间
+ */
+var _modifyWifiTestRoom = function(data,success, error) {
+    if (isAndroid) {
+        // android请求。
+		var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+		var param = {};
+        param.roomName = data.roomName;
+		param.roomId = data.roomId;
+        _currentBridge.modifyWifiTestRoom(JSON.stringify(param), frameName,success, error);
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.modifyWifiTestRoom";
+        param.roomName = data.roomName;
+        param.roomId = data.roomId;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+/**
+ * 删除房间
+ */
+var _deleteWifiTestRoom = function(data,success, error) {
+    if (isAndroid) {
+        // android请求。
+		var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+		var param = {};
+		param.roomId = data.roomId;
+        _currentBridge.deleteWifiTestRoom(JSON.stringify(param), frameName,success, error);
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.deleteWifiTestRoom";
+        param.roomId = data.roomId;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+/**
+ * wifi测试参数设置
+ */
+var _setWifiTestSetting = function(params,success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.setWifiTestSetting(JSON.stringify(params.params),frameName,success, error);
+
+    }else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.setWifiTestSetting";
+		param.params = params.params;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+/**
+ * 获取连接wifi基本信息
+ */
+var _getNativeWifiInfo = function(success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getNativeWifiInfo(frameName,success, error);
+
+    }
+    else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.getNativeWifiInfo";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+/**
+ * 获取周边干扰
+ */
+var _getNeighborInterference = function(success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getNeighborInterference(frameName,success, error);
+
+    }else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.getNeighborInterference";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+/**
+ * 获取所有WIFI信道
+ */
+var _getAllWiFiChannel = function(success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getAllWiFiChannel(frameName,success, error);
+
+    }
+}
+/**
+ * 跳转到WIFI设置界面
+ */
+var _jumpSwitchWifiPage = function(success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.jumpSwitchWifiPage(frameName,success, error);
+    }
+}
+/**
+ * H5跟APP透传通道
+ */
+var _getAppConfigInfo = function(success,error,tag) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getAppConfigInfo(frameName,success, error,tag);
+    }
+    else if (isIOS) {
+        // IOS请求。
+        _successCallback = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "service.getAppConfigInfo";
+        param.tag = tag;
+        initBridge(function(){
+                   _currentBridge.send(param, _successCallback);
+                   });
+    } else {
+    }
+}
+/**
+ * 跳转到WIFI设置界面
+ */
+var _getWifiTestSetting = function(success, error) {
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getWifiTestSetting(frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.getWifiTestSetting";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+
 
 var _queryWifiDeviceList = function(success, error) {
     if (isAndroid) {
@@ -6192,59 +7307,6 @@ var _setAttachParentControl = function(parentControl, success, error)
     }
 }
 
-
-var _startWifiSpeedTest = function(wifiSpeedTestParam,handle,success,error){
-    if(!checkObject(wifiSpeedTestParam))
-    {
-        eval(error)({"errCode":"-5","errMsg":"invalid parameter"});
-        return;
-    }
-	 if (isAndroid) {
-	        // android请求。
-	        var frameName = "";
-            if(getUrlParams(location.href).frameName){
-                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
-            }else{
-                frameName = "";
-            } 
-	        _currentBridge.startWifiSpeedTest(JSON.stringify(wifiSpeedTestParam),frameName,success,error, handle);
-	   }else if (isIOS) {
-           var param = {};
-           param.request = "gatewayService.startWifiSpeedTest";
-           param.param = wifiSpeedTestParam;
-		   initBridge(function(){
-					_currentBridge.send(wifiSpeedTestParam, eval(success), handle);
-                });
-       }
-}
-
-var _stopWifiSpeedTest = function(success,error){
-	if (isAndroid) {
-		// android请求。
-		var frameName = "";
-		if(getUrlParams(location.href).frameName){
-			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
-		}
-		_currentBridge.stopWifiSpeedTest(frameName,success, error);
-	}else if (isIOS) {
-        // IOS请求。
-        _successCallback = function(jsbReturnObjString) {
-            // 由于JS框架不能传多个回调，所以这里再来重新划分
-            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
-        };
-        
-        _failCallback = error;
-        // IOS请求。
-        // 调用原生。
-        var param = {};
-        param.request = "gatewayService.stopWifiSpeedTest";
-        initBridge(function(){
-                   _currentBridge.send(param, _successCallback);
-                   });
-    }
-}
-
-
 var _getSceneList = function(success,error){
 	if (isAndroid) {
 		var frameName = "";
@@ -6324,3 +7386,858 @@ var _executeScene = function(sceneMeta,success,error){
 	}
 }
 
+var _beginNewTest = function(success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		_currentBridge.beginNewTest(frameName,success,error);
+	}else if(isIOS){
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.beginNewTest";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+	}
+}
+
+var _getSinglePointTestResultList = function(txId,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		_currentBridge.getSinglePointTestResultList(txId,frameName,success, error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.getSinglePointTestResultList";
+		param.txId = txId;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _getLastTransactionByCurrentWifi = function(success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		_currentBridge.getLastTransactionByCurrentWifi(frameName,success,error);
+	}else if (isIOS) {
+		// IOS请求。
+		var successCallbackTem = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+		};
+		_failCallback = error;
+		// IOS请求。
+		// 调用原生。
+		var param = {};
+		param.request = "wifiTestService.getLastTransactionByCurrentWifi";
+		initBridge(function(){
+			_currentBridge.send(param, successCallbackTem);
+		});
+	} else {
+	}
+}
+
+var _getCurrentBroadbandAccount = function(success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		_currentBridge.getCurrentBroadbandAccount(frameName,success,error);
+	}else if (isIOS) {
+		// IOS请求。
+		var successCallbackTem = function(jsbReturnObjString) {
+			// 由于JS框架不能传多个回调，所以这里再来重新划分
+			_iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+		};
+		_failCallback = error;
+		// IOS请求。
+		// 调用原生。
+		var param = {};
+		param.request = "wifiTestService.getCurrentBroadbandAccount";
+		initBridge(function(){
+			_currentBridge.send(param, successCallbackTem);
+		});
+	} else {
+		
+	}
+}
+
+
+var _startTestAtPoint = function(txId,singlePointTestParam,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.txId = txId;
+		params.singlePointTestParam = singlePointTestParam;
+		_currentBridge.startTestAtPoint(JSON.stringify(params),frameName,success,error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.startTestAtPoint";
+		param.txId = txId;
+		param.singlePointTestParam = singlePointTestParam;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _saveSinglePointTestResult = function(txId,singlePointTestResult,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.txId = txId;
+		params.singlePointTestResult = singlePointTestResult;
+		_currentBridge.saveSinglePointTestResult(JSON.stringify(params),frameName,success,error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.saveSinglePointTestResult";
+		param.txId = txId;
+		param.singlePointTestResult = singlePointTestResult;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _deleteSinglePointTestResult = function(txId,singlePointTestResultId,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.txId = txId;
+		params.singlePointTestResultId = singlePointTestResultId;
+		_currentBridge.deleteSinglePointTestResult(JSON.stringify(params),frameName,success,error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.deleteSinglePointTestResult";
+		param.txId = txId;
+		param.singlePointTestResultId = singlePointTestResultId;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _comprehensiveEvaluationByAllPoint = function(txId,userInfo,contractedBandwidthInKbps,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.txId = txId;
+		params.contractedBandwidthInKbps = contractedBandwidthInKbps;
+		params.userInfo = userInfo;
+		console.log(typeof(success));
+		console.log(typeof(error));
+		_currentBridge.comprehensiveEvaluationByAllPoint(JSON.stringify(params),frameName,success,error);
+	}else if(isIOS){
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.comprehensiveEvaluationByAllPoint";
+        param.userInfo = userInfo;
+        param.txId = txId;
+        param.contractedBandwidthInKbps = contractedBandwidthInKbps;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+	}
+}
+
+var _saveComprehensiveEvaluationResult = function(userInfo,comprehensiveEvaluationResult,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.userInfo = userInfo;
+		params.comprehensiveEvaluationResult = comprehensiveEvaluationResult;
+		_currentBridge.saveComprehensiveEvaluationResult(JSON.stringify(params),frameName,success,error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.saveComprehensiveEvaluationResult";
+		param.userInfo = userInfo;
+		param.comprehensiveEvaluationResult = comprehensiveEvaluationResult;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _queryComprehensiveEvaluationList = function(userInfo,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.userInfo = userInfo;
+		_currentBridge.queryComprehensiveEvaluationList(JSON.stringify(params),frameName,success,error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.queryComprehensiveEvaluationList";
+		param.userInfo = userInfo;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+
+var _deleteComprehensiveEvaluation = function(comprehensiveEvaluationResultIdList,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.comprehensiveEvaluationResultIdList = comprehensiveEvaluationResultIdList;
+		_currentBridge.deleteComprehensiveEvaluation(JSON.stringify(params),frameName,success,error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.deleteComprehensiveEvaluation";
+		param.comprehensiveEvaluationResultIdList = comprehensiveEvaluationResultIdList;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _compareEvaluationResult = function(first,second,success,error){
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		var params = {};
+		params.first = first;
+		params.second = second;
+		_currentBridge.compareEvaluationResult(JSON.stringify(params),frameName,success,error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.compareEvaluationResult";
+		params.first = first;
+		params.second = second;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _savePicture = function(picture,success,error)
+{
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		_currentBridge.saveEvaluationPicture(picture,frameName,success, error);
+	}else if (isIOS) {
+                // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "wifiTestService.savePicture";
+		param.picture = picture;
+
+
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    } else {
+    }
+}
+
+var _getWLANNeighbor = function(radioType,success,error){
+    if (isAndroid) {
+        // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getWLANNeighbor(radioType,frameName,success, error);
+
+    } else if (isIOS) {
+        // IOS请求。
+        var successCallbackTem = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.request = "gatewayService.getWLANNeighbor";
+        param.radioType = radioType;
+        
+        
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+        
+    } else {
+    }
+}
+
+var _getFeatureList = function(features, success, error)
+{
+    if(isAndroid)
+    {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+		
+        _currentBridge.getFeatureList(JSON.stringify(features),frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem  = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.features = features;
+        param.request = "deviceFeatureService.getFeatureList";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _testSpeedService = function(phoneSpeedTestParam, success, error)
+{
+    if(isAndroid)
+    {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+		
+        _currentBridge.phoneSpeedTest(JSON.stringify(phoneSpeedTestParam),frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem  = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.phoneSpeedTestParam = phoneSpeedTestParam;
+        param.request = "testSpeedService.phoneSpeedTest";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _getSupportedCheckItemList = function(success, error)
+{
+    if(isAndroid)
+    {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+        _currentBridge.getSupportedCheckItemList(frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem  = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+		var param = {};
+		param.request = "networkCheckService.getSupportedCheckItemList";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _startCheck = function(startCheckParam, success, error)
+{
+    if(isAndroid)
+    {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+        _currentBridge.startCheck(JSON.stringify(startCheckParam),frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem  = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.startCheckParam = startCheckParam;
+		param.request = "networkCheckService.startCheck";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _getCheckResult = function(startCheckParam, success, error)
+{
+    if(isAndroid)
+    {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+        _currentBridge.getCheckResult(JSON.stringify(startCheckParam),frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem  = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.startCheckParam = startCheckParam;
+		param.request = "networkCheckService.getCheckResult";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+
+    }
+}
+
+var _cancelCheck = function(cancelCheckParam, success, error)
+{
+    if(isAndroid)
+    {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+        _currentBridge.cancelCheck(JSON.stringify(cancelCheckParam),frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem  = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.cancelCheckParam = cancelCheckParam;
+		param.request = "networkCheckService.cancelCheck";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+
+    }
+}
+
+var _startOptimization = function(startOptimizationParam, success, error)
+{
+    if(isAndroid)
+    {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            } 
+                
+        } catch (e) {
+            frameName = "";
+        }
+		
+        _currentBridge.startOptimization(JSON.stringify(startOptimizationParam),frameName,success, error);
+    }
+    else if(isIOS)
+    {
+        // IOS请求。
+        var successCallbackTem  = function(jsbReturnObjString) {
+            // 由于JS框架不能传多个回调，所以这里再来重新划分
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        // IOS请求。
+        // 调用原生。
+        var param = {};
+        param.startOptimizationParam = startOptimizationParam;
+		param.request = "networkCheckService.startOptimization";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
+
+var _getDiscoveredDeviceList = function(success,error)
+{
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		_currentBridge.getDiscoveredDeviceList(frameName,success, error);
+	}else if (isIOS) {
+	
+	}else {
+    }
+}
+
+var _getWirelessAccessPointList= function(success,error)
+{
+	if (isAndroid) {
+		var frameName = "";
+		if(getUrlParams(location.href).frameName){
+			frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+		}
+		_currentBridge.getWirelessAccessPointList(frameName,success, error);
+	}else if (isIOS) {
+	
+	}else {
+    }
+}
+
+var _chooseImages = function(success,error){
+    console.log("chooseImages");
+	if (isAndroid) {
+	    _currentBridge.chooseImages(success, error);
+	}
+}
+
+var _scan = function(success,error) {
+		if(isAndroid){
+				//android请求。
+		_currentBridge.scan(
+				success,error);
+        } else if (isIOS) {
+            var successCallbackTemp = function(jsbReturnObjString) {
+                // 由于JS框架不能传多个回调，所以这里再来重新划分
+                _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+            };
+            
+            _failCallback = error;
+            // IOS请求。
+            // 调用原生。
+            var param = {};
+            param.request = "barcodeScannerService.scan";
+            initBridge(function(){
+                       _currentBridge.send(param, successCallbackTemp);
+                       });
+        }
+}
+
+var _scanBarcode = function(success,error) {
+		if(isAndroid){
+				//android请求。	
+		_currentBridge.scanBarcode(
+				success,error);
+        } else if (isIOS) {
+		}
+
+}
+
+var _sign = function(success,error){
+    console.log("sign");
+	if (isAndroid) {
+	    _currentBridge.sign(success, error);
+	}else if (isIOS) {
+		}
+}
+
+var _getLocation = function(success,error){
+    console.log("getLocation");
+	if (isAndroid) {
+	    _currentBridge.getLocation(success, error);
+	}else if (isIOS) {
+		}
+}
+
+var _acknowledgeSelfCheckResult = function(data,success,error){
+    if (isAndroid) {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            }
+
+        } catch (e) {
+            frameName = "";
+        }
+		var params = {};
+		params.resultId = data.resultId;
+        _currentBridge.acknowledgeSelfCheckResult(JSON.stringify(params),frameName,success, error);
+    }else if (isIOS) {
+        
+                var successCallbackTem = function(jsbReturnObjString) {
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        var param = {};
+        param.request = "gatewayService.acknowledgeSelfCheckResult";
+        param.resultId = data.resultId;
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+        }
+}
+
+var _getSelfCheckResult = function(success,error){
+    if (isAndroid) {
+	    // android请求。
+        var frameName = "";
+        try {
+            if(getUrlParams(location.href).frameName){
+                frameName = decodeURIComponent(getUrlParams(location.href).frameName)
+            }else{
+                frameName = "";
+            }
+
+        } catch (e) {
+            frameName = "";
+        }
+        _currentBridge.getSelfCheckResult(frameName,success, error);
+    }else if (isIOS) {
+        var successCallbackTem = function(jsbReturnObjString) {
+            _iOSResponseDispatch("JSON", jsbReturnObjString, success, error);
+        };
+        
+        _failCallback = error;
+        
+        var param = {};
+        param.request = "gatewayService.getSelfCheckResult";
+        initBridge(function(){
+                   _currentBridge.send(param, successCallbackTem);
+                   });
+    }
+}
