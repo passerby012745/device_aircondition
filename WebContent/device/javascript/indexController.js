@@ -59,14 +59,14 @@ myApp.factory('DataService', function () {
             "parameters": param,
             "success": function doActionSuccess(res)
             {
-            	alert("doConfig success:"+res.toJSONString());
+//            	alert("doConfig success:"+res.toJSONString());
 //            	console.log("doAction success");
 //            	console.log(res);
                 callback(res);
             },
             "error": function doActionError(res)
             {
-            	console.log("doAction faild");
+//            	console.log("doAction faild");
 //            	console.log(res);
             	callback(res);
             }

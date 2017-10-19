@@ -348,7 +348,6 @@ var getWifiList = function (){
 		"success":function(res){
 			var bfind=0;
 			var level = -100;
-			var index=0;
 			for(var i = 0; i < res.length; i++){
 				var levelValue = parseInt(res[i].level);
 				var res1 = res[i].ssid.indexOf("AIH-");
@@ -361,8 +360,6 @@ var getWifiList = function (){
 					break;
 				}
 			}
-			alert("wifi列表扫描完成");
-			showApResult();
 			showLog("Module SSID:" + _moduleSsid + " PWD:" + _modulePassword);
 			console.log("Module SSID:" + _moduleSsid + " PWD:" + _modulePassword);
 			
