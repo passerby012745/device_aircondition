@@ -17,6 +17,7 @@ public class TestAIRCONDITION
 	public static void main(String args[]) {
 		
 		String sn="AEH-W4A1-2059a0FCB3B6-1";
+		System.out.println("debug:"+System.getProperty( "debug"));
 		AirconditionTestDriver airconditionDriver=new AirconditionTestDriver();
 		AirconditionTestDiscoverer airconditionTDiscoverer=new AirconditionTestDiscoverer();
 		PLog.setDebugMode(PLog.MODE_SYSTEM);

@@ -64,24 +64,22 @@ public class DeviceControl extends AbstractHisenseControl
 			logger.d("<parseAction> sn={} action={} params={}", sn,action,params.toString());
 			
 			buildCommand(sn, action, params, result);
-			
-			if(null == params)
-				getProtocol().setAirConditionSendOrderWay(1);//有声音
+			if(params.has("mute"))
+				getProtocol().setAirConditionSendOrderWay(0);//无声音
 			else
-			{
-				if(params.has("mute"))
-					getProtocol().setAirConditionSendOrderWay(0);//无声音
-				else
-					getProtocol().setAirConditionSendOrderWay(1);//有声音
-			}
+				getProtocol().setAirConditionSendOrderWay(1);//有声音
 			//String module = LivehomeDeviceDriver.getdeviceModuleFromSn(sn);
 			//logger.d("<parseAction Single> sn = {}, module = {}, sendCmd = {}", sn , module, getProtocol().sendAirConditionCommand());
 			//SocketManager.getInstance().sendMessageToCdn(module, (getProtocol().sendAirConditionCommand() + "\r\n").getBytes());
 	
 			if(null!=getDriver()){
-				getDriver().sentMessage(sn,getProtocol().sendCommand(getDriver().getDevice(sn)) );
 				if(null!=reportFlagInfo){
 					reportFlagInfo.put(sn, 0);
+				}
+				if(getDriver().sentMessage(sn,getProtocol().sendCommand(getDriver().getDevice(sn)) )){
+					result.put("error", 0);
+				}else{
+					result.put("error", -777);
 				}
 			}
 		}
@@ -89,6 +87,7 @@ public class DeviceControl extends AbstractHisenseControl
 		{
 			LogUtils.printTrace("<parseAction> Trace", e);
 		}
+		result.put("error", -666);
 		return result;
 	}
 	
@@ -129,9 +128,13 @@ public class DeviceControl extends AbstractHisenseControl
 			//logger.d("<parseAction List> sn = {}, module = {}, sendCmd = {}", sn , module, getProtocol().sendAirConditionCommand());
 			//SocketManager.getInstance().sendMessageToCdn(module, (getProtocol().sendAirConditionCommand() + "\r\n").getBytes());
 			if(null!=getDriver()){
-				getDriver().sentMessage(sn,getProtocol().sendCommand(getDriver().getDevice(sn)) );
 				if(null!=reportFlagInfo){
 					reportFlagInfo.put(sn, 0);
+				}
+				if(getDriver().sentMessage(sn,getProtocol().sendCommand(getDriver().getDevice(sn)) )){
+					result.put("error", "0");
+				}else{
+					result.put("error", "-777");
 				}
 			}
 		}
@@ -139,6 +142,7 @@ public class DeviceControl extends AbstractHisenseControl
 		{
 			LogUtils.printTrace("<parseAction> Trace", e);
 		}
+		result.put("error", "-666");
 		return result;
 	}
 	

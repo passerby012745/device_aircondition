@@ -1,7 +1,27 @@
 var myApp = angular.module('starterApp', ['ionic'])
 myApp.factory('DataService', function () {
 	localStorage.setItem("lastUpdated", 0); //将SN保存到本地存储中
-	
+	function getOrder(start, end) {
+        var length = end - start;
+        var myorder = new Array();
+        var index = 0;
+        while (index < length+1) {
+            var flag = true;
+            var num = parseInt(Math.random() * (length + 1));
+            for (var i in myorder) {
+                if (myorder[i] == num) {
+                    flag = false;
+                }
+            }
+            if (flag == true) {
+                myorder[index] = num;
+                index++;
+            }
+        }
+        alert(myorder.length);
+        alert(myorder);
+    }
+
 	var resource = null;
 	function getResource()
 	{
@@ -31,20 +51,22 @@ myApp.factory('DataService', function () {
     //调用华为接口，发送指令
     //*************************************************************************
     factory.doAction = function (cmd, param, callback) {
+    	param.sequence=(new Date()).valueOf(); 
         window.AppJsBridge.service.deviceService.doAction({
             "sn": SN,
-            "deviceClass": "hisenseKelon",
+            "deviceClass": "SmartAirCondition",
             "action": cmd,
             "parameters": param,
             "success": function doActionSuccess(res)
             {
+            	alert("doConfig success:"+res.toJSONString());
 //            	console.log("doAction success");
 //            	console.log(res);
                 callback(res);
             },
             "error": function doActionError(res)
             {
-//            	console.log("doAction faild");
+            	console.log("doAction faild");
 //            	console.log(res);
             	callback(res);
             }
@@ -143,45 +165,45 @@ myApp.controller("homeCtrl", ["$scope", "DataService", function ($scope, DataSer
 												}
 											}
 										
-											if("hisenseKelon" in result) 
+											if("SmartAirCondition" in result) 
 											{
-												var hisenseKelon = result["hisenseKelon"];
+												var SmartAirCondition = result["SmartAirCondition"];
 											
-												if("strongMode" in hisenseKelon) //强力
+												if("strongMode" in SmartAirCondition) //强力
 												{
-													switch(hisenseKelon.strongMode)
+													switch(SmartAirCondition.strongMode)
 													{
 														case "on":		$scope.gaoXiao = true;		break;
 														case "off":		$scope.gaoXiao = false;		break;
 													}
 												}
-												if("sleepMode" in hisenseKelon) //睡眠模式  
+												if("sleepMode" in SmartAirCondition) //睡眠模式  
 												{
-													switch(hisenseKelon.sleepMode)
+													switch(SmartAirCondition.sleepMode)
 													{
 														case "on":		$scope.sleepModel = true;	break;
 														case "off":		$scope.sleepModel = false;	break;
 													}
 												}
-												if("horizonWind" in hisenseKelon) //左右风
+												if("horizonWind" in SmartAirCondition) //左右风
 												{
-													switch(hisenseKelon.horizonWind)
+													switch(SmartAirCondition.horizonWind)
 													{
 														case "fix":		$scope.wind_t = "HWind";	break;
 														case "scan":	$scope.wind_t = "HWindNo";	break;
 													}
 												}
-												if("verticalWind" in hisenseKelon) //上下风
+												if("verticalWind" in SmartAirCondition) //上下风
 												{
-													switch(hisenseKelon.verticalWind)
+													switch(SmartAirCondition.verticalWind)
 													{
 													case "fix":		$scope.wind_s = "s_sao";		break;
 													case "scan":	$scope.wind_s = "s_auto";		break;
 													}
 												}
-												if("electricHeat" in hisenseKelon) //电热
+												if("electricHeat" in SmartAirCondition) //电热
 												{
-													switch(hisenseKelon.electricHeat)
+													switch(SmartAirCondition.electricHeat)
 													{
 														case "fix":		$scope.dianRe = false;		break;
 														case "scan":	$scope.dianRe = true;		break;

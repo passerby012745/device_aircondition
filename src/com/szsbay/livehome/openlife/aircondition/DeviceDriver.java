@@ -15,7 +15,7 @@ public class DeviceDriver extends AbstractHisenseDriver
 	//DeviceControl control=null;
 	//DeviceProtocol protocol=null;
 	public DeviceDriver() {
-		LogUtils.setDebugLevel(LogUtils.LEVEL_DEBUG);
+		LogUtils.setDebugLevel(LogUtils.LEVEL_WARN);
 		LogUtils.setDebugMode(LogUtils.MODE_LOGD);
 		PLog.setDebugLevel(PLog.LEVEL_NONE);
 		deviceControl=new DeviceControl(this);
