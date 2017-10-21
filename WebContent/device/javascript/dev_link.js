@@ -33,6 +33,20 @@ var _connectPort = "8888";
 var _connectTimeout = "40";
 var _connectType = "TEXT"; 
 
+//新增一个变量，存放模块SSID列表，为了调试方便，先添加假数据
+var _moduleWifiList = 
+[
+	'AEH-W4A1-2059a0fcb3b6',
+	'AEH-W4A1-2059a0fcb3b1',
+	'AEH-W4A1-2059a0fcb3b2',
+	'AEH-W4A1-2059a0fcb3b3',
+	'AEH-W4A1-2059a0fcb3b4',
+	'AEH-W4A1-2059a0fcb3b5',
+	'AEH-W4A1-2059a0fcb3b7',
+	'AEH-W4A1-2059a0fcb3b8',
+	'AEH-W4A1-2059a0fcb3b9'
+];
+
 //var _cdnAddress = "cdn1.topfuturesz.com"; 
 //var _cdnAddress = "119.29.55.235"; //"hsc.topfuturesz.com";//"192.168.8.1";//"203.195.160.110"
 var _cdnAddress = "192.168.8.1";//_routeIp 
@@ -593,7 +607,13 @@ function runBinding()
 {
 	//获取路由器信息
 	_getWifiInfo();
-
+	
+	//在这里向前端HTML输出拼装的列表
+	var wifiListLi = '';
+	for(var ind=0;ind<_moduleWifiList.length;ind++){
+		wifiListLi+="<li>"+_moduleWifiList[ind]+"<button class=\"btn-class\" onclick=\"moduleBind(this)\" value="+_moduleWifiList[ind]+" style=\"font-size:18px;\">+</button></li>"
+	}
+	document.getElementById("module-wifi-list").innerHTML=wifiListLi;
 	//定时查询烤箱状态
 	_handleMesgTimer = setInterval (_handleBindingMsg, 500);
 
@@ -601,21 +621,25 @@ function runBinding()
 	setTimeout(_handleBindTimeout, 90000);
 }
 
+/*++++绑定++++++*/
+function moduleBind(obj){
+    _moduleSsid =obj.getAttribute('value');
+    $('#ap_ssid').val(_moduleSsid);
+}
 $(document).ready(function(){
 	window.AppJsBridge.service.localeService.getResource({
 		"success" : function(data) {
 			//alert("success: " + JSON.stringify(data));
 			resource = data;
 			initPage();
-			//runBinding();  
+			runBinding();  
 			},
 		"error" : function(data) {}
 		});
 	$('#module_ap_scan').click(function(){
-		runBinding();
-	})
-	$('#module_ap_bind').click(function(){
-		_moduleSsid = $('#ap_ssid').val();
-		runBinding();
-	})
+        $('#ap_ssid').val("123125134ishfksh");
+    })
+	$('#module_ap_bind').click(function () {
+        runBinding();
+    })
 });

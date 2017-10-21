@@ -673,7 +673,8 @@ public class DeviceControl extends AbstractHisenseControl
 	}
 
 	@Override
-	public void reportOnlineStatus(String arg0, boolean arg1) {
+	public void reportOnlineStatus(String sn, boolean status) 
+	{
 		// TODO Auto-generated method stub
 		
 	}
