@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import com.huawei.smarthome.driver.IDeviceService;
 import com.huawei.smarthome.log.LogService;
 import com.huawei.smarthome.log.LogServiceFactory;
+import com.szsbay.livehome.openlife.device.AbstractDeviceControl;
 import com.szsbay.livehome.openlife.device.AbstractHisenseControl;
 import com.szsbay.livehome.openlife.device.ZAbstractDeviceDriver;
 import com.szsbay.livehome.protocol.Device;
@@ -17,7 +18,6 @@ import com.szsbay.livehome.util.LogUtils;
 
 public class DeviceControl extends AbstractHisenseControl
 {
-	
 	/**
 	 * 设备服务 
 	 */
@@ -26,7 +26,8 @@ public class DeviceControl extends AbstractHisenseControl
 	/**
 	 * 日志接口
 	 */
-	private final static LogService logger = LogServiceFactory.getLogService(DeviceControl.class);
+	private final static LogService logger = LogServiceFactory.getLogService(AbstractDeviceControl.class);
+	
 	
 	/**
 	 * 设备SN与设备真实状态集映射表

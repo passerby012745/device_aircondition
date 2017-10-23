@@ -31,4 +31,9 @@ public class DeviceDriver extends AbstractHisenseDriver
 		
 		logger.d("Aircondition:finish");
 	}
+	@Override
+	public void isControlDevice(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -46,6 +46,21 @@ public class TestAIRCONDITION
 			this.setConnectType(ConnectType.CONN_DEVICE);
 			initDriver();
 		}
+		@Override
+		public void isControlDevice(String arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void queryDevice(String arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void querySubDevice(String arg0) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 	public static class AirconditionTestDiscoverer extends AbstractHisenseDiscoverer
 	{

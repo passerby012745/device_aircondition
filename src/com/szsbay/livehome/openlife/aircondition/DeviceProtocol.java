@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.szsbay.livehome.openlife.device.AbstractHisenseProtocol;
+import com.szsbay.livehome.protocol.Device;
 
 public class DeviceProtocol extends AbstractHisenseProtocol
 {
@@ -149,7 +150,6 @@ public class DeviceProtocol extends AbstractHisenseProtocol
 			returnResult = null;
 		}
 	}
-	
 	/**
 	 * 设置空调风量档位
 	 * @param value	<自动风:0、静音风:1、低风:2、中风:3、高风:4>
@@ -1637,5 +1637,11 @@ public class DeviceProtocol extends AbstractHisenseProtocol
 		// TODO Auto-generated method stub
 		return deviceName;
 	}
-	
+	/**
+	 * 设置指令下发
+	 */
+	@Override
+	public String sendCommand(Device device) {
+		return device.downActionBuild(this.buildCommand.toString());
+	}
 }
