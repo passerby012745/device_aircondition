@@ -19,7 +19,7 @@
 	</driver-config>
 	
 	<!-- 产品名称：hisenseKelon-->
-	<product name ="SbayASbayASmartAirCondition" description="The standard model of air condition" title="PRODUCT_AIRCONDITION_TITLE">
+	<product name ="SbaySmartAirCondition" description="The standard model of air condition" title="PRODUCT_AIRCONDITION_TITLE">
 		<!-- 继承标准设备类 -->
 		<classes>
 			<class name="airConditioner" />
