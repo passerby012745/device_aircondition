@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import com.szsbay.livehome.openlife.aircondition.DeviceControl;
 import com.szsbay.livehome.openlife.aircondition.DeviceProtocol;
 import com.szsbay.livehome.openlife.device.AbstractHisenseDiscoverer;
-import com.szsbay.livehome.openlife.device.ZAbstractDeviceDriver;
+import com.szsbay.livehome.openlife.device.AbstractHisenseDriver;
 import com.szsbay.livehome.protocol.util.PLog;
 import com.szsbay.livehome.util.LogUtils;
 import com.szsbay.livehome.util.Util;
@@ -32,7 +32,7 @@ public class TestAIRCONDITION
         	airconditionDriver.queryStatus(sn);
         } 
 	}
-	public static class AirconditionTestDriver extends ZAbstractDeviceDriver
+	public static class AirconditionTestDriver extends AbstractHisenseDriver
 	{
 		public AirconditionTestDriver() {
 			LogUtils.setDebugLevel(LogUtils.LEVEL_DEBUG);
@@ -47,19 +47,19 @@ public class TestAIRCONDITION
 			initDriver();
 		}
 		@Override
-		public void isControlDevice(String arg0) {
+		public boolean isControlDevice(String arg0) {
 			// TODO Auto-generated method stub
-			
+			return true;
 		}
 		@Override
-		public void queryDevice(String arg0) {
+		public boolean queryDevice(String arg0) {
 			// TODO Auto-generated method stub
-			
+			return true;
 		}
 		@Override
-		public void querySubDevice(String arg0) {
+		public boolean querySubDevice(String arg0) {
 			// TODO Auto-generated method stub
-			
+			return true;
 		}
 	}
 	public static class AirconditionTestDiscoverer extends AbstractHisenseDiscoverer

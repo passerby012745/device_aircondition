@@ -54,7 +54,7 @@ myApp.factory('DataService', function () {
     	param.sequence=(new Date()).valueOf(); 
         window.AppJsBridge.service.deviceService.doAction({
             "sn": SN,
-            "deviceClass": "SmartAirCondition",
+            "deviceClass": "SbayASmartAirCondition",
             "action": cmd,
             "parameters": param,
             "success": function doActionSuccess(res)
@@ -165,45 +165,45 @@ myApp.controller("homeCtrl", ["$scope", "DataService", function ($scope, DataSer
 												}
 											}
 										
-											if("SmartAirCondition" in result) 
+											if("SbayASmartAirCondition" in result) 
 											{
-												var SmartAirCondition = result["SmartAirCondition"];
+												var SbayASmartAirCondition = result["SbayASmartAirCondition"];
 											
-												if("strongMode" in SmartAirCondition) //强力
+												if("strongMode" in SbayASmartAirCondition) //强力
 												{
-													switch(SmartAirCondition.strongMode)
+													switch(SbayASmartAirCondition.strongMode)
 													{
 														case "on":		$scope.gaoXiao = true;		break;
 														case "off":		$scope.gaoXiao = false;		break;
 													}
 												}
-												if("sleepMode" in SmartAirCondition) //睡眠模式  
+												if("sleepMode" in SbayASmartAirCondition) //睡眠模式  
 												{
-													switch(SmartAirCondition.sleepMode)
+													switch(SbayASmartAirCondition.sleepMode)
 													{
 														case "on":		$scope.sleepModel = true;	break;
 														case "off":		$scope.sleepModel = false;	break;
 													}
 												}
-												if("horizonWind" in SmartAirCondition) //左右风
+												if("horizonWind" in SbayASmartAirCondition) //左右风
 												{
-													switch(SmartAirCondition.horizonWind)
+													switch(SbayASmartAirCondition.horizonWind)
 													{
 														case "fix":		$scope.wind_t = "HWind";	break;
 														case "scan":	$scope.wind_t = "HWindNo";	break;
 													}
 												}
-												if("verticalWind" in SmartAirCondition) //上下风
+												if("verticalWind" in SbayASmartAirCondition) //上下风
 												{
-													switch(SmartAirCondition.verticalWind)
+													switch(SbayASmartAirCondition.verticalWind)
 													{
 													case "fix":		$scope.wind_s = "s_sao";		break;
 													case "scan":	$scope.wind_s = "s_auto";		break;
 													}
 												}
-												if("electricHeat" in SmartAirCondition) //电热
+												if("electricHeat" in SbayASmartAirCondition) //电热
 												{
-													switch(SmartAirCondition.electricHeat)
+													switch(SbayASmartAirCondition.electricHeat)
 													{
 														case "fix":		$scope.dianRe = false;		break;
 														case "scan":	$scope.dianRe = true;		break;

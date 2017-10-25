@@ -114,11 +114,11 @@ function send_msg(msgID)
 var _handleBindTimeout = function(){	
 	clearInterval(_handleMesgTimer); 
 	if(_lastMsgID > MSG_getDeviceModuleId_succ){
-		showResult(getResource()["LIVEHOME_Install_succ"]);//"安装成功！"
-	       $.alertable.alert(getResource()["LIVEHOME_Install_succ"]).then(function() {
+		showResult(getResource()["PRODUCT_Install_succ"]);//"安装成功！"
+	       $.alertable.alert(getResource()["PRODUCT_Install_succ"]).then(function() {
 	        });
 	}else{
-	       $.alertable.alert(getResource()["LIVEHOME_Install_timeout"]).then(function() {
+	       $.alertable.alert(getResource()["PRODUCT_Install_timeout"]).then(function() {
 	    	   window.location.href = "install_guide.html";
 	        });
 	}
@@ -144,7 +144,7 @@ var _handleBindingMsg = function(){
 	switch(_curMsgID) {
 	case MSG_getWifiInfo_succ: //连接网关wifi成功
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_get_Wifi_List"]);//正在扫描wifi列表...
+		showResult(getResource()["PRODUCT_Install_msg_get_Wifi_List"]);//正在扫描wifi列表...
 		if(_moduleSsid!=null){
 			setTimeout(switchWifi, _sleepTime);
 		}else{
@@ -156,7 +156,7 @@ var _handleBindingMsg = function(){
 //		showResult("请先用手机连接路由器！");
 		if(_getWifiInfoRetryCnt--){
 			_curMsgID = 0;
-			showResult(getResource()["LIVEHOME_Install_msg_get_router_Info"]);//获取当前路由器信息...
+			showResult(getResource()["PRODUCT_Install_msg_get_router_Info"]);//获取当前路由器信息...
 			setTimeout(_getWifiInfo, _retrySleepTime);
 		}else{
 			MSG_exit = -1;
@@ -165,7 +165,7 @@ var _handleBindingMsg = function(){
 		
 	case MSG_getWifiList_succ: //扫描wifi成功
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_switch_wifi"]);//切换WIFI模块...
+		showResult(getResource()["PRODUCT_Install_msg_switch_wifi"]);//切换WIFI模块...
 		setTimeout(switchWifi, _sleepTime);
 		break;
 		
@@ -173,7 +173,7 @@ var _handleBindingMsg = function(){
 //		showResult("没有找到烤箱设备！");
 		if(_getWifiListRetryCnt--){
 			_curMsgID = 0;
-			showResult(getResource()["LIVEHOME_Install_msg_get_Wifi_List"]);//"正在扫描wifi列表..."
+			showResult(getResource()["PRODUCT_Install_msg_get_Wifi_List"]);//"正在扫描wifi列表..."
 			setTimeout(getWifiList, _retrySleepTime);
 		}else{
 			MSG_exit = -1;
@@ -182,7 +182,7 @@ var _handleBindingMsg = function(){
 		
 	case MSG_switchWifi_succ: //切换wifi成功
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_create_tcp_connection"]);//创建TCP连接...
+		showResult(getResource()["PRODUCT_Install_msg_create_tcp_connection"]);//创建TCP连接...
 		setTimeout(socketConnect, _sleepTime);
 		break;
 		
@@ -194,7 +194,7 @@ var _handleBindingMsg = function(){
 	case MSG_socketConnect_succ: //创建TCP连接成功
 		_socketLostCnt = CNT_socket_lost;
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_send_wifi_info"]);//发送WIFI信息...
+		showResult(getResource()["PRODUCT_Install_msg_send_wifi_info"]);//发送WIFI信息...
 		setTimeout(sendWifiInfo, _retrySleepTime);
 //		sendWifiInfo();
 		break;
@@ -203,7 +203,7 @@ var _handleBindingMsg = function(){
 //		showResult("创建TCP连接失败！");
 		if(_getsocketConnectRetryCnt--){
 			_curMsgID = 0;
-			showResult(getResource()["LIVEHOME_Install_msg_create_tcp_connection"]);//"创建TCP连接..."
+			showResult(getResource()["PRODUCT_Install_msg_create_tcp_connection"]);//"创建TCP连接..."
 			setTimeout(socketConnect, _retrySleepTime);
 		}else{
 			MSG_exit = -1;
@@ -213,7 +213,7 @@ var _handleBindingMsg = function(){
 	case MSG_SendWifiInfo_succ: //发送WIFI信息成功
 		_socketLostCnt = CNT_socket_lost;
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_send_cdn_info"]);//"发送CDN信息..."
+		showResult(getResource()["PRODUCT_Install_msg_send_cdn_info"]);//"发送CDN信息..."
 		setTimeout(sendCdnInfo, _sleepTime);
 //		sendCdnInfo();
 		break;
@@ -226,7 +226,7 @@ var _handleBindingMsg = function(){
 	case MSG_SendCdnInfo_succ: //发送CDN信息成功
 		_socketLostCnt = CNT_socket_lost;
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_get_module_id"]);//"获取模块ID..."
+		showResult(getResource()["PRODUCT_Install_msg_get_module_id"]);//"获取模块ID..."
 		setTimeout(getDeviceModuleId, _sleepTime);
 //		getDeviceModuleId();
 		break;
@@ -238,7 +238,7 @@ var _handleBindingMsg = function(){
 		
 	case MSG_getDeviceModuleId_succ: //获取模块ID成功
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_connect_remote_server"]);//"连接远程服务器..."
+		showResult(getResource()["PRODUCT_Install_msg_connect_remote_server"]);//"连接远程服务器..."
 		setTimeout(connectServer, _sleepTime);
 //		connectServer();
 		break;
@@ -247,7 +247,7 @@ var _handleBindingMsg = function(){
 //		showResult("获取模块ID失败");
 		if(_getgetDeviceModuleIdRetryCnt--){
 			_curMsgID = 0;
-			showResult(getResource()["LIVEHOME_Install_msg_get_module_id"]);//"获取模块ID..."
+			showResult(getResource()["PRODUCT_Install_msg_get_module_id"]);//"获取模块ID..."
 			setTimeout(getDeviceModuleId, _retrySleepTime);
 		}else{
 			MSG_exit = -1;
@@ -256,7 +256,7 @@ var _handleBindingMsg = function(){
 		
 	case MSG_connectServer_succ: //连接远程服务器成功
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_switch_HW_router"]);//切换WIFI至华为路由器...
+		showResult(getResource()["PRODUCT_Install_msg_switch_HW_router"]);//切换WIFI至华为路由器...
 		setTimeout(switchRoute, _sleepTime);
 		break;
 		
@@ -267,7 +267,7 @@ var _handleBindingMsg = function(){
 		
 	case MSG_switchRoute_succ: //切换WIFI至华为路由器成功
 		_curMsgID = 0;
-		showResult(getResource()["LIVEHOME_Install_msg_device_config"]);//设备入网配置...
+		showResult(getResource()["PRODUCT_Install_msg_device_config"]);//设备入网配置...
 		setTimeout(doConfig, 15000);
 		break;
 		
@@ -277,7 +277,7 @@ var _handleBindingMsg = function(){
 		break;
 		
 	case MSG_doConfig_succ: //设备入网配置成功
-		showResult(getResource()["LIVEHOME_Install_succ"]);
+		showResult(getResource()["PRODUCT_Install_succ"]);
 		MSG_exit = 1; 
 		break;
 	case MSG_doConfig_fail:
@@ -317,11 +317,11 @@ var _handleBindingMsg = function(){
 	
 	if(MSG_exit == 1){
 		clearInterval(_handleMesgTimer); 
-	       $.alertable.alert(getResource()["LIVEHOME_Install_succ"]).then(function() {
+	       $.alertable.alert(getResource()["PRODUCT_Install_succ"]).then(function() {
 	        });
 	}else if(MSG_exit == -1){
 		clearInterval(_handleMesgTimer); 
-	       $.alertable.alert(getResource()["LIVEHOME_Install_fail"]).then(function() {
+	       $.alertable.alert(getResource()["PRODUCT_Install_fail"]).then(function() {
 	    	   window.location.href = "install_guide.html";
 	        });
 	}
@@ -347,7 +347,7 @@ var _getWifiInfo = function (){
 			}
 		},
 		"error":function(res){
-			showLog(getResource()["LIVEHOME_Install_msg_get_wifi_info_fail"] + res);//"获取当前wif信息失败："
+			showLog(getResource()["PRODUCT_Install_msg_get_wifi_info_fail"] + res);//"获取当前wif信息失败："
 			send_msg(MSG_getWifiInfo_fail);
 		}
 	});
@@ -385,7 +385,7 @@ var getWifiList = function (){
 			}
 		},
 		"error":function(res){
-			showLog(getResource()["LIVEHOME_Install_msg_scan_wifi_list_fail"] + res);//"扫描wifi列表失败："
+			showLog(getResource()["PRODUCT_Install_msg_scan_wifi_list_fail"] + res);//"扫描wifi列表失败："
 			send_msg(MSG_getWifiList_fail);
 		}
 	});
@@ -411,7 +411,7 @@ var switchWifi = function (){
 			send_msg(MSG_switchWifi_succ);
 		},
 		"error":function(res){
-			showLog(getResource()["LIVEHOME_Install_msg_switch_wifi_fail"] + res);//切换wifi模块失败：
+			showLog(getResource()["PRODUCT_Install_msg_switch_wifi_fail"] + res);//切换wifi模块失败：
 			send_msg(MSG_switchWifi_fail);
 		}
 	});
@@ -473,13 +473,13 @@ var socketConnect = function (){
 				}
 		    },
 			"error":function(res){
-				showLog(getResource()["LIVEHOME_Install_msg_create_tcp_connection_fail"] + res);//"创建tcp连接失败"
+				showLog(getResource()["PRODUCT_Install_msg_create_tcp_connection_fail"] + res);//"创建tcp连接失败"
 				send_msg(MSG_socketConnect_fail);
 				alert("error");
 			}
 		})
 	}catch (e){
-		showLog(getResource()["LIVEHOME_Install_msg_create_tcp_connection_err"] + e.name+"---"+e.massage);//"创建tcp连接错误"
+		showLog(getResource()["PRODUCT_Install_msg_create_tcp_connection_err"] + e.name+"---"+e.massage);//"创建tcp连接错误"
 		send_msg(MSG_socketConnect_fail);
 	}
 }
@@ -498,7 +498,7 @@ var sendWifiInfo = function (){
 			send_msg(MSG_SendWifiInfo_succ);
 		},
 		"error":function(res){
-			showLog(getResource()["LIVEHOME_Install_msg_send_wifi_info_fail"] + res);//"发送WIFI信息失败："
+			showLog(getResource()["PRODUCT_Install_msg_send_wifi_info_fail"] + res);//"发送WIFI信息失败："
 			send_msg(MSG_SendWifiInfo_fail);
 		}
 	});
@@ -517,7 +517,7 @@ var sendCdnInfo = function (){
 			send_msg(MSG_SendCdnInfo_succ);
 		},
 		"error":function(res){
-			showLog(getResource()["LIVEHOME_Install_msg_send_cdn_info_fail"] + res);//发送CDN信息失败：
+			showLog(getResource()["PRODUCT_Install_msg_send_cdn_info_fail"] + res);//发送CDN信息失败：
 			send_msg(MSG_SendCdnInfo_fail);
 		}
 	});
@@ -536,7 +536,7 @@ var getDeviceModuleId = function (){
 //			alert("1");
 		},
 		"error":function(res){
-			showLog(getResource()["LIVEHOME_Install_msg_get_module_id_fail"] + res);//获取模块ID失败：
+			showLog(getResource()["PRODUCT_Install_msg_get_module_id_fail"] + res);//获取模块ID失败：
 			send_msg(MSG_getDeviceModuleId_fail);
 		}
 	});
@@ -554,7 +554,7 @@ var connectServer = function (){
 				send_msg(MSG_connectServer_succ);
 			},
 			"error":function(res){
-				showLog(getResource()["LIVEHOME_Install_msg_connect_remote_server_fail"] + res);//连接远程服务器失败：
+				showLog(getResource()["PRODUCT_Install_msg_connect_remote_server_fail"] + res);//连接远程服务器失败：
 				send_msg(MSG_connectServer_fail);
 			}
 		});
@@ -571,7 +571,7 @@ var switchRoute = function (){
 			send_msg(MSG_switchRoute_succ);
 		},
 		"error":function(res){
-			showLog(getResource()["LIVEHOME_Install_msg_switch_HW_router_fail"] + res);//切换wifi至华为路由器失败：
+			showLog(getResource()["PRODUCT_Install_msg_switch_HW_router_fail"] + res);//切换wifi至华为路由器失败：
 			send_msg(MSG_switchRoute_fail);
 		}
 	});
@@ -596,7 +596,7 @@ var doConfig = function (msg){
 		},
 		"error":function(res){
 //			alert("doConfig error");
-			showLog(getResource()["LIVEHOME_Install_msg_device_config_fail"] + res);//设备入网配置失败：
+			showLog(getResource()["PRODUCT_Install_msg_device_config_fail"] + res);//设备入网配置失败：
 			send_msg(MSG_doConfig_fail);
 		}
 	});

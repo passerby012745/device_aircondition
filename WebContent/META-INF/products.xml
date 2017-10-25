@@ -5,8 +5,8 @@
 	 brand-resource:品牌的资源名,用于界面显示 
 	 manufacturer-resource:厂商的资源名,用于界面显示 
 	 resource:国际化资源文件路径 -->
-<products brand="Livehome" 
-		  manufacturer="AirCondition" 
+<products brand="LiveAirCondition" 
+		  manufacturer="SzsbayAirCondition" 
 		  resource="resource/resource.properties"
 		  brand-resource="HISENSE_AIR_CONDITION_MANUFACTURER" 
 		  manufacturer-resource="HISENSE_AIR_CONDITION_BRAND"
@@ -19,7 +19,7 @@
 	</driver-config>
 	
 	<!-- 产品名称：hisenseKelon-->
-	<product name ="SmartAirCondition" description="The standard model of air condition" title="LIVEHOME_AIRCONDITION_TITLE">
+	<product name ="SbayASbayASmartAirCondition" description="The standard model of air condition" title="PRODUCT_AIRCONDITION_TITLE">
 		<!-- 继承标准设备类 -->
 		<classes>
 			<class name="airConditioner" />
@@ -77,7 +77,7 @@
 		<!-- 自定义action动作，可选 -->
 		<actions>
 			<!-- 配置CDN-->
-			<action name="configCDN" description="config device CDN address" title="LIVEHOME_AIRCONDITION_ACTION_CONFIG_CDN_TITLE">
+			<action name="configCDN" description="config device CDN address" title="PRODUCT_AIRCONDITION_ACTION_CONFIG_CDN_TITLE">
 				<property name="ip" type="string" description="device CDN server ip address" title="AIR_CONDITIONER_IP_TITLE">
 				</property>
 				<property name="port" type="integer" description="device CDN server port" title="AIR_CONDITIONER_PORT_TITLE">
@@ -85,27 +85,27 @@
 			</action>
 			
 			<!-- 添加设备-->
-			<action name="addDevice" description="add a device to huawei gateway according to sn" title="LIVEHOME_AIRCONDITION_ACTION_ADD_DEVICE_TITLE">
+			<action name="addDevice" description="add a device to huawei gateway according to sn" title="PRODUCT_AIRCONDITION_ACTION_ADD_DEVICE_TITLE">
 				<property name="sn" type="string" description="the device sn that need to be added" title="AIR_CONDITIONER_ADD_DEVICE_SN_TITLE">
 				</property>
 			</action>
 			
 			<!-- 删除设备-->
-			<action name="removeDevice" description="remove a device from huawei gateway according to sn" title="LIVEHOME_AIRCONDITION_ACTION_REMOVE_DEVICE_TITLE">
+			<action name="removeDevice" description="remove a device from huawei gateway according to sn" title="PRODUCT_AIRCONDITION_ACTION_REMOVE_DEVICE_TITLE">
 				<property name="sn" type="string" description="the device sn that need to be removed" title="AIR_CONDITIONER_REMOVE_DEVICE_SN_TITLE">
 				</property>
 			</action>
 			
 			<!-- 开始指令缓存-->
-			<action name="startCacheOrder" description="start to cache the orders" title="LIVEHOME_AIRCONDITION_ACTION_START_CACHE_ORDER_TITLE">
+			<action name="startCacheOrder" description="start to cache the orders" title="PRODUCT_AIRCONDITION_ACTION_START_CACHE_ORDER_TITLE">
 			</action>
 			
 			<!-- 停止指令缓存-->
-			<action name="stopCacheOrder" description="stop to cache the orders, and issues orders at once" title="LIVEHOME_AIRCONDITION_ACTION_STOP_CACHE_ORDER_TITLE">
+			<action name="stopCacheOrder" description="stop to cache the orders, and issues orders at once" title="PRODUCT_AIRCONDITION_ACTION_STOP_CACHE_ORDER_TITLE">
 			</action>
 			
 			<!-- 辅助功能-->
-			<action name="assistFunction" description="the other assistant functions about this product" title="LIVEHOME_AIRCONDITION_ACTION_ASSIST_FUNCTION_TITLE">
+			<action name="assistFunction" description="the other assistant functions about this product" title="PRODUCT_AIRCONDITION_ACTION_ASSIST_FUNCTION_TITLE">
 				<property name="verticalWind" type="enum" description="the status of vertical wind direction" title="AIR_CONDITIONER_VERTICAL_WIND_STATE_TITLE">
 					<enum title="AIR_CONDITIONER_VERTICAL_WIND_SCAN">scan</enum>
 					<enum title="AIR_CONDITIONER_VERTICAL_WIND_FIX">fix</enum>
