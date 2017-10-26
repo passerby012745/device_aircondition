@@ -205,10 +205,13 @@ var _handleBindingMsg = function() {
 	case MSG_SendWifiInfo_succ: // 发送WIFI信息成功
 		_socketLostCnt = CNT_socket_lost;
 		_curMsgID = 0;
-		showResult(getResource()["PRODUCT_DEVICE_INSTALL_msg_send_cdn_info"]);// "发送CDN信息..."
-		setTimeout(sendCdnInfo, _sleepTime);
-		// sendCdnInfo();
-		connectServer();
+		//showResult(getResource()["PRODUCT_DEVICE_INSTALL_msg_send_cdn_info"]);// "发送CDN信息..."
+		//setTimeout(sendCdnInfo, _sleepTime);
+		//sendCdnInfo();
+		//目前设备都是在本地连接，不需要配置cdn
+		showResult(getResource()["PRODUCT_DEVICE_INSTALL_msg_connect_remote_server"]);// "连接远程服务器..."
+		setTimeout(connectServer, _sleepTime);
+		//connectServer();
 		break;
 
 	case MSG_SendWifiInfo_fail:
@@ -628,6 +631,7 @@ function runBinding() {
 	_getWifiInfo();
 
 	// 在这里向前端HTML输出拼装的列表
+	/*
 	var wifiListLi = '';
 	for (var ind = 0; ind < _moduleWifiList.length; ind++) {
 		wifiListLi += "<li>"
@@ -637,6 +641,7 @@ function runBinding() {
 				+ " style=\"font-size:18px;\">+</button></li>"
 	}
 	document.getElementById("module-wifi-list").innerHTML = wifiListLi;
+	*/
 	// 定时查询烤箱状态
 	_handleMesgTimer = setInterval(_handleBindingMsg, 500);
 

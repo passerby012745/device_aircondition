@@ -13,7 +13,7 @@
 
 	<!-- 产品名称：hisenseKelon -->
 	<product name="SbaySmartAirCondition" description="The standard model of air condition"
-		title="PRODUCT_ITLE">
+		title="PRODUCT_TITLE">
 		<!-- 继承标准设备类 -->
 		<classes>
 			<class name="airConditioner" />
