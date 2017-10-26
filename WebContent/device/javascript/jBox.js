@@ -20,7 +20,8 @@ function jBox(type, options) {
 	this.options = {
 		
 		// jBox ID
-		id: null,					// Choose a unique id, otherwise jBox will set one for you (jBoxID1, jBoxID2, ...)
+		id: null,					// Choose a unique id, otherwise jBox will
+									// set one for you (jBoxID1, jBoxID2, ...)
 		
 		// Dimensions
 		width: 'auto',				// Width of content area (e.g. 'auto', 100)
@@ -31,105 +32,204 @@ function jBox(type, options) {
 		maxHeight: null,			// Minimum height
 		
 		// Attach
-		attach: null,				// Attach jBox to elements (if no target element is provided, jBox will use the attached element as target)
-		trigger: 'click',			// The event to open or close your jBoxes, use 'click' or 'mouseenter'
-		preventDefault: false,		// Prevent default event when opening jBox (e.g. don't follow the href in a link when clicking on it)
+		attach: null,				// Attach jBox to elements (if no target
+									// element is provided, jBox will use the
+									// attached element as target)
+		trigger: 'click',			// The event to open or close your jBoxes,
+									// use 'click' or 'mouseenter'
+		preventDefault: false,		// Prevent default event when opening jBox
+									// (e.g. don't follow the href in a link
+									// when clicking on it)
 		
 		// Content
 		title: null,				// Adds a title to your jBox
-		content: null,				// You can use a string to set text or HTML as content, or an element selector (e.g. jQuery('#jBox-content')) to append one or several elements (elements appended will get style display: 'block', so hide them with CSS style display: 'none' beforehand)
-		getTitle: null,				// Get the title from an attribute when jBox opens
-		getContent: null,			// Get the content from an attribute when jBox opens
+		content: null,				// You can use a string to set text or HTML
+									// as content, or an element selector (e.g.
+									// jQuery('#jBox-content')) to append one or
+									// several elements (elements appended will
+									// get style display: 'block', so hide them
+									// with CSS style display: 'none'
+									// beforehand)
+		getTitle: null,				// Get the title from an attribute when jBox
+									// opens
+		getContent: null,			// Get the content from an attribute when
+									// jBox opens
 		
 		// AJAX request
-		ajax: {						// Setting an url will make an AJAX call when jBox opens
+		ajax: {						// Setting an url will make an AJAX call
+									// when jBox opens
 			url: null,				// URL to send the AJAX request to
-			data: '',				// Data to send with your AJAX call (e.g. 'id=82&limit=10')
-			// Optional you can add any jQuery AJAX option (http://api.jquery.com/jquery.ajax/)
-			reload: false,			// Resend the ajax call every time jBox opens
-			getData: 'data-ajax',	// The attribute in the source element where the AJAX will look for the data to send with, e.g. data-ajax="id=82&limit=10"
-			setContent: true,		// Automatically set the response as new content when the AJAX call is finished
-			spinner: true			// Hides the current content and adds a spinner while loading, you can pass html content to add your own spinner, e.g. spinner: '<div class="mySpinner"></div>'
+			data: '',				// Data to send with your AJAX call (e.g.
+									// 'id=82&limit=10')
+			// Optional you can add any jQuery AJAX option
+			// (http://api.jquery.com/jquery.ajax/)
+			reload: false,			// Resend the ajax call every time jBox
+									// opens
+			getData: 'data-ajax',	// The attribute in the source element where
+									// the AJAX will look for the data to send
+									// with, e.g. data-ajax="id=82&limit=10"
+			setContent: true,		// Automatically set the response as new
+									// content when the AJAX call is finished
+			spinner: true			// Hides the current content and adds a
+									// spinner while loading, you can pass html
+									// content to add your own spinner, e.g.
+									// spinner: '<div class="mySpinner"></div>'
 		},
 		
 		// Position
-		target: null,				// The target element where jBox will be opened
+		target: null,				// The target element where jBox will be
+									// opened
 		position: {
-			x: 'center',			// Horizontal Position (Use a number, 'left', 'right' or 'center')
-			y: 'center'				// Vertical Position (Use a number, 'top', 'bottom' or 'center')
+			x: 'center',			// Horizontal Position (Use a number,
+									// 'left', 'right' or 'center')
+			y: 'center'				// Vertical Position (Use a number, 'top',
+									// 'bottom' or 'center')
 		},
-		outside: null,				// Use 'x', 'y', or 'xy' to move your jBox outside of the target element
-		offset: 0,					// Offset to final position, you can set different values for x and y with an object e.g. {x: 15, y: 0}
+		outside: null,				// Use 'x', 'y', or 'xy' to move your jBox
+									// outside of the target element
+		offset: 0,					// Offset to final position, you can set
+									// different values for x and y with an
+									// object e.g. {x: 15, y: 0}
 		
-		attributes: {				// Note that attributes can only be 'left' or 'right' when using numbers for position, e.g. {x: 300, y: 20}
-			x: 'left',				// Horizontal position, use 'left' or 'right'
+		attributes: {				// Note that attributes can only be 'left'
+									// or 'right' when using numbers for
+									// position, e.g. {x: 300, y: 20}
+			x: 'left',				// Horizontal position, use 'left' or
+									// 'right'
 			y: 'top'				// Vertical position, use 'top' or 'bottom'
 		},
-		adjustPosition: false,		// Adjusts the position when there is not enough space (use true, 'flip' or 'move')
-		adjustTracker: false,		// By default jBox adjusts the position when opening, to adjust when scrolling or resizing, use 'scroll', 'resize' or 'true' (both events)
-		adjustDistance: 5,			// How far from the window edge we start adjusting, use an object to set different values: {bottom: 5, top: 50, left: 5, right: 20}
-		fixed: false,				// Your jBox will stay on position when scrolling
-		reposition: false,			// Calculates new position when the window-size changes
-		repositionOnOpen: true,		// Calculates new position each time jBox opens (rather than only when it opens the first time)
-		repositionOnContent: true,	// Calculates new position when the content changes with .setContent() or .setTitle()
+		adjustPosition: false,		// Adjusts the position when there is not
+									// enough space (use true, 'flip' or 'move')
+		adjustTracker: false,		// By default jBox adjusts the position when
+									// opening, to adjust when scrolling or
+									// resizing, use 'scroll', 'resize' or
+									// 'true' (both events)
+		adjustDistance: 5,			// How far from the window edge we start
+									// adjusting, use an object to set different
+									// values: {bottom: 5, top: 50, left: 5,
+									// right: 20}
+		fixed: false,				// Your jBox will stay on position when
+									// scrolling
+		reposition: false,			// Calculates new position when the
+									// window-size changes
+		repositionOnOpen: true,		// Calculates new position each time jBox
+									// opens (rather than only when it opens the
+									// first time)
+		repositionOnContent: true,	// Calculates new position when the content
+									// changes with .setContent() or .setTitle()
 		
 		// Pointer
-		pointer: false,				// Your pointer will always point towards the target element, so the option outside should be 'x' or 'y'
-		pointTo: 'target',			// Setting something else than 'target' will add a pointer even if there is no target element set or found (Use 'top', 'bottom', 'left' or 'right')
+		pointer: false,				// Your pointer will always point towards
+									// the target element, so the option outside
+									// should be 'x' or 'y'
+		pointTo: 'target',			// Setting something else than 'target' will
+									// add a pointer even if there is no target
+									// element set or found (Use 'top',
+									// 'bottom', 'left' or 'right')
 		
 		// Animations
-		fade: 180,					// Fade duration in ms, set to 0 or false to disable
-		animation: null,			// Animation when opening or closing (use 'pulse', 'zoomIn', 'zoomOut', 'move', 'slide', 'flip', 'tada') (CSS inspired from Daniel Edens Animate.css: http://daneden.me/animate)
+		fade: 180,					// Fade duration in ms, set to 0 or false to
+									// disable
+		animation: null,			// Animation when opening or closing (use
+									// 'pulse', 'zoomIn', 'zoomOut', 'move',
+									// 'slide', 'flip', 'tada') (CSS inspired
+									// from Daniel Edens Animate.css:
+									// http://daneden.me/animate)
 		
 		// Appearance
 		theme: 'Default',			// Set a jBox theme class
 		addClass: '',				// Adds classes to the wrapper
-		overlay: false,				// Adds an overlay when jBox opens (set color and opacity with CSS)
-		zIndex: 10000,				// Use a high zIndex (your overlay will have the lowest zIndex of all your jBoxes (with overlays) minus one)
+		overlay: false,				// Adds an overlay when jBox opens (set
+									// color and opacity with CSS)
+		zIndex: 10000,				// Use a high zIndex (your overlay will have
+									// the lowest zIndex of all your jBoxes
+									// (with overlays) minus one)
 		
 		// Delays
-		delayOpen: 0,				// Delay opening in ms (Note that the delay will be ignored if your jBox didn't finish closing)
-		delayClose: 0,				// Delay closing in ms (Note that there is always a closing delay of at least 10ms to ensure jBox won't be closed when opening right away)
+		delayOpen: 0,				// Delay opening in ms (Note that the delay
+									// will be ignored if your jBox didn't
+									// finish closing)
+		delayClose: 0,				// Delay closing in ms (Note that there is
+									// always a closing delay of at least 10ms
+									// to ensure jBox won't be closed when
+									// opening right away)
 		
 		// Closing events
 		closeOnEsc: false,			// Close jBox when pressing [esc] key
-		closeOnClick: false,		// Close jBox with mouseclick, use 'true' (click anywhere), 'box' (click on jBox itself), 'overlay' (click on the overlay), 'body' (click anywhere but jBox)
-		closeOnMouseleave: false,	// Close jBox when the mouse leaves the jBox area or the area of the attached element
-		closeButton: false,			// Adds a close button to your jBox, use 'title', 'overlay', 'box' or true (true will add the button to overlay, title or box, in that order if any of those elements can be found)
+		closeOnClick: false,		// Close jBox with mouseclick, use 'true'
+									// (click anywhere), 'box' (click on jBox
+									// itself), 'overlay' (click on the
+									// overlay), 'body' (click anywhere but
+									// jBox)
+		closeOnMouseleave: false,	// Close jBox when the mouse leaves the jBox
+									// area or the area of the attached element
+		closeButton: false,			// Adds a close button to your jBox, use
+									// 'title', 'overlay', 'box' or true (true
+									// will add the button to overlay, title or
+									// box, in that order if any of those
+									// elements can be found)
 		
 		// Other options
-		constructOnInit: false,		// Construct jBox when it's being initialized
+		constructOnInit: false,		// Construct jBox when it's being
+									// initialized
 		blockScroll: false,			// When jBox is open, block scrolling
-		appendTo: jQuery('body'), 	// Provide an element if you want the jBox to be positioned inside a specific element (only useful for fixed positions or when position values are numbers)
-		draggable: null,			// Make your jBox draggable (use 'true', 'title' or provide an element as handle) (inspired from Chris Coyiers CSS-Tricks http://css-tricks.com/snippets/jquery/draggable-without-jquery-ui/)
-		dragOver: true,				// When you have multiple draggable jBoxes, the one you select will always move over the other ones
+		appendTo: jQuery('body'), 	// Provide an element if you want the jBox
+									// to be positioned inside a specific
+									// element (only useful for fixed positions
+									// or when position values are numbers)
+		draggable: null,			// Make your jBox draggable (use 'true',
+									// 'title' or provide an element as handle)
+									// (inspired from Chris Coyiers CSS-Tricks
+									// http://css-tricks.com/snippets/jquery/draggable-without-jquery-ui/)
+		dragOver: true,				// When you have multiple draggable jBoxes,
+									// the one you select will always move over
+									// the other ones
 		
-		// Events						// Note: You can use 'this' in the event functions, it refers to your jBox object (e.g. onInit: function() { this.open(); })
-		onInit: function() {},			// Triggered when jBox is initialized, just before it's being created
-		onCreated: function() {},		// Triggered when jBox is created and is availible in DOM
+		// Events // Note: You can use 'this' in the event functions, it refers
+		// to your jBox object (e.g. onInit: function() { this.open(); })
+		onInit: function() {},			// Triggered when jBox is initialized,
+										// just before it's being created
+		onCreated: function() {},		// Triggered when jBox is created and is
+										// availible in DOM
 		onOpen: function() {},			// Triggered when jBox is opened
 		onClose: function() {},			// Triggered when jBox is closed
-		onCloseComplete: function() {},	// Triggered when jBox is completely closed (when fading is finished, useful if you want to destroy the jBox when it is closed)
+		onCloseComplete: function() {},	// Triggered when jBox is completely
+										// closed (when fading is finished,
+										// useful if you want to destroy the
+										// jBox when it is closed)
 		
 		// Only for type "Confirm"
 		confirmButton: 'Submit',	// Text for the submit button
 		cancelButton: 'Cancel',		// Text for the cancel button
-		confirm: null,				// Function to execute when clicking the submit button. By default jBox will use firstly the onclick and secondly the href attribute
-		cancel: null,				// Function to execute when clicking the cancel button
+		confirm: null,				// Function to execute when clicking the
+									// submit button. By default jBox will use
+									// firstly the onclick and secondly the href
+									// attribute
+		cancel: null,				// Function to execute when clicking the
+									// cancel button
 		
 		// Only for type "Notice"
 		autoClose: 7000,			// Time when jBox should close automatically
-		color: null,				// Makes your notices colorful, use 'black', 'red', 'green', 'blue', 'yellow'
+		color: null,				// Makes your notices colorful, use 'black',
+									// 'red', 'green', 'blue', 'yellow'
 		stack: true,				// Set to false to disable notice-stacking
-		audio: false,				// Set the url to an audio file without extention, e.g. '/url/filename'. jBox will look for an .mp3 and an .ogg file
+		audio: false,				// Set the url to an audio file without
+									// extention, e.g. '/url/filename'. jBox
+									// will look for an .mp3 and an .ogg file
 		volume: 100,				// Percent of volume for audio files
 		
 		// Only for type "Image"
-		src: 'href',				// The attribute where jBox gets the image source from, e.g. href="/path_to_image/image.jpg"
-		gallery: 'data-jbox-image',	// The attribute where you define the image gallery, e.g. data-jbox-image="gallery1"
-		imageLabel: 'title',		// The attribute where jBox gets the image label from, e.g. title="My label"
+		src: 'href',				// The attribute where jBox gets the image
+									// source from, e.g.
+									// href="/path_to_image/image.jpg"
+		gallery: 'data-jbox-image',	// The attribute where you define the image
+									// gallery, e.g. data-jbox-image="gallery1"
+		imageLabel: 'title',		// The attribute where jBox gets the image
+									// label from, e.g. title="My label"
 		imageFade: 600,				// The fade duration for images
-		imageSize: 'contain'		// How to display the images: Use CSS background-position values, e.g. 'cover', 'contain', 'auto', 'initial', '50% 50%'
+		imageSize: 'contain'		// How to display the images: Use CSS
+									// background-position values, e.g. 'cover',
+									// 'contain', 'auto', 'initial', '50% 50%'
 	};
 
 	// Default type options
@@ -180,7 +280,8 @@ function jBox(type, options) {
 			animation: 'zoomOut',
 			preventDefault: true,
 			_onAttach: function(el) {
-				// Extract the href or the onclick event if no submit event is passed
+				// Extract the href or the onclick event if no submit event is
+				// passed
 				if (!this.options.confirm) {
 					var submit = el.attr('onclick') ? el.attr('onclick') : (el.attr('href') ? (el.attr('target') ? 'window.open("' + el.attr('href') + '", "' + el.attr('target') + '");'  : 'window.location.href = "' + el.attr('href') + '";') : '');
 					el.prop('onclick', null).data('jBox-Confirm-submit', submit);
@@ -216,7 +317,8 @@ function jBox(type, options) {
 				this.wrapper.data('jBox-Notice-position', this.options.attributes.x + '-' + this.options.attributes.y);
 			},
 			_onOpen: function() {
-				// Loop through notices at same window corner and either move or destroy them
+				// Loop through notices at same window corner and either move or
+				// destroy them
 				jQuery.each(jQuery('.jBox-Notice'), function(index, el) {
 					el = jQuery(el);
 
@@ -252,7 +354,9 @@ function jBox(type, options) {
 			preventDefault: true,
 			
 			// TODO: What if the image is not found?
-			// TODO: What if the first image of a gallery needs some time to load, but other images are in content. Maybe add a blank black container
+			// TODO: What if the first image of a gallery needs some time to
+			// load, but other images are in content. Maybe add a blank black
+			// container
 			
 			_onInit: function() {
 				this.images = this.currentImage = {};
@@ -266,7 +370,8 @@ function jBox(type, options) {
 					!this.images[gallery] && (this.images[gallery] = []);
 					this.images[gallery].push({src: item.attr(this.options.src), label: (item.attr(this.options.imageLabel) || '')});
 					
-					// Remove the title attribute so it won't show the browsers tooltip
+					// Remove the title attribute so it won't show the browsers
+					// tooltip
 					this.options.imageLabel == 'title' && item.removeAttr('title');
 					
 					// Store data in source element for easy access
@@ -304,7 +409,8 @@ function jBox(type, options) {
 				
 				// Show images when they are loaded or load them if not
 				this.showImage = function(img) {
-					// Get the gallery and the image id from the next or the previous image
+					// Get the gallery and the image id from the next or the
+					// previous image
 					if (img != 'open') {
 						var gallery = this.currentImage.gallery;
 						var id = this.currentImage.id + (1 * (img == 'prev') ? -1 : 1);
@@ -354,7 +460,8 @@ function jBox(type, options) {
 				this.wrapper.append(jQuery('<div/>', {'class': 'jBox-image-pointer-prev', click: function() { this.showImage('prev'); }.bind(this)})).append(jQuery('<div/>', {'class': 'jBox-image-pointer-next', click: function() { this.showImage('next'); }.bind(this)}));
 			},
 			_onOpen: function() {
-				// Add a class to body so you can control the appearance of the overlay, for images a darker one is better
+				// Add a class to body so you can control the appearance of the
+				// overlay, for images a darker one is better
 				jQuery('body').addClass('jBox-image-open');
 				
 				// Add key events
@@ -410,7 +517,8 @@ function jBox(type, options) {
 	// Save default outside position
 	this.options.outside && this.options.outside != 'xy' && (this.outside = this.options.position[this.options.outside]);
 	
-	// I know browser detection is bad practice, but for now it seems the only option to get jBox working in IE8
+	// I know browser detection is bad practice, but for now it seems the only
+	// option to get jBox working in IE8
 	var userAgent = navigator.userAgent.toLowerCase();
 	this.IE8 = userAgent.indexOf('msie') != -1 && parseInt(userAgent.split('msie')[1]) == 8;
 	
@@ -455,10 +563,12 @@ function jBox(type, options) {
 			opacity: 0,
 			zIndex: this.options.zIndex
 			
-			// Save the jBox instance in the wrapper, so you can get access to your jBox when you only have the element
+			// Save the jBox instance in the wrapper, so you can get access to
+			// your jBox when you only have the element
 		}).data('jBox', this);
 		
-		// Add mouseleave event (.parents('*') might be a performance nightmare! Maybe there is a better way)
+		// Add mouseleave event (.parents('*') might be a performance nightmare!
+		// Maybe there is a better way)
 		this.options.closeOnMouseleave && this.wrapper.mouseleave(function(ev) {
 			// Only close when the new target is not the source element
 			!this.source || !(ev.relatedTarget == this.source[0] || jQuery.inArray(this.source[0], jQuery(ev.relatedTarget).parents('*')) !== -1) && this.close();
@@ -629,7 +739,9 @@ function jBox(type, options) {
 			
 			var scrollTimer,
 				scrollTimerTriggered = 0,
-				scrollTriggerDelay = 150;	// Trigger scroll and resize events every 150 ms (set a higher value to improve performance)
+				scrollTriggerDelay = 150;	// Trigger scroll and resize events
+											// every 150 ms (set a higher value
+											// to improve performance)
 				
 			// Function to delay positioning event
 			var positionDelay = function () {
@@ -1016,16 +1128,19 @@ jBox.prototype.attach = function(elements, trigger) {
 			this.attachedElements || (this.attachedElements = []);
 			this.attachedElements.push(el[0]);
 			
-			// Add click or mouseenter event, click events can prevent default as well
+			// Add click or mouseenter event, click events can prevent default
+			// as well
 			el.on(trigger + '.jBox-attach-' + this.id, function(ev) {
 				// Clear timer
 				this.timer && clearTimeout(this.timer);
 				
-				// Block opening when jbox is open and the source element is triggering
+				// Block opening when jbox is open and the source element is
+				// triggering
 				if (trigger == 'mouseenter' && this.isOpen && this.source[0] == el[0])
 					return;
 				
-				// Only close jBox if you click the current target element, otherwise open at new target
+				// Only close jBox if you click the current target element,
+				// otherwise open at new target
 				if (this.isOpen && this.source && this.source[0] != el[0]) var forceOpen = true;
 				
 				// Set new source element
@@ -1043,7 +1158,8 @@ jBox.prototype.attach = function(elements, trigger) {
 			
 			// Add close event for trigger event mouseenter
 			(this.options.trigger == 'mouseenter') && el.on('mouseleave', function(ev) {
-				// If we have set closeOnMouseleave, do not close jBox when leaving attached element and mouse is over jBox
+				// If we have set closeOnMouseleave, do not close jBox when
+				// leaving attached element and mouse is over jBox
 				if(!this.options.closeOnMouseleave || !(ev.relatedTarget == this.wrapper[0] || jQuery(ev.relatedTarget).parents('#' + this.id).length)) this.close();
 			}.bind(this));
 			
@@ -1108,10 +1224,12 @@ jBox.prototype.setContent = function(content, ignore_positioning) {
 	// Create jBox if no wrapper found
 	!this.wrapper && this._create();
 	
-	// Get the width and height of wrapper, only if they change we need to reposition
+	// Get the width and height of wrapper, only if they change we need to
+	// reposition
 	var wrapperHeight = this.wrapper.height(), wrapperWidth = this.wrapper.width();
 	
-	// Get the width and height of body, if they change with new content, adjust accordingly (happens when a hidden scrollbar changes body dimensions)
+	// Get the width and height of body, if they change with new content, adjust
+	// accordingly (happens when a hidden scrollbar changes body dimensions)
 	var bodyHeight = jQuery('body').height(), bodyWidth = jQuery('body').width();
 	
 	// Extract all appended containers to body
@@ -1296,7 +1414,8 @@ jBox.prototype.open = function(options) {
 	// Abort any opening or closing timer
 	this.timer && clearTimeout(this.timer);
 	
-	// Block body click for 10ms, so jBox can open on attached elements while closeOnClick = 'body'
+	// Block body click for 10ms, so jBox can open on attached elements while
+	// closeOnClick = 'body'
 	this._blockBodyClick();
 	
 	// Block opening
@@ -1377,7 +1496,8 @@ jBox.prototype.close = function(options) {
 	// Abort opening
 	this.timer && clearTimeout(this.timer);
 	
-	// Block body click for 10ms, so jBox can open on attached elements while closeOnClock = 'body' is true
+	// Block body click for 10ms, so jBox can open on attached elements while
+	// closeOnClock = 'body' is true
 	this._blockBodyClick();
 	
 	// Block closing

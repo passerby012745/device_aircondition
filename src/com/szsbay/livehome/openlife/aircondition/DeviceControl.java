@@ -365,43 +365,43 @@ public class DeviceControl extends AbstractHisenseControl
 	
 			int indoor_alarm1 = getProtocol().getAirConditionIndoorAlarm1();
 			if(1 == ((indoor_alarm1&0x80)>>7)){//室内温度传感器故障:0x80
-				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT", new JSONObject());
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_INDOOR_TEMP_SENSOR_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_INDOOR_TEMP_SENSOR_FAULT", new JSONObject());
 			}
 			if(1 == ((indoor_alarm1&0x40)>>6)){//室内盘管温度传感器故障:0x40
-				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT", new JSONObject());
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_INDOOR_PIPE_TEMP_SENSOR_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_INDOOR_PIPE_TEMP_SENSOR_FAULT", new JSONObject());
 			}
 			if(1 == ((indoor_alarm1&0x20)>>5)){//室内湿度传感器故障:0x20
-				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT", new JSONObject());
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_INDOOR_HUMI_SENSOR_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_INDOOR_HUMI_SENSOR_FAULT", new JSONObject());
 			}
 			if(1 == ((indoor_alarm1&0x08)>>3)){//室内风机电机运转异常故障:0x08
-				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT", new JSONObject());	
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_INDOOR_FAN_MOTOR_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_INDOOR_FAN_MOTOR_FAULT", new JSONObject());	
 			}
 			if(1 == ((indoor_alarm1&0x02)>>1)){//室内电压过零检测故障:0x02
-				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT", new JSONObject());	
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_INDOOR_VOLTAGE_DETECTION_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_INDOOR_VOLTAGE_DETECTION_FAULT", new JSONObject());	
 			}
 			if(1 == (indoor_alarm1&0x01)){//室内外通信故障:0x01
-				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT", new JSONObject());	
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_INDOOR_OUTDOOR_COMMUNICATION_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_INDOOR_OUTDOOR_COMMUNICATION_FAULT", new JSONObject());	
 			}
 			int indoor_alarm2 = getProtocol().getAirConditionIndoorAlarm2();
 			if(1 == ((indoor_alarm2&0x80)>>7)){//室内控制板与显示板通信故障:0x80
-				logger.d("<reportAlarm> ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT", new JSONObject());
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_INDOOR_COMMUNICATION_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_INDOOR_COMMUNICATION_FAULT", new JSONObject());
 			}
 			int outdoor_alarm1 = getProtocol().getAirConditionOutdoorAlarm1();
 			if(1 == ((outdoor_alarm1&0x20)>>5)){//室外盘管温度传感器故障:0x20
-				logger.d("<reportAlarm> ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT", new JSONObject());
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_OUTDOOR_PIPE_TEMP_SENSOR_FAULT");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_OUTDOOR_PIPE_TEMP_SENSOR_FAULT", new JSONObject());
 			}
 			int indoor_alarm4 = getProtocol().getAirConditionOutdoorAlarm4();
 			if(1 == ((indoor_alarm4&0x40)>>6)){//冷媒泄漏:0x40
-				logger.d("<reportAlarm> ALARM_AIRCON_REFRIGERANT_LEAKAGE");
-				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCON_REFRIGERANT_LEAKAGE", new JSONObject());
+				logger.d("<reportAlarm> ALARM_AIRCONDITION_REFRIGERANT_LEAKAGE");
+				deviceService.reportDeviceAlarm(sn, "ALARM_AIRCONDITION_REFRIGERANT_LEAKAGE", new JSONObject());
 			}
 			
 		}

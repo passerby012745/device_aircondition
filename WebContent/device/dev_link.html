@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<title><span local_key="PRODUCT_ADD_DEVICE"></span></title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <link rel="stylesheet" href="css/common.css" />
-        <link rel="stylesheet" href="css/device.css" /> 
-	    <link rel="stylesheet" href="css/jquery.alertable.css">
- 		<link href="css/style.css"rel="stylesheet" type="text/css" />
-        <script type="text/javascript" src="javascript/init.js" ></script>
-        <!--<script type="text/javascript" src="javascript/lib/vconsole.min.js" ></script>-->
-		<style type="text/css">
+<head>
+<meta charset="utf-8" />
+<title><span local_key="PRODUCT_DEVICE_ADD_DEVICE"></span></title>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="css/common.css" />
+<link rel="stylesheet" href="css/device.css" />
+<link rel="stylesheet" href="css/jquery.alertable.css">
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="javascript/init.js"></script>
+<!--<script type="text/javascript" src="javascript/lib/vconsole.min.js" ></script>-->
+<!--<style type="text/css">
 			.wifilist{
 			  border:5px solid #FCC;
 			  overflow:hidden;
@@ -32,32 +33,64 @@
 				height: 20px;
 				margin-top:20px;
 			}
-		</style>
-	</head>
-	<body>
-		<div class="loading_section" style="text-align:center;margin-top:20px;">
-			<div class="loading" style="margin:0 auto"></div>
-			<p class="text_progress" id="result_list"><span local_key="PRODUCT_DEVICE_CONNECTING"></span></p>
-			<br>
-			<div class="wifilist">
+		</style>-->
+</head>
+<body>
+	<div class="loading_section"
+		style="text-align: center; margin-top: 20px;">
+		<div class="loading" style="margin: 0 auto"></div>
+		<p class="text_progress" id="result_list">
+			<span local_key="PRODUCT_DEVICE_CONNECTING"></span>
+		</p>
+		<br>
+		<!--<div class="wifilist">
 			  <ul id="module-wifi-list" class="module_wifi_list">
 			  </ul>
 			</div>
-			<br>
-			<div style="width: 350px;border-style: solid;border-color: #0a9ec7;text-align: center;height: 100px">
+			<br>-->
+		<!--<div style="width: 350px;border-style: solid;border-color: #0a9ec7;text-align: center;height: 100px">
 				<div style="margin-top: 10px;text-align: center">
-					ģ����:<input id="ap_ssid" value="41iujnflsdhgiuwbnasdhkflbh" style="width:80%;font-size:20px;">
+					<input id="ap_ssid" value="" style="width:80%;font-size:20px;">
 					<div style="margin-top: 15px">
-						<button id="module_ap_scan"  style="font-size:18px;float: left;margin-left: 20px">��ά��ɨ��<!--<span local_key="PRODUCT_BUTTON_SCAN"></span>--></button>
-						<button id="module_ap_bind"  style="font-size:18px;float: right;margin-right: 20px">���豸<!--<span local_key="PRODUCT_BUTTON_BIND"></span>--></button>
+						<button id="module_ap_scan"  style="font-size:18px;float: left;margin-left: 20px"><span local_key="PRODUCT_BUTTON_SCAN"></span></button>
+						<button id="module_ap_bind"  style="font-size:18px;float: right;margin-right: 20px"><span local_key="PRODUCT_BUTTON_BIND"></span></button>
 					</div>
 				</div>
+			</div>-->
+		<p style="width: 100%;">
+			<span local_key="PRODUCT_INPUT_DESC"></span>
+		</p>
+		<br> <input type="text" id="ap_ssid"
+			value="GZO-B220-5ECF7F028426" style="width: 100%; font-size: 20px;">
+		<br> <br>
+		<div>
+			<div
+				style="width: 50%; padding: 0; margin: 0; float: left; box-sizing: border-box; font-size: 20px;">
+				<button id="module_ap_scan"
+					style="font-size: 20px; text-align: center;">
+					<span local_key="PRODUCT_BUTTON_SCAN">
+				</button>
 			</div>
-		</div>  	
+			<div
+				style="width: 50%; padding: 0; margin: 0; float: left; box-sizing: border-box; font-size: 20px;">
+				<button id="module_ap_bind"
+					style="font-size: 20px; text-align: center;">
+					<span local_key="PRODUCT_BUTTON_BIND">
+				</button>
+			</div>
+		</div>
+		<br>
+		<div>
+			<img src="images/icon.png"
+				style="width: 20%; margin-top: 20px; margin-bottom: 10px; text-align: center;" />
+		</div>
+		<span style="font-size: 20px; color: #9932CC !important"
+			local_key="PRODUCT_ITLE"></span> <br> <br>
+	</div>
 
 	<script type="text/javascript" src="javascript/lib/jquery-1.9.1.js"></script>
 	<script type="text/javascript" src="javascript/lib/hw_plugin_public.js"></script>
 	<script type="text/javascript" src="javascript/lib/jquery.alertable.js"></script>
 	<script type="text/javascript" src="javascript/dev_link.js"></script>
-	</body>
+</body>
 </html>

@@ -1,28 +1,47 @@
 <!doctype html>
 <html ng-app="starterApp">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
-    <META HTTP-EQUIV="Expires" CONTENT="-1">
-    <title>操控页</title>
-    <link href="css/ionic.min.css" rel="stylesheet" type="text/css" />
-    <link href="css/style.css"rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="css/jBox.css">
-    <style type="text/css">
-        @charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
-    </style>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="-1">
+<link href="css/ionic.min.css" rel="stylesheet" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="css/jBox.css">
+<style type="text/css">
+@charset "UTF-8"; 
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak,
+	.x-ng-cloak, .ng-hide {
+	display: none !important;
+}
+
+ng\:form {
+	display: block;
+}
+
+.ng-animate-start {
+	clip: rect(0, auto, auto, 0);
+	-ms-zoom: 1.0001;
+}
+
+.ng-animate-active {
+	clip: rect(-1px, auto, auto, 0);
+	-ms-zoom: 1;
+}
+</style>
 
 <!-- 	<script type="text/javascript" src="javascript/lib/vconsole.min.js"></script> -->
 </head>
 
-<body onload="load();" class="air" ng-controller="homeCtrl" >
-<div class="list padding-top-0 " style="margin-bottom: 0px">
-    <!--head start-->
-<!--   <div class="head">
+<body onload="load();" class="air" ng-controller="homeCtrl">
+	<div class="list padding-top-0 " style="margin-bottom: 0px">
+		<!--head start-->
+		<!--   <div class="head">
      <div class="light text-center font-size-16" style="opacity: .7;padding-top:20px">
-		<span local_key="AIRCON_CONTROL_CURRENT_TEMPERATURE"></span>
+		<span local_key="CONTROL_AIRCONDITION_CURRENT_TEMPERATURE"></span>
       </div>
       <p class="light text-center item bg-transparent item-borderless relative" 
             style="font-size:55px;margin-top:16px !important;" ng-cloak>
@@ -34,207 +53,256 @@
       </div>
 
   </div> -->
-    <!--head end-->
+		<!--head end-->
 
-        <label class="item item-borderless bg-transparent no-padding" style="position: relative;">
-            <input type="checkbox" ng-model="open" ng-change="openClose()" style="position: absolute;z-index: -10;">
+		<label class="item item-borderless bg-transparent no-padding"
+			style="position: relative;"> <input type="checkbox"
+			ng-model="open" ng-change="openClose()"
+			style="position: absolute; z-index: -10;">
 
-    <div class="item item-icon-right blue  " ng-show="open" style="padding:30px 16px;">
-        <span class="font-size-18"><span local_key="AIRCON_CONTROL_IS_OPEN"></span></span>
-        <i class="icon" style="margin-right: 8px;"><img src="images/btn-switch-open.png" width="50px"></i>
+			<div class="item item-icon-right blue  " ng-show="open"
+				style="padding: 30px 16px;">
+				<span class="font-size-18"><span
+					local_key="CONTROL_AIRCONDITION_IS_OPEN"></span></span> <i class="icon"
+					style="margin-right: 8px;"><img
+					src="images/btn-switch-open.png" width="50px"></i>
 
-    </div>
-    <div class="item item-icon-right gray-9 " ng-show="!open" style="padding:30px 16px;">
-        <span class="font-size-18"><span local_key="AIRCON_CONTROL_CLOSED"></span></span>
-        <i class="icon" style="margin-right: 8px;"><img src="images/btn-switch-close.png" width="50px"></i>
-    </div>
-        </label>
-
-
-    <!--功能列表start-->
-    <div style="position: relative">
-    <div class="card">
-        <div class="row" style="padding: 10px 13px 10px 8px;">
-            <div class="col col-67">
-                <span class="gray-6 margin-bottom-15 inline-block"><span local_key="AIRCON_CONTROL_TEMPERATURE_REGULATION"></span></span><br/>
-                <span class="blue" style="display: inline-block;position: relative;" >
-                    <span class="font-size-32" ng-cloak>{{temControl}}</span>
-                    <span style=" position: absolute;top: -4px;right: -16px;">℃</span>
-                </span>
-            </div>
-
-            <div class="col text-center no-padding" style="padding-top:16px !important;">
-                <div class="add padding-v-6" ng-click="add();" >
-                <span class="font-size-28 gray-6">+</span>
-                </div>
-            </div>
-            <div class="col text-center no-padding" style="padding-top:16px !important;">
-                <div class="reduce padding-v-6" ng-click="reduce()" >
-                <span class="font-size-28 gray-6">-</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card" >
-        <div class="item gray-3 font-size-16" style="border-color: #EAEAEA !important;">
-			<span local_key="AIRCON_CONTROL_SET_MODE"></span>
-        </div>
-        <div class="row no-padding">
-            <div class="col no-padding border-b_r" >
-                <label class="item item-radio radius-none text-center">
-                    <input type="radio" ng-model="choice" ng-value="'heating'" name="group01" ng-click="modeSet()">
-                    <div class="item-content padding-right-16">
-                        <span class="gray-9 inline-block">
-                            <img class="v-middle" src="images/icon-mode_05.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_HEATING"></span></span>
-                        </span>
-                    </div>
-                    <div class="radio-icon " style="background-color: #58BBFF;width: 100%;">
-                        <span class="light inline-block font-size-16">
-                            <img src="images/icon-white_05.png" width="30px" class="v-middle">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_HEATING"></span></span>
-                        </span>
-                    </div>
-                </label>
-            </div>
-            <div class="col no-padding border-b_r">
-                <label class="item item-radio radius-none text-center">
-                    <input type="radio" ng-model="choice" ng-value="'cooling'" name="group01" ng-click="modeSet()">
-                    <div class="item-content padding-right-16">
-                        <span class="gray-9 inline-block"> <img class="v-middle" src="images/icon-mode_03.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_COOL"></span></span>
-                        </span>
-                    </div>
-                    <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
-                        <span class="light inline-block font-size-16"><img class="v-middle" src="images/icon-white_03.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_COOL"></span></span>
-                        </span>
-                    </div>
-                </label>
-            </div>
-            <div class="col no-padding border-b">
-                <label class="item item-radio radius-none text-center">
-                    <input type="radio" ng-model="choice" ng-value="'dehumidification'" name="group01" ng-click="modeSet()">
-                    <div class="item-content padding-right-16">
-                        <span class="gray-9 inline-block"><img class="v-middle" src="images/icon-mode_07.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_DEHUMIDIFICATION"></span></span>
-                            </span>
-                    </div>
-                    <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
-                        <span class="light inline-block font-size-16"><img class="v-middle" src="images/icon-white_07.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_DEHUMIDIFICATION"></span></span>
-                            </span>
-                    </div>
-                </label>
-            </div>
-        </div>
-        
-        <div class="row no-padding ">
-            <div class="col no-padding border_r">
-                <label class="item item-radio radius-none text-center">
-                    <input type="radio" ng-model="choice" ng-value="'blast'" name="group01" ng-click="modeSet()">
-                    <div class="item-content padding-right-16">
-                        <span class="gray-9 inline-block"><img class="v-middle" src="images/icon-mode_09.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_BLAST"></span></span>
-                            </span>
-                    </div>
-                    <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
-                        <span class="light inline-block font-size-16"><img class="v-middle" src="images/icon-white_09.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_BLAST"></span></span>
-                            </span>
-                    </div>
-                </label>
-            </div>
-            <div class="col no-padding border_r">
-
-                <label class="item item-radio radius-none text-center">
-                    <input type="radio" ng-model="choice" ng-value="'auto'" name="group01" ng-click="modeSet()">
-                    <div class="item-content padding-right-16">
-                        <span class="gray-9 inline-block"><img class="v-middle" src="images/icon-mode_11.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_AUTO"></span></span>
-                            </span>
-                    </div>
-                    <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
-                        <span class="light inline-block font-size-16"><img class="v-middle" src="images/icon-white_11.png" width="30px">
-                            <span class="v-middle"><span local_key="AIRCON_CONTROL_MODE_AUTO"></span></span>
-                            </span>
-                    </div>
-                </label>
-            </div>
-            <div class="col no-padding">
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div  class="item gray-3 font-size-16" style="border-color: #EAEAEA !important;">
-			<span local_key="AIRCON_CONTROL_WIND_SPEED_ADJUSTMENT"></span>
-        </div>
-
-        <div class="">
+			</div>
+			<div class="item item-icon-right gray-9 " ng-show="!open"
+				style="padding: 30px 16px;">
+				<span class="font-size-18"><span
+					local_key="CONTROL_AIRCONDITION_CLOSED"></span></span> <i class="icon"
+					style="margin-right: 8px;"><img
+					src="images/btn-switch-close.png" width="50px"></i>
+			</div>
+		</label>
 
 
+		<!--功能列表start-->
+		<div style="position: relative">
+			<div class="card">
+				<div class="row" style="padding: 10px 13px 10px 8px;">
+					<div class="col col-67">
+						<span class="gray-6 margin-bottom-15 inline-block"><span
+							local_key="CONTROL_AIRCONDITION_TEMPERATURE_REGULATION"></span></span><br />
+						<span class="blue"
+							style="display: inline-block; position: relative;"> <span
+							class="font-size-32" ng-cloak>{{temControl}}</span> <span
+							style="position: absolute; top: -4px; right: -16px;">℃</span>
+						</span>
+					</div>
 
-            <div class=" item " style="border-bottom: none;padding-bottom: 4px">
-                <input class="windStrip" id="windMode" type="range" name="volume" min="0" max="100" ng-value="50" ng-model="windValue" step="25" >
-                <img src="images/wind-strip01.png" width="100%" ng-show="windValue==0">
-                <img src="images/wind-strip02.png" width="100%" ng-show="windValue==25">
-                <img src="images/wind-strip03.png" width="100%" ng-show="windValue==50">
-                <img src="images/wind-strip04.png" width="100%" ng-show="windValue==75">
-                <img src="images/wind-strip05.png" width="100%" ng-show="windValue==100">
-            </div>
-             <div class="row " style="padding:0 25px 15px 20px;">
-                <div class="col-20 gray-9">
-					<span local_key="AIRCON_CONTROL_WIND_SPEED_MUTE"></span>
-                </div>
-                <div class="col-20 gray-9" style="padding-left: 3%">
-					<span local_key="AIRCON_CONTROL_WIND_SPEED_SLOW"></span>
-                </div>
-                <div class="col-20 gray-9 text-center">
-					<span local_key="AIRCON_CONTROL_WIND_SPEED_MIDDLE"></span>
-                </div>
-                <div class="col-20 gray-9 text-right" style="padding-right: 1%">
-					<span local_key="AIRCON_CONTROL_WIND_SPEED_FAST"></span>
-                </div>
-                <div class="col-20 gray-9 text-right">
-					<span local_key="AIRCON_CONTROL_WIND_SPEED_AUTO"></span>
-                </div>
-            </div>           
+					<div class="col text-center no-padding"
+						style="padding-top: 16px !important;">
+						<div class="add padding-v-6" ng-click="add();">
+							<span class="font-size-28 gray-6">+</span>
+						</div>
+					</div>
+					<div class="col text-center no-padding"
+						style="padding-top: 16px !important;">
+						<div class="reduce padding-v-6" ng-click="reduce()">
+							<span class="font-size-28 gray-6">-</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card">
+				<div class="item gray-3 font-size-16"
+					style="border-color: #EAEAEA !important;">
+					<span local_key="CONTROL_AIRCONDITION_SET_MODE"></span>
+				</div>
+				<div class="row no-padding">
+					<div class="col no-padding border-b_r">
+						<label class="item item-radio radius-none text-center"> <input
+							type="radio" ng-model="choice" ng-value="'heating'"
+							name="group01" ng-click="modeSet()">
+							<div class="item-content padding-right-16">
+								<span class="gray-9 inline-block"> <img class="v-middle"
+									src="images/icon-mode_05.png" width="30px"> <span
+									class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_HEATING"></span></span>
+								</span>
+							</div>
+							<div class="radio-icon "
+								style="background-color: #58BBFF; width: 100%;">
+								<span class="light inline-block font-size-16"> <img
+									src="images/icon-white_05.png" width="30px" class="v-middle">
+									<span class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_HEATING"></span></span>
+								</span>
+							</div>
+						</label>
+					</div>
+					<div class="col no-padding border-b_r">
+						<label class="item item-radio radius-none text-center"> <input
+							type="radio" ng-model="choice" ng-value="'cooling'"
+							name="group01" ng-click="modeSet()">
+							<div class="item-content padding-right-16">
+								<span class="gray-9 inline-block"> <img class="v-middle"
+									src="images/icon-mode_03.png" width="30px"> <span
+									class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_COOL"></span></span>
+								</span>
+							</div>
+							<div class="radio-icon "
+								style="background-color: #58BBFF; width: 100%">
+								<span class="light inline-block font-size-16"><img
+									class="v-middle" src="images/icon-white_03.png" width="30px">
+									<span class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_COOL"></span></span> </span>
+							</div>
+						</label>
+					</div>
+					<div class="col no-padding border-b">
+						<label class="item item-radio radius-none text-center"> <input
+							type="radio" ng-model="choice" ng-value="'dehumidification'"
+							name="group01" ng-click="modeSet()">
+							<div class="item-content padding-right-16">
+								<span class="gray-9 inline-block"><img class="v-middle"
+									src="images/icon-mode_07.png" width="30px"> <span
+									class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_DEHUMIDIFICATION"></span></span>
+								</span>
+							</div>
+							<div class="radio-icon "
+								style="background-color: #58BBFF; width: 100%">
+								<span class="light inline-block font-size-16"><img
+									class="v-middle" src="images/icon-white_07.png" width="30px">
+									<span class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_DEHUMIDIFICATION"></span></span>
+								</span>
+							</div>
+						</label>
+					</div>
+				</div>
+
+				<div class="row no-padding ">
+					<div class="col no-padding border_r">
+						<label class="item item-radio radius-none text-center"> <input
+							type="radio" ng-model="choice" ng-value="'blast'" name="group01"
+							ng-click="modeSet()">
+							<div class="item-content padding-right-16">
+								<span class="gray-9 inline-block"><img class="v-middle"
+									src="images/icon-mode_09.png" width="30px"> <span
+									class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_BLAST"></span></span> </span>
+							</div>
+							<div class="radio-icon "
+								style="background-color: #58BBFF; width: 100%">
+								<span class="light inline-block font-size-16"><img
+									class="v-middle" src="images/icon-white_09.png" width="30px">
+									<span class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_BLAST"></span></span> </span>
+							</div>
+						</label>
+					</div>
+					<div class="col no-padding border_r">
+
+						<label class="item item-radio radius-none text-center"> <input
+							type="radio" ng-model="choice" ng-value="'auto'" name="group01"
+							ng-click="modeSet()">
+							<div class="item-content padding-right-16">
+								<span class="gray-9 inline-block"><img class="v-middle"
+									src="images/icon-mode_11.png" width="30px"> <span
+									class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_AUTO"></span></span> </span>
+							</div>
+							<div class="radio-icon "
+								style="background-color: #58BBFF; width: 100%">
+								<span class="light inline-block font-size-16"><img
+									class="v-middle" src="images/icon-white_11.png" width="30px">
+									<span class="v-middle"><span
+										local_key="CONTROL_AIRCONDITION_MODE_AUTO"></span></span> </span>
+							</div>
+						</label>
+					</div>
+					<div class="col no-padding"></div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="item gray-3 font-size-16"
+					style="border-color: #EAEAEA !important;">
+					<span local_key="CONTROL_AIRCONDITION_WIND_SPEED_ADJUSTMENT"></span>
+				</div>
+
+				<div class="">
 
 
-        </div>
 
-    </div>
+					<div class=" item "
+						style="border-bottom: none; padding-bottom: 4px">
+						<input class="windStrip" id="windMode" type="range" name="volume"
+							min="0" max="100" ng-value="50" ng-model="windValue" step="25">
+						<img src="images/wind-strip01.png" width="100%"
+							ng-show="windValue==0"> <img src="images/wind-strip02.png"
+							width="100%" ng-show="windValue==25"> <img
+							src="images/wind-strip03.png" width="100%"
+							ng-show="windValue==50"> <img src="images/wind-strip04.png"
+							width="100%" ng-show="windValue==75"> <img
+							src="images/wind-strip05.png" width="100%"
+							ng-show="windValue==100">
+					</div>
+					<div class="row " style="padding: 0 25px 15px 20px;">
+						<div class="col-20 gray-9">
+							<span local_key="CONTROL_AIRCONDITION_WIND_SPEED_MUTE"></span>
+						</div>
+						<div class="col-20 gray-9" style="padding-left: 3%">
+							<span local_key="CONTROL_AIRCONDITION_WIND_SPEED_SLOW"></span>
+						</div>
+						<div class="col-20 gray-9 text-center">
+							<span local_key="CONTROL_AIRCONDITION_WIND_SPEED_MIDDLE"></span>
+						</div>
+						<div class="col-20 gray-9 text-right" style="padding-right: 1%">
+							<span local_key="CONTROL_AIRCONDITION_WIND_SPEED_FAST"></span>
+						</div>
+						<div class="col-20 gray-9 text-right">
+							<span local_key="CONTROL_AIRCONDITION_WIND_SPEED_AUTO"></span>
+						</div>
+					</div>
 
 
-    <div class="card">
-        <label  class="item item-icon-right gray-3 font-size-16 item-borderless" >
-			<span local_key="AIRCON_CONTROL_SLEEP_MODE"></span>
-            <div  class="icon">
-                <input type="checkbox" ng-model="sleepModel" ng-click="sleepCli()" style="opacity:0">
-                <!--<div class="track">-->
-                    <!--<div class="handle"></div>-->
-                <!--</div>-->
-                <div class="swich_t text-right" ng-show="sleepModel" >
-                    <img src="images/btn-open.png" width="65px" style="margin-top:9px">
-                </div>
-                <div class="swich_t text-right" ng-show="!sleepModel" >
-                    <img src="images/btn-close.png" width="65px" style="margin-top:9px">
-                </div>
-            </div>
-        </label>
-    </div>
+				</div>
 
-    <div class="card">
-        <div class="item item-icon-right gray-3 font-size-16 item-borderless"  ng-click=" groupShow = !groupShow">
+			</div>
 
-		<span local_key="AIRCON_CONTROL_AUXILIARY_FUCTION"></span>
-            <i class="icon" ng-class="groupShow ? 'ion-ios-arrow-up' : 'ion-ios-arrow-down'" style="color:#D3D3D3;"></i>
-        </div>
-        
-        <div class="item no-padding " ng-show="groupShow">
-<!--             <div class="item item-borderless gray-6" style="padding:6px 16px;border-bottom:1px solid #EAEAEA !important;">
-				<span local_key="AIRCON_CONTROL_WIND_UP_DOWN"></span>
+
+			<div class="card">
+				<label
+					class="item item-icon-right gray-3 font-size-16 item-borderless">
+					<span local_key="CONTROL_AIRCONDITION_SLEEP_MODE"></span>
+					<div class="icon">
+						<input type="checkbox" ng-model="sleepModel" ng-click="sleepCli()"
+							style="opacity: 0">
+						<!--<div class="track">-->
+						<!--<div class="handle"></div>-->
+						<!--</div>-->
+						<div class="swich_t text-right" ng-show="sleepModel">
+							<img src="images/btn-open.png" width="65px"
+								style="margin-top: 9px">
+						</div>
+						<div class="swich_t text-right" ng-show="!sleepModel">
+							<img src="images/btn-close.png" width="65px"
+								style="margin-top: 9px">
+						</div>
+					</div>
+				</label>
+			</div>
+
+			<div class="card">
+				<div
+					class="item item-icon-right gray-3 font-size-16 item-borderless"
+					ng-click=" groupShow = !groupShow">
+
+					<span local_key="CONTROL_AIRCONDITION_AUXILIARY_FUCTION"></span> <i
+						class="icon"
+						ng-class="groupShow ? 'ion-ios-arrow-up' : 'ion-ios-arrow-down'"
+						style="color: #D3D3D3;"></i>
+				</div>
+
+				<div class="item no-padding " ng-show="groupShow">
+					<!--             <div class="item item-borderless gray-6" style="padding:6px 16px;border-bottom:1px solid #EAEAEA !important;">
+				<span local_key="CONTROL_AIRCONDITION_WIND_UP_DOWN"></span>
             </div>
             <div  ng-click="upDown();" class="row no-padding">
                 <div class="col no-padding border-b_r">
@@ -242,12 +310,12 @@
                         <input type="radio" ng-model="wind_s" ng-value="'s_sao'" name="group03">
                         <div class="item-content padding-right-16">
                         <span class="gray-9 inline-block"><img class="v-middle" src="images/icon-mode_44.png" width="30px">
-                           <span class="v-middle font-size-14"><span local_key="AIRCON_CONTROL_WIND_SCAN"></span></span>
+                           <span class="v-middle font-size-14"><span local_key="CONTROL_AIRCONDITION_WIND_SCAN"></span></span>
                         </span>
                         </div>
                         <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
                         <span class="light inline-block font-size-16"  style="margin-top: 8px"><img class="v-middle" src="images/icon-white_44.png" width="30px">
-                          <span class="v-middle font-size-14" ><span local_key="AIRCON_CONTROL_WIND_SCAN"></span> </span>
+                          <span class="v-middle font-size-14" ><span local_key="CONTROL_AIRCONDITION_WIND_SCAN"></span> </span>
                         </span>
                         </div>
                     </label>
@@ -258,20 +326,20 @@
                         <input type="radio" ng-model="wind_s" ng-value="'s_auto'" name="group03">
                         <div class="item-content padding-right-16">
                         <span class="gray-9 inline-block"><img class="v-middle" src="images/icon-mode_45.png" width="30px">
-                            <span class="v-middle font-size-14"><span local_key="AIRCON_CONTROL_WIND_FIX"></span></span>
+                            <span class="v-middle font-size-14"><span local_key="CONTROL_AIRCONDITION_WIND_FIX"></span></span>
                         </span>
                         </div>
                         <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
                         <span class="light inline-block font-size-16"  style="margin-top: 8px"><img class="v-middle" src="images/icon-white_45.png" width="30px">
-                          <span class="v-middle font-size-14"><span local_key="AIRCON_CONTROL_WIND_FIX"></span></span>
+                          <span class="v-middle font-size-14"><span local_key="CONTROL_AIRCONDITION_WIND_FIX"></span></span>
                         </span>
                         </div>
                     </label>
                 </div>
             </div> -->
 
-<!--             <div class="item item-borderless gray-6" style="padding:6px 16px;border-bottom: 1px solid #EAEAEA !important;">
-				<span local_key="AIRCON_CONTROL_WIND_LEFT_RIGHT"></span>
+					<!--             <div class="item item-borderless gray-6" style="padding:6px 16px;border-bottom: 1px solid #EAEAEA !important;">
+				<span local_key="CONTROL_AIRCONDITION_WIND_LEFT_RIGHT"></span>
             </div>
             <div ng-click="leftRight();" class="row no-padding">
                 <div class="col-50 no-padding border_r">
@@ -279,12 +347,12 @@
                         <input type="radio" ng-model="wind_t" ng-value="'HWind'" name="group04">
                         <div class="item-content padding-right-16">
                         <span class="gray-9 inline-block"><img class="v-middle" src="images/icon-mode_32.png" width="30px">
-                           <span class="v-middle "><span local_key="AIRCON_CONTROL_WIND_SCAN"></span> </span>
+                           <span class="v-middle "><span local_key="CONTROL_AIRCONDITION_WIND_SCAN"></span> </span>
                         </span>
                         </div>
                         <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
                         <span class="light inline-block font-size-16"><img class="v-middle" src="images/icon-white_32.png" width="30px">
-                           <span class="v-middle "><span local_key="AIRCON_CONTROL_WIND_SCAN"></span>  </span>
+                           <span class="v-middle "><span local_key="CONTROL_AIRCONDITION_WIND_SCAN"></span>  </span>
                         </span>
                         </div>
                     </label>
@@ -294,19 +362,19 @@
                         <input type="radio" ng-model="wind_t" ng-value="'HWindNo'" name="group04">
                         <div class="item-content padding-right-16">
                         <span class="gray-9 inline-block"><img class="v-middle" src="images/icon-mode_33.png" width="30px">
-                            <span class="v-middle "><span local_key="AIRCON_CONTROL_WIND_FIX"></span> </span>
+                            <span class="v-middle "><span local_key="CONTROL_AIRCONDITION_WIND_FIX"></span> </span>
                         </span>
                         </div>
                         <div class="radio-icon " style="background-color: #58BBFF;width: 100%">
                         <span class="light inline-block font-size-16"><img class="v-middle" src="images/icon-white_33.png" width="30px">
-                           <span class="v-middle "><span local_key="AIRCON_CONTROL_WIND_FIX"></span> </span>
+                           <span class="v-middle "><span local_key="CONTROL_AIRCONDITION_WIND_FIX"></span> </span>
                         </span>
                         </div>
                     </label>
                 </div>
             </div> -->
-            
-            <!--label  class="item item-icon-right item-borderless " style="border-bottom: 1px solid #EAEAEA !important;border-top: 1px solid #EAEAEA !important;">
+
+					<!--label  class="item item-icon-right item-borderless " style="border-bottom: 1px solid #EAEAEA !important;border-top: 1px solid #EAEAEA !important;">
                 <span class="gray-6">电热</span>
                 <div class="icon">
                     <input type="checkbox" ng-model="dianRe" ng-click="dianreCli()" style="opacity:0">
@@ -320,49 +388,55 @@
             </label-->
 
 
-            <label class="item item-icon-right item-borderless " style="border-bottom: 1px solid #EAEAEA !important;">
-               <span class="gray-6"><span local_key="AIRCON_CONTROL_STRONG"></span></span>
-                <div class="icon">
-                    <input type="checkbox" ng-model="gaoXiao" ng-click="gaoxiaoCli()" style="opacity:0">
-                    <!--<div class="track">-->
-                    <!--<div class="handle"></div>-->
-                    <!--</div>-->
-                    <div class="swich_t text-right" ng-show="gaoXiao" >
-                        <img src="images/btn-open.png" width="65px" style="margin-top:9px">
-                    </div>
-                    <div class="swich_t text-right" ng-show="!gaoXiao">
-                        <img src="images/btn-close.png" width="65px" style="margin-top:9px">
-                    </div>
-                </div>
-            </label>
+					<label class="item item-icon-right item-borderless "
+						style="border-bottom: 1px solid #EAEAEA !important;"> <span
+						class="gray-6"><span
+							local_key="CONTROL_AIRCONDITION_STRONG"></span></span>
+						<div class="icon">
+							<input type="checkbox" ng-model="gaoXiao" ng-click="gaoxiaoCli()"
+								style="opacity: 0">
+							<!--<div class="track">-->
+							<!--<div class="handle"></div>-->
+							<!--</div>-->
+							<div class="swich_t text-right" ng-show="gaoXiao">
+								<img src="images/btn-open.png" width="65px"
+									style="margin-top: 9px">
+							</div>
+							<div class="swich_t text-right" ng-show="!gaoXiao">
+								<img src="images/btn-close.png" width="65px"
+									style="margin-top: 9px">
+							</div>
+						</div>
+					</label> <label class="item item-icon-right item-borderless "> <span
+						class="gray-6"><span
+							local_key="CONTROL_AIRCONDITION_BRIGHTNESS"></span></span>
+						<div class="icon">
+							<input type="checkbox" ng-model="liangDu" ng-click="dingCli()"
+								style="opacity: 0">
+							<!--<div class="track"> -->
+							<!--<div class="handle"></div> -->
+							<!--</div> -->
+							<div class="swich_t text-right" ng-show="liangDu">
+								<img src="images/btn-open.png" width="65px"
+									style="margin-top: 9px">
+							</div>
+							<div class="swich_t text-right" ng-show="!liangDu">
+								<img src="images/btn-close.png" width="65px"
+									style="margin-top: 9px">
+							</div>
+						</div>
+					</label>
+				</div>
+			</div>
+			<!--zhezhao start-->
+			<div class="zhezhao" ng-show="!open"></div>
+			<!--zhezhao end-->
 
-            <label  class="item item-icon-right item-borderless ">
-                <span class="gray-6"><span local_key="AIRCON_CONTROL_BRIGHTNESS"></span></span>
-                <div class="icon">
-                    <input type="checkbox" ng-model="liangDu" ng-click="dingCli()" style="opacity:0">
-					<!--<div class="track"> -->
-					<!--<div class="handle"></div> -->
-					<!--</div> -->
-                    <div class="swich_t text-right" ng-show="liangDu" >
-                        <img src="images/btn-open.png" width="65px" style="margin-top:9px">
-                    </div>
-                    <div class="swich_t text-right" ng-show="!liangDu" >
-                        <img src="images/btn-close.png" width="65px" style="margin-top:9px">
-                    </div>
-                </div>
-            </label>
-        </div>
-    </div>
-        <!--zhezhao start-->
-        <div class="zhezhao" ng-show="!open">
-        </div>
-        <!--zhezhao end-->
-
-    </div>
-    <!--功能列表结束-->
+		</div>
+		<!--功能列表结束-->
 
 
- <!--div class="card">
+		<!--div class="card">
         <div class="row" style="padding:10px;">
             <div class="col col-50 gray-3 font-size-16 no-padding" >
                 <span class="inline-block" style="margin-top: 6px">云定时</span>
@@ -372,7 +446,7 @@
             </a>
         </div>
     </div -->
-</div>
+	</div>
 
 
 
@@ -382,11 +456,14 @@
 
 
 </body>
-<script type="text/javascript" charset="utf-8" src="javascript/jquery.js"></script>
+<script type="text/javascript" charset="utf-8"
+	src="javascript/jquery.js"></script>
 <script type="text/javascript" src="javascript/jBox.js"></script>
 
-<script type="text/javascript" charset="utf-8" src="javascript/ionic.bundle.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="javascript/indexController.js"></script>
+<script type="text/javascript" charset="utf-8"
+	src="javascript/ionic.bundle.min.js"></script>
+<script type="text/javascript" charset="utf-8"
+	src="javascript/indexController.js"></script>
 <script type="text/javascript" src="javascript/lib/hw_plugin_public.js"></script>
 <!--<script type="text/javascript" src="javascript/lib/vconsole.min.js" ></script>-->
 <script type="text/javascript" src="javascript/guide.js"></script>

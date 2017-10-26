@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!-- brand:品牌名,用于内部逻辑处理
-	 manufacturer:厂商名,用于内部逻辑处理
-	 brand-resource:品牌的资源名,用于界面显示 
-	 manufacturer-resource:厂商的资源名,用于界面显示 
-	 resource:国际化资源文件路径 -->
-<products brand="LiveAirCondition" 
-		  manufacturer="SzsbayAirCondition" 
-		  resource="resource/resource.properties"
-		  brand-resource="HISENSE_AIR_CONDITION_MANUFACTURER" 
-		  manufacturer-resource="HISENSE_AIR_CONDITION_BRAND"
-		  alarm-template="resource/alarm-template.properties">
-	
-	<!-- implement-class: 驱动实现类类名-->
-	<driver-config
-		implement-class="com.szsbay.livehome.openlife.aircondition.DeviceDriver"
+<!-- brand:品牌名,用于内部逻辑处理 manufacturer:厂商名,用于内部逻辑处理 brand-resource:品牌的资源名,用于界面显示 
+	manufacturer-resource:厂商的资源名,用于界面显示 resource:国际化资源文件路径 -->
+<products brand="LiveAirCondition" manufacturer="SzsbayAirCondition"
+	resource="resource/resource.properties" brand-resource="PRODUCT_MANUFACTURER"
+	manufacturer-resource="PRODUCT_BRAND" alarm-template="resource/alarm-template.properties">
+
+	<!-- implement-class: 驱动实现类类名 -->
+	<driver-config implement-class="com.szsbay.livehome.openlife.aircondition.DeviceDriver"
 		discover-class="com.szsbay.livehome.openlife.aircondition.DeviceDiscoverer">
 	</driver-config>
-	
-	<!-- 产品名称：hisenseKelon-->
-	<product name ="SbaySmartAirCondition" description="The standard model of air condition" title="PRODUCT_AIRCONDITION_TITLE">
+
+	<!-- 产品名称：hisenseKelon -->
+	<product name="SbaySmartAirCondition" description="The standard model of air condition"
+		title="PRODUCT_ITLE">
 		<!-- 继承标准设备类 -->
 		<classes>
 			<class name="airConditioner" />
@@ -27,213 +21,254 @@
 			<class name="temperatureSensor" />
 			<class name="PM25Sensor" />
 		</classes>
-		
+
 		<!-- 自定义property属性，可选 -->
 		<properties>
-			<!-- 空气质量-->
-			<property name="airQuality" type="enum" description="the current indoor air quality" title="AIR_CONDITIONER_PROPERTY_AIR_QUALITY_TITLE">
-				<enum title="AIR_CONDITIONER_AIR_QUALITY_EXCELLENT">excellent</enum>
-				<enum title="AIR_CONDITIONER_AIR_QUALITY_GOOD">good</enum>
-				<enum title="AIR_CONDITIONER_AIR_QUALITY_MEDIUM">medium</enum>
-				<enum title="AIR_CONDITIONER_AIR_QUALITY_BAD">bad</enum>
-				<enum title="AIR_CONDITIONER_AIR_QUALITY_EXBAD">exbad</enum>
+			<!-- 空气质量 -->
+			<property name="airQuality" type="enum"
+				description="the current indoor air quality" title="PROPERTY_AIRCONDITION_AIR_QUALITY_TITLE">
+				<enum title="AIRCONDITION_AIR_QUALITY_EXCELLENT">excellent</enum>
+				<enum title="AIRCONDITION_AIR_QUALITY_GOOD">good</enum>
+				<enum title="AIRCONDITION_AIR_QUALITY_MEDIUM">medium</enum>
+				<enum title="AIRCONDITION_AIR_QUALITY_BAD">bad</enum>
+				<enum title="AIRCONDITION_AIR_QUALITY_EXBAD">exbad</enum>
 			</property>
-			
-			<!-- 上下风-->
-			<property name="verticalWind" type="enum" description="the status of vertical wind direction" title="AIR_CONDITIONER_PROPERTY_VERTICAL_WIND_STATE_TITLE">
-				<enum title="AIR_CONDITIONER_VERTICAL_WIND_SCAN">scan</enum>
-				<enum title="AIR_CONDITIONER_VERTICAL_WIND_FIX">fix</enum>
+
+			<!-- 上下风 -->
+			<property name="verticalWind" type="enum"
+				description="the status of vertical wind direction" title="PROPERTY_AIRCONDITION_VERTICAL_WIND_STATE_TITLE">
+				<enum title="AIRCONDITION_VERTICAL_WIND_SCAN">scan</enum>
+				<enum title="AIRCONDITION_VERTICAL_WIND_FIX">fix</enum>
 			</property>
-			
-			<!-- 左右风-->
-			<property name="horizonWind" type="enum" description="the status of horizon wind direction" title="AIR_CONDITIONER_PROPERTY_HORIZON_WIND_STATE_TITLE">
-				<enum title="AIR_CONDITIONER_HORIZON_WIND_SCAN">scan</enum>
-				<enum title="AIR_CONDITIONER_HORIZON_WIND_FIX">fix</enum>
+
+			<!-- 左右风 -->
+			<property name="horizonWind" type="enum"
+				description="the status of horizon wind direction" title="PROPERTY_AIRCONDITION_HORIZON_WIND_STATE_TITLE">
+				<enum title="AIRCONDITION_HORIZON_WIND_SCAN">scan</enum>
+				<enum title="AIRCONDITION_HORIZON_WIND_FIX">fix</enum>
 			</property>
-			
-			<!-- 电热-->
-			<property name="electricHeat" type="enum" description="the status of electric heat" title="AIR_CONDITIONER_PROPERTY_ELECTRIC_HEAT_STATE_TITLE">
-				<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_ON">on</enum>
-				<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_OFF">off</enum>
+
+			<!-- 电热 -->
+			<property name="electricHeat" type="enum"
+				description="the status of electric heat" title="PROPERTY_AIRCONDITION_ELECTRIC_HEAT_STATE_TITLE">
+				<enum title="AIRCONDITION_ELECTRIC_HEAT_ON">on</enum>
+				<enum title="AIRCONDITION_ELECTRIC_HEAT_OFF">off</enum>
 			</property>
-			
-			<!-- 强力模式-->
-			<property name="strongMode" type="enum" description="the status of normal strong mode" title="AIR_CONDITIONER_PROPERTY_STRONG_MODE_TITLE">
-				<enum title="AIR_CONDITIONER_STRONGE_MODE_ON">on</enum>
-				<enum title="AIR_CONDITIONER_STRONGE_MODE_OFF">off</enum>
+
+			<!-- 强力模式 -->
+			<property name="strongMode" type="enum"
+				description="the status of normal strong mode" title="PROPERTY_AIRCONDITION_STRONG_MODE_TITLE">
+				<enum title="AIRCONDITION_STRONGE_MODE_ON">on</enum>
+				<enum title="AIRCONDITION_STRONGE_MODE_OFF">off</enum>
 			</property>
-			
-			<!-- 睡眠模式-->
-			<property name="sleepMode" type="enum" description="the status of normal sleep mode" title="AIR_CONDITIONER_PROPERTY_SLEEP_MODE_TITLE">
-				<enum title="AIR_CONDITIONER_SLEEP_MODE_ON">on</enum>
-				<enum title="AIR_CONDITIONER_SLEEP_MODE_OFF">off</enum>
+
+			<!-- 睡眠模式 -->
+			<property name="sleepMode" type="enum"
+				description="the status of normal sleep mode" title="PROPERTY_AIRCONDITION_SLEEP_MODE_TITLE">
+				<enum title="AIRCONDITION_SLEEP_MODE_ON">on</enum>
+				<enum title="AIRCONDITION_SLEEP_MODE_OFF">off</enum>
 			</property>
-			
-			<!-- 时间戳-->
-			<property name="timestamp" type="long" description="the timestamp of status" title="AIR_CONDITIONER_PROPERTY_TIMESTAMP_TITLE">
+
+			<!-- 时间戳 -->
+			<property name="timestamp" type="long" description="the timestamp of status"
+				title="PROPERTY_AIRCONDITION_TIMESTAMP_TITLE">
 			</property>
 		</properties>
-		
+
 		<!-- 自定义action动作，可选 -->
 		<actions>
-			<!-- 配置CDN-->
-			<action name="configCDN" description="config device CDN address" title="PRODUCT_AIRCONDITION_ACTION_CONFIG_CDN_TITLE">
-				<property name="ip" type="string" description="device CDN server ip address" title="AIR_CONDITIONER_IP_TITLE">
+			<!-- 配置CDN -->
+			<action name="configCDN" description="config device CDN address"
+				title="PRODUCT_ACTION_AIRCONDITION_CONFIG_CDN_TITLE">
+				<property name="ip" type="string" description="device CDN server ip address"
+					title="AIRCONDITION_IP_TITLE">
 				</property>
-				<property name="port" type="integer" description="device CDN server port" title="AIR_CONDITIONER_PORT_TITLE">
-				</property>
-			</action>
-			
-			<!-- 添加设备-->
-			<action name="addDevice" description="add a device to huawei gateway according to sn" title="PRODUCT_AIRCONDITION_ACTION_ADD_DEVICE_TITLE">
-				<property name="sn" type="string" description="the device sn that need to be added" title="AIR_CONDITIONER_ADD_DEVICE_SN_TITLE">
+				<property name="port" type="integer" description="device CDN server port"
+					title="AIRCONDITION_PORT_TITLE">
 				</property>
 			</action>
-			
-			<!-- 删除设备-->
-			<action name="removeDevice" description="remove a device from huawei gateway according to sn" title="PRODUCT_AIRCONDITION_ACTION_REMOVE_DEVICE_TITLE">
-				<property name="sn" type="string" description="the device sn that need to be removed" title="AIR_CONDITIONER_REMOVE_DEVICE_SN_TITLE">
+
+			<!-- 添加设备 -->
+			<action name="addDevice" description="add a device to huawei gateway according to sn"
+				title="PRODUCT_ACTION_AIRCONDITION_ADD_DEVICE_TITLE">
+				<property name="sn" type="string"
+					description="the device sn that need to be added" title="AIRCONDITION_ADD_DEVICE_SN_TITLE">
 				</property>
 			</action>
-			
-			<!-- 开始指令缓存-->
-			<action name="startCacheOrder" description="start to cache the orders" title="PRODUCT_AIRCONDITION_ACTION_START_CACHE_ORDER_TITLE">
-			</action>
-			
-			<!-- 停止指令缓存-->
-			<action name="stopCacheOrder" description="stop to cache the orders, and issues orders at once" title="PRODUCT_AIRCONDITION_ACTION_STOP_CACHE_ORDER_TITLE">
-			</action>
-			
-			<!-- 辅助功能-->
-			<action name="assistFunction" description="the other assistant functions about this product" title="PRODUCT_AIRCONDITION_ACTION_ASSIST_FUNCTION_TITLE">
-				<property name="verticalWind" type="enum" description="the status of vertical wind direction" title="AIR_CONDITIONER_VERTICAL_WIND_STATE_TITLE">
-					<enum title="AIR_CONDITIONER_VERTICAL_WIND_SCAN">scan</enum>
-					<enum title="AIR_CONDITIONER_VERTICAL_WIND_FIX">fix</enum>
-				</property>
-				<property name="horizonWind" type="enum" description="the status of horizon wind direction" title="AIR_CONDITIONER_HORIZON_WIND_STATE_TITLE">
-					<enum title="AIR_CONDITIONER_HORIZON_WIND_SCAN">scan</enum>
-					<enum title="AIR_CONDITIONER_HORIZON_WIND_FIX">fix</enum>
-				</property>
-				<property name="electricHeat" type="enum" description="the status of electric heat" title="AIR_CONDITIONER_ELECTRIC_HEAT_STATE_TITLE">
-					<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_ON">on</enum>
-					<enum title="AIR_CONDITIONER_ELECTRIC_HEAT_OFF">off</enum>
-				</property>
-				<property name="strongMode" type="enum" description="the status of normal strong mode" title="AIR_CONDITIONER_STRONG_MODE_TITLE">
-					<enum title="AIR_CONDITIONER_STRONGE_MODE_ON">on</enum>
-					<enum title="AIR_CONDITIONER_STRONGE_MODE_OFF">off</enum>
+
+			<!-- 删除设备 -->
+			<action name="removeDevice"
+				description="remove a device from huawei gateway according to sn"
+				title="PRODUCT_ACTION_AIRCONDITION_REMOVE_DEVICE_TITLE">
+				<property name="sn" type="string"
+					description="the device sn that need to be removed" title="AIRCONDITION_REMOVE_DEVICE_SN_TITLE">
 				</property>
 			</action>
-			
+
+			<!-- 开始指令缓存 -->
+			<action name="startCacheOrder" description="start to cache the orders"
+				title="PRODUCT_ACTION_AIRCONDITION_START_CACHE_ORDER_TITLE">
+			</action>
+
+			<!-- 停止指令缓存 -->
+			<action name="stopCacheOrder"
+				description="stop to cache the orders, and issues orders at once"
+				title="PRODUCT_ACTION_AIRCONDITION_STOP_CACHE_ORDER_TITLE">
+			</action>
+
+			<!-- 辅助功能 -->
+			<action name="assistFunction"
+				description="the other assistant functions about this product"
+				title="PRODUCT_ACTION_AIRCONDITION_ASSIST_FUNCTION_TITLE">
+				<property name="verticalWind" type="enum"
+					description="the status of vertical wind direction" title="AIRCONDITION_VERTICAL_WIND_STATE_TITLE">
+					<enum title="AIRCONDITION_VERTICAL_WIND_SCAN">scan</enum>
+					<enum title="AIRCONDITION_VERTICAL_WIND_FIX">fix</enum>
+				</property>
+				<property name="horizonWind" type="enum"
+					description="the status of horizon wind direction" title="AIRCONDITION_HORIZON_WIND_STATE_TITLE">
+					<enum title="AIRCONDITION_HORIZON_WIND_SCAN">scan</enum>
+					<enum title="AIRCONDITION_HORIZON_WIND_FIX">fix</enum>
+				</property>
+				<property name="electricHeat" type="enum"
+					description="the status of electric heat" title="AIRCONDITION_ELECTRIC_HEAT_STATE_TITLE">
+					<enum title="AIRCONDITION_ELECTRIC_HEAT_ON">on</enum>
+					<enum title="AIRCONDITION_ELECTRIC_HEAT_OFF">off</enum>
+				</property>
+				<property name="strongMode" type="enum"
+					description="the status of normal strong mode" title="AIRCONDITION_STRONG_MODE_TITLE">
+					<enum title="AIRCONDITION_STRONGE_MODE_ON">on</enum>
+					<enum title="AIRCONDITION_STRONGE_MODE_OFF">off</enum>
+				</property>
+			</action>
+
 		</actions>
-		
+
 		<!-- 自定义alarm警报，可选 -->
 		<alarms>
-			<!--室内温度传感器故障-->
-			<alarm name="ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT" title="ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT_TITLE" type="ALARM">
+			<!--室内温度传感器故障 -->
+			<alarm name="ALARM_AIRCONDITION_INDOOR_TEMP_SENSOR_FAULT"
+				title="ALARM_AIRCONDITION_INDOOR_TEMP_SENSOR_FAULT_TITLE" type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT_TEMPLATE_TITLE" 
-					content-resource="ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_INDOOR_TEMP_SENSOR_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_INDOOR_TEMP_SENSOR_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--室内盘管温度传感器故障-->
-			<alarm name="ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT" title="ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT_TITLE" type="ALARM">
+
+			<!--室内盘管温度传感器故障 -->
+			<alarm name="ALARM_AIRCONDITION_INDOOR_PIPE_TEMP_SENSOR_FAULT"
+				title="ALARM_AIRCONDITION_INDOOR_PIPE_TEMP_SENSOR_FAULT_TITLE" type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_INDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_INDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--室内湿度传感器故障-->
-			<alarm name="ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT" title="ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT_TITLE" type="ALARM">
+
+			<!--室内湿度传感器故障 -->
+			<alarm name="ALARM_AIRCONDITION_INDOOR_HUMI_SENSOR_FAULT"
+				title="ALARM_AIRCONDITION_INDOOR_HUMI_SENSOR_FAULT_TITLE" type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_INDOOR_HUMI_SENSOR_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_INDOOR_HUMI_SENSOR_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--室内控制板与显示板通信故障-->
-			<alarm name="ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT" title="ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT_TITLE" type="ALARM">
+
+			<!--室内控制板与显示板通信故障 -->
+			<alarm name="ALARM_AIRCONDITION_INDOOR_COMMUNICATION_FAULT"
+				title="ALARM_AIRCONDITION_INDOOR_COMMUNICATION_FAULT_TITLE" type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_INDOOR_COMMUNICATION_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_INDOOR_COMMUNICATION_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--室内风机电机运转异常故障-->
-			<alarm name="ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT" title="ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT_TITLE" type="ALARM">
+
+			<!--室内风机电机运转异常故障 -->
+			<alarm name="ALARM_AIRCONDITION_INDOOR_FAN_MOTOR_FAULT" title="ALARM_AIRCONDITION_INDOOR_FAN_MOTOR_FAULT_TITLE"
+				type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_INDOOR_FAN_MOTOR_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_INDOOR_FAN_MOTOR_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--室内电压过零检测故障-->
-			<alarm name="ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT" title="ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT_TITLE" type="ALARM">
+
+			<!--室内电压过零检测故障 -->
+			<alarm name="ALARM_AIRCONDITION_INDOOR_VOLTAGE_DETECTION_FAULT"
+				title="ALARM_AIRCONDITION_INDOOR_VOLTAGE_DETECTION_FAULT_TITLE"
+				type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_INDOOR_VOLTAGE_DETECTION_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_INDOOR_VOLTAGE_DETECTION_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--室内外通信故障-->
-			<alarm name="ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT" title="ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT_TITLE" type="ALARM">
+
+			<!--室内外通信故障 -->
+			<alarm name="ALARM_AIRCONDITION_INDOOR_OUTDOOR_COMMUNICATION_FAULT"
+				title="ALARM_AIRCONDITION_INDOOR_OUTDOOR_COMMUNICATION_FAULT_TITLE"
+				type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_INDOOR_OUTDOOR_COMMUNICATION_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_INDOOR_OUTDOOR_COMMUNICATION_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--室外盘管温度传感器故障-->
-			<alarm name="ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT" title="ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT_TITLE" type="ALARM">
+
+			<!--室外盘管温度传感器故障 -->
+			<alarm name="ALARM_AIRCONDITION_OUTDOOR_PIPE_TEMP_SENSOR_FAULT"
+				title="ALARM_AIRCONDITION_OUTDOOR_PIPE_TEMP_SENSOR_FAULT_TITLE"
+				type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_CONTENT">
+					<template
+						title-resource="ALARM_AIRCONDITION_OUTDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_OUTDOOR_PIPE_TEMP_SENSOR_FAULT_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
-			
-			<!--冷媒泄漏-->
-			<alarm name="ALARM_AIRCON_REFRIGERANT_LEAKAGE" title="ALARM_AIRCON_REFRIGERANT_LEAKAGE_TITLE" type="ALARM">
+
+			<!--冷媒泄漏 -->
+			<alarm name="ALARM_AIRCONDITION_REFRIGERANT_LEAKAGE" title="ALARM_AIRCONDITION_REFRIGERANT_LEAKAGE_TITLE"
+				type="ALARM">
 				<templates detail-view="DEVICE_LIST">
-					<template title-resource="ALARM_AIRCON_REFRIGERANT_LEAKAGE_TEMPLATE_TITLE"
-						content-resource="ALARM_AIRCON_REFRIGERANT_LEAKAGE_TEMPLATE_CONTENT">
+					<template title-resource="ALARM_AIRCONDITION_REFRIGERANT_LEAKAGE_TEMPLATE_TITLE"
+						content-resource="ALARM_AIRCONDITION_REFRIGERANT_LEAKAGE_TEMPLATE_CONTENT">
 					</template>
 				</templates>
 			</alarm>
 		</alarms>
-		
+
 		<ifttt>
 			<triggers>
-				<alarm name="ALARM_AIRCON_INDOOR_TEMP_SENSOR_FAULT" />
-				<alarm name="ALARM_AIRCON_INDOOR_PIPE_TEMP_SENSOR_FAULT" />
-				<alarm name="ALARM_AIRCON_INDOOR_HUMI_SENSOR_FAULT" />
-				<alarm name="ALARM_AIRCON_INDOOR_COMMUNICATION_FAULT" />
-				<alarm name="ALARM_AIRCON_INDOOR_FAN_MOTOR_FAULT" />
-				<alarm name="ALARM_AIRCON_INDOOR_VOLTAGE_DETECTION_FAULT" />
-				<alarm name="ALARM_AIRCON_INDOOR_OUTDOOR_COMMUNICATION_FAULT" />
-				<alarm name="ALARM_AIRCON_OUTDOOR_PIPE_TEMP_SENSOR_FAULT" />
-				<alarm name="ALARM_AIRCON_REFRIGERANT_LEAKAGE" />
+				<alarm name="ALARM_AIRCONDITION_INDOOR_TEMP_SENSOR_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_INDOOR_PIPE_TEMP_SENSOR_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_INDOOR_HUMI_SENSOR_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_INDOOR_COMMUNICATION_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_INDOOR_FAN_MOTOR_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_INDOOR_VOLTAGE_DETECTION_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_INDOOR_OUTDOOR_COMMUNICATION_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_OUTDOOR_PIPE_TEMP_SENSOR_FAULT" />
+				<alarm name="ALARM_AIRCONDITION_REFRIGERANT_LEAKAGE" />
 			</triggers>
 			<actions>
 				<action name="assistFunction" />
 			</actions>
 		</ifttt>
-		
+
 		<!-- 配置设备界面，可选 -->
 		<view>
-			<!-- icon:在线设备图标路径
-				 icon-offline:离线设备图标路径
-				 device-status-entry:设备基本信息页面路径
-				 device-control-entry:设备控制页面路径
-				 device-guide-entry:设备安装指南页面路径 -->
+			<!-- icon:在线设备图标路径 icon-offline:离线设备图标路径 device-status-entry:设备基本信息页面路径 
+				device-control-entry:设备控制页面路径 device-guide-entry:设备安装指南页面路径 -->
 			<icon>device/images/icon.png</icon>
 			<icon-offline>device/images/icon_offline.png</icon-offline>
 			<device-control-entry>device/dev_control.html</device-control-entry>
