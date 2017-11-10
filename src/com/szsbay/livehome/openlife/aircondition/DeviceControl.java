@@ -18,6 +18,7 @@ import com.szsbay.livehome.util.LogUtils;
 
 public class DeviceControl extends AbstractHisenseControl
 {
+	private static final String TAG = "[DeviceControl] ";
 	/**
 	 * 设备服务 
 	 */
@@ -26,8 +27,7 @@ public class DeviceControl extends AbstractHisenseControl
 	/**
 	 * 日志接口
 	 */
-	private final static LogService logger = LogServiceFactory.getLogService(AbstractDeviceControl.class);
-	
+	private final static LogService logger = LogServiceFactory.getLogService(DeviceControl.class);
 	
 	/**
 	 * 设备SN与设备真实状态集映射表
@@ -55,6 +55,7 @@ public class DeviceControl extends AbstractHisenseControl
 	 * @param params 设备动作参数
 	 * @return
 	 */
+	@Override
 	public JSONObject parseAction(String sn, String action, JSONObject params)
 	{
 		/*TODO 
@@ -99,6 +100,7 @@ public class DeviceControl extends AbstractHisenseControl
 	 * @param params 设备动作及参数列表
 	 * @return
 	 */
+	@Override
 	public  JSONObject parseAction(String sn, JSONArray jsa)
 	{
 		/*TODO 
@@ -156,6 +158,7 @@ public class DeviceControl extends AbstractHisenseControl
 	 * @param result 设备期望状态
 	 * @return
 	 */
+	@Override
 	public  void buildCommand(String sn, String action, JSONObject params, JSONObject result)
 	{
 		logger.d("<buildCommand> sn={} buildCommand={}", sn,action);
@@ -350,6 +353,7 @@ public class DeviceControl extends AbstractHisenseControl
 	 * @param productName 产品名称
 	 * @return 
 	 */
+	@Override
 	public void reportAlarm(String sn) 
 	{
 		if(null==deviceService){
@@ -418,6 +422,7 @@ public class DeviceControl extends AbstractHisenseControl
 	 * @param productName 产品名称
 	 * @return 
 	 */
+	@Override
 	public  JSONObject reportStatus(String sn)
 	{
 		if(null==deviceService){
@@ -427,11 +432,16 @@ public class DeviceControl extends AbstractHisenseControl
 		try{
 			logger.v("<reportStatus> sn = {}, productName = {}", sn , getProtocol().getDeviceName());
 			logger.d("<reportStatus> before flush, devicesStatusInfo = {}", devicesStatusInfo);
-			JSONObject devSta_old=devicesStatusInfo.get(sn);
-			if(null!=devSta_old){
-				devSta_old=new JSONObject(devSta_old.toString());
+			
+			JSONObject devSta_js = devicesStatusInfo.get(sn);
+			JSONObject devSta_old = null;
+			if(null!=devSta_js){
+				devSta_old=new JSONObject(devSta_js.toString());
 			}else{
+				logger.e("<reportStatus>  {} status is null", sn);
 				devSta_old=new JSONObject();
+				devSta_js=new JSONObject();
+				devicesStatusInfo.put(sn, devSta_js);
 			}
 			int indoorTemperature = getProtocol().getAirConditionIndoorCurrentTemp();//室内温度
 			int indoorHumidity = getProtocol().getAirConditionIndoorCurrentHumi();//室内湿度
@@ -483,32 +493,25 @@ public class DeviceControl extends AbstractHisenseControl
 	
 			logger.d("<reportStatus> get device status from 102 order, sn = {}", sn);
 			
-			if(null == devicesStatusInfo.get(sn))
-			{
-				devicesStatusInfo.put(sn, new JSONObject());
-			}
-			JSONObject devSta_js = devicesStatusInfo.get(sn);
-			if(17 != devSta_js.length())
-			{
-				if(!devSta_js.has("airQuality"))		devSta_js.put("airQuality", "");
-				if(!devSta_js.has("verticalWind"))		devSta_js.put("verticalWind", "");
-				if(!devSta_js.has("horizonWind"))		devSta_js.put("horizonWind", "");
-				if(!devSta_js.has("electricHeat"))		devSta_js.put("electricHeat", "");
-				if(!devSta_js.has("strongMode"))		devSta_js.put("strongMode", "");
-				if(!devSta_js.has("sleepMode"))			devSta_js.put("sleepMode", "");
-				if(!devSta_js.has("state"))				devSta_js.put("state", "");
-				if(!devSta_js.has("screenState"))		devSta_js.put("screenState", "");
-				if(!devSta_js.has("ledState"))			devSta_js.put("ledState", "");
-				if(!devSta_js.has("mode"))				devSta_js.put("mode", "");
-				if(!devSta_js.has("configTemperature"))	devSta_js.put("configTemperature", -1);
-				if(!devSta_js.has("configHumidity"))	devSta_js.put("configHumidity", -1);
-				if(!devSta_js.has("windDirection"))		devSta_js.put("windDirection", "");
-				if(!devSta_js.has("windSpeed"))			devSta_js.put("windSpeed", "");
-				if(!devSta_js.has("humidity"))			devSta_js.put("humidity", -1);
-				if(!devSta_js.has("temperature"))		devSta_js.put("temperature", -1);
-				if(!devSta_js.has("particulates"))		devSta_js.put("particulates", -1);
+
+			if(!devSta_js.has("airQuality"))		devSta_js.put("airQuality", "");
+			if(!devSta_js.has("verticalWind"))		devSta_js.put("verticalWind", "");
+			if(!devSta_js.has("horizonWind"))		devSta_js.put("horizonWind", "");
+			if(!devSta_js.has("electricHeat"))		devSta_js.put("electricHeat", "");
+			if(!devSta_js.has("strongMode"))		devSta_js.put("strongMode", "");
+			if(!devSta_js.has("sleepMode"))			devSta_js.put("sleepMode", "");
+			if(!devSta_js.has("state"))				devSta_js.put("state", "");
+			if(!devSta_js.has("screenState"))		devSta_js.put("screenState", "");
+			if(!devSta_js.has("ledState"))			devSta_js.put("ledState", "");
+			if(!devSta_js.has("mode"))				devSta_js.put("mode", "");
+			if(!devSta_js.has("configTemperature"))	devSta_js.put("configTemperature", -1);
+			if(!devSta_js.has("configHumidity"))	devSta_js.put("configHumidity", -1);
+			if(!devSta_js.has("windDirection"))		devSta_js.put("windDirection", "");
+			if(!devSta_js.has("windSpeed"))			devSta_js.put("windSpeed", "");
+			if(!devSta_js.has("humidity"))			devSta_js.put("humidity", -1);
+			if(!devSta_js.has("temperature"))		devSta_js.put("temperature", -1);
+			if(!devSta_js.has("particulates"))		devSta_js.put("particulates", -1);
 				
-			}
 			
 			logger.d("<reportStatus> begin to check device status, sn = {}", sn);
 			JSONObject extendStatus = new JSONObject();//自定义扩展属性集

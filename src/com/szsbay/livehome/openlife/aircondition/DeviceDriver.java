@@ -26,7 +26,7 @@ public class DeviceDriver extends AbstractHisenseDriver
 	{
 		logger.d("Aircondition:init");
 		setConnectType(ConnectType.CONN_DEVICE);
-		setReportTimes(5000);
+		//setReportTimes(5000);
 		initDriver();
 		
 		logger.d("Aircondition:finish");
